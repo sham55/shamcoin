@@ -37,6 +37,17 @@
       font-size: 1.2em;
       margin-top: 10px;
     }
+
+    /* QR Code Styling */
+    .qr-code {
+      margin: 20px auto;
+      display: block;
+      border: 5px solid #fff;
+      border-radius: 12px;
+      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+      background: #fff;
+    }
+
     section {
       padding: 60px 20px;
     }
@@ -114,9 +125,12 @@
          onerror="this.style.display='none'">
     <h1>🚀 Sham Coin (SHAM)</h1>
     <p>5 Billion Fixed-Supply Token with Burn Functionality</p>
-    <p><b>Contract Address:</b><br>
-      <code>0x55d43bfede19f035ff03df042a53708565ff17af</code>
-    </p>
+
+    <p><b>Contract Address:</b></p>
+    <img class="qr-code"
+         src="https://chart.googleapis.com/chart?cht=qr&chs=200x200&chl=0x55d43bfede19f035ff03df042a53708565ff17af" 
+         alt="Contract Address QR Code" width="200" height="200">
+    <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
   </header>
 
   <section>
@@ -181,4 +195,5 @@
   </footer>
 </body>
 </html>
+
 
