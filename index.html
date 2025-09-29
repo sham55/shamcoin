@@ -43,9 +43,16 @@
       margin: 20px auto;
       display: block;
       border: 5px solid #fff;
-      border-radius: 12px;
+      border-radius: 0;   /* square corners */
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
       background: #fff;
+    }
+
+    .contract-section {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
     }
 
     section {
@@ -126,14 +133,15 @@
     <h1>🚀 Sham Coin (SHAM)</h1>
     <p>5 Billion Fixed-Supply Token with Burn Functionality</p>
 
-    <p><b>Contract Address:</b></p>
-    <!-- Local QR Code -->
-    <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
-      <img class="qr-code"
-           src="sham-qr.png"
-           alt="Contract Address QR Code" width="200" height="200">
-    </a>
-    <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
+    <div class="contract-section">
+      <p><b>Contract Address:</b></p>
+      <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
+        <img class="qr-code"
+             src="sham-qr.png"
+             alt="Contract Address QR Code" width="200" height="200">
+      </a>
+      <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
+    </div>
   </header>
 
   <section>
