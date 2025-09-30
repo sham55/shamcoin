@@ -42,10 +42,10 @@
     .qr-code {
       display: block;
       margin: 20px auto;
-      width: 100%;
-      max-width: 200px;
-      aspect-ratio: 1 / 1;
-      object-fit: contain;
+      width: 100%;             /* responsive width */
+      max-width: 200px;        /* max size */
+      aspect-ratio: 1 / 1;     /* always a square */
+      object-fit: contain;     /* keep proportions */
       border: 5px solid #fff;
       border-radius: 0;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
@@ -110,7 +110,7 @@
       border-radius: 50%;
     }
 
-    /* Buttons */
+    /* Buy button style */
     .buy-btn {
       display: inline-block;
       padding: 15px 30px;
@@ -128,16 +128,6 @@
       background: linear-gradient(135deg, #0066ff, #00ccff);
       transform: scale(1.05);
     }
-    .download-btn, .copy-btn {
-      display: inline-block;
-      margin-top: 10px;
-      font-size: 0.9em;
-      color: #00ccff;
-      cursor: pointer;
-    }
-    .download-btn:hover, .copy-btn:hover {
-      text-decoration: underline;
-    }
   </style>
 </head>
 <body>
@@ -149,16 +139,13 @@
 
     <div class="contract-section">
       <p><b>Contract Address:</b></p>
+      <!-- ✅ Dynamic QR pointing to BscScan URL -->
       <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
         <img class="qr-code"
-             src="sham-qr.png"
+             src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af"
              alt="Contract Address QR Code">
       </a>
-      <p id="contract-text">
-        <small>0x55d43bfede19f035ff03df042a53708565ff17af</small>
-      </p>
-      <a class="download-btn" href="sham-qr.png" download="shamcoin-qr.png">⬇ Download QR Code</a>
-      <span class="copy-btn" onclick="copyAddress()">📋 Copy Contract Address</span>
+      <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
     </div>
   </header>
 
@@ -222,16 +209,6 @@
     <p>© 2025 Sham Coin | Built with ❤️ for the community</p>
     <img src="logo2.png" alt="ShamCoin Logo" onerror="this.style.display='none'">
   </footer>
-
-  <script>
-    function copyAddress() {
-      const address = "0x55d43bfede19f035ff03df042a53708565ff17af";
-      navigator.clipboard.writeText(address).then(() => {
-        alert("✅ Contract address copied to clipboard!");
-      });
-    }
-  </script>
 </body>
 </html>
-
 
