@@ -40,10 +40,14 @@
 
     /* QR Code Styling */
     .qr-code {
-      margin: 20px auto;
       display: block;
+      margin: 20px auto;
+      width: 100%;             /* responsive width */
+      max-width: 200px;        /* max size */
+      aspect-ratio: 1 / 1;     /* always a square */
+      object-fit: contain;     /* preserve proportions */
       border: 5px solid #fff;
-      border-radius: 0;   /* square corners */
+      border-radius: 0;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
       background: #fff;
     }
@@ -138,7 +142,7 @@
       <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
         <img class="qr-code"
              src="sham-qr.png"
-             alt="Contract Address QR Code" width="200" height="200">
+             alt="Contract Address QR Code">
       </a>
       <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
     </div>
@@ -206,4 +210,3 @@
   </footer>
 </body>
 </html>
-
