@@ -38,7 +38,7 @@
       margin-top: 10px;
     }
 
-    /* QR Code Styling */
+    /* Glowing QR Code Styling */
     .qr-code {
       display: block;
       margin: 20px auto;
@@ -46,10 +46,25 @@
       max-width: 200px;
       aspect-ratio: 1 / 1;
       object-fit: contain;
-      border: 5px solid #fff;
-      border-radius: 0;
-      box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
+
+      /* Rounded border */
+      border: 6px solid #00ccff;
+      border-radius: 20px;
+
+      /* Glow effect */
+      box-shadow: 0 0 15px #00ccff,
+                  0 0 30px #00ccff,
+                  0 0 45px #00ccff;
+
       background: #fff;
+      transition: 0.3s;
+    }
+
+    .qr-code:hover {
+      transform: scale(1.05);
+      box-shadow: 0 0 20px #00e1ff,
+                  0 0 40px #00e1ff,
+                  0 0 60px #00e1ff;
     }
 
     .contract-section {
@@ -210,7 +225,5 @@
   </footer>
 </body>
 </html>
-
-
 
 
