@@ -110,7 +110,7 @@
       border-radius: 50%;
     }
 
-    /* Buy button style */
+    /* Buttons */
     .buy-btn {
       display: inline-block;
       padding: 15px 30px;
@@ -128,16 +128,14 @@
       background: linear-gradient(135deg, #0066ff, #00ccff);
       transform: scale(1.05);
     }
-
-    /* Download QR button */
-    .download-btn {
+    .download-btn, .copy-btn {
       display: inline-block;
       margin-top: 10px;
       font-size: 0.9em;
       color: #00ccff;
       cursor: pointer;
     }
-    .download-btn:hover {
+    .download-btn:hover, .copy-btn:hover {
       text-decoration: underline;
     }
   </style>
@@ -153,13 +151,14 @@
       <p><b>Contract Address:</b></p>
       <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
         <img class="qr-code"
-             src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af"
+             src="https://chart.googleapis.com/chart?chs=200x200&amp;cht=qr&amp;chl=https%3A%2F%2Fbscscan.com%2Ftoken%2F0x55d43bfede19f035ff03df042a53708565ff17af"
              alt="Contract Address QR Code">
       </a>
-      <p>
+      <p id="contract-text">
         <small>0x55d43bfede19f035ff03df042a53708565ff17af</small>
       </p>
-      <a class="download-btn" href="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" download="shamcoin-qr.png">⬇ Download QR Code</a>
+      <a class="download-btn" href="https://chart.googleapis.com/chart?chs=200x200&amp;cht=qr&amp;chl=https%3A%2F%2Fbscscan.com%2Ftoken%2F0x55d43bfede19f035ff03df042a53708565ff17af" download="shamcoin-qr.png">⬇ Download QR Code</a>
+      <span class="copy-btn" onclick="copyAddress()">📋 Copy Contract Address</span>
     </div>
   </header>
 
@@ -223,6 +222,16 @@
     <p>© 2025 Sham Coin | Built with ❤️ for the community</p>
     <img src="logo2.png" alt="ShamCoin Logo" onerror="this.style.display='none'">
   </footer>
+
+  <script>
+    function copyAddress() {
+      const address = "0x55d43bfede19f035ff03df042a53708565ff17af";
+      navigator.clipboard.writeText(address).then(() => {
+        alert("✅ Contract address copied to clipboard!");
+      });
+    }
+  </script>
 </body>
 </html>
+
 
