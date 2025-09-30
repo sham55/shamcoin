@@ -42,10 +42,10 @@
     .qr-code {
       display: block;
       margin: 20px auto;
-      width: 100%;             /* responsive width */
-      max-width: 200px;        /* max size */
-      aspect-ratio: 1 / 1;     /* always a square */
-      object-fit: contain;     /* keep proportions */
+      width: 100%;
+      max-width: 200px;
+      aspect-ratio: 1 / 1;
+      object-fit: contain;
       border: 5px solid #fff;
       border-radius: 0;
       box-shadow: 0 0 20px rgba(255, 255, 255, 0.6);
@@ -139,10 +139,9 @@
 
     <div class="contract-section">
       <p><b>Contract Address:</b></p>
-      <!-- ✅ Dynamic QR pointing to BscScan URL -->
       <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
         <img class="qr-code"
-             src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af"
+             src="https://chart.googleapis.com/chart?chs=200x200&cht=qr&chl=https%3A%2F%2Fbscscan.com%2Ftoken%2F0x55d43bfede19f035ff03df042a53708565ff17af"
              alt="Contract Address QR Code">
       </a>
       <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
@@ -211,4 +210,3 @@
   </footer>
 </body>
 </html>
-
