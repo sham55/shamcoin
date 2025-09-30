@@ -38,7 +38,7 @@
       margin-top: 10px;
     }
 
-    /* Glowing QR Code Styling */
+    /* Animated Glowing QR Code Styling */
     .qr-code {
       display: block;
       margin: 20px auto;
@@ -47,24 +47,40 @@
       aspect-ratio: 1 / 1;
       object-fit: contain;
 
-      /* Rounded border */
-      border: 10px solid #00ccff;
-      border-radius: 5px;
-
-      /* Glow effect */
-      box-shadow: 0 0 15px #00ccff,
-                  0 0 30px #00ccff,
-                  0 0 45px #00ccff;
-
+      border: 6px solid #00ccff;
+      border-radius: 20px;
       background: #fff;
+
+      /* Neon glow animation */
+      animation: neonGlow 4s infinite alternate;
       transition: 0.3s;
+    }
+
+    @keyframes neonGlow {
+      0% {
+        box-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff, 0 0 45px #00ccff;
+        border-color: #00ccff;
+      }
+      25% {
+        box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff, 0 0 45px #ff00ff;
+        border-color: #ff00ff;
+      }
+      50% {
+        box-shadow: 0 0 15px #00ff99, 0 0 30px #00ff99, 0 0 45px #00ff99;
+        border-color: #00ff99;
+      }
+      75% {
+        box-shadow: 0 0 15px #ffcc00, 0 0 30px #ffcc00, 0 0 45px #ffcc00;
+        border-color: #ffcc00;
+      }
+      100% {
+        box-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #ff4444;
+        border-color: #ff4444;
+      }
     }
 
     .qr-code:hover {
       transform: scale(1.05);
-      box-shadow: 0 0 20px #00e1ff,
-                  0 0 40px #00e1ff,
-                  0 0 60px #00e1ff;
     }
 
     .contract-section {
@@ -225,5 +241,6 @@
   </footer>
 </body>
 </html>
+
 
 
