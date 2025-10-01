@@ -18,7 +18,109 @@
       background: #0d1117;
       color: #f0f6fc;
       text-align: center;
+      scroll-behavior: smooth;
     }
+
+    /* 🔹 Sticky Navbar */
+    nav {
+      position: sticky;
+      top: 0;
+      z-index: 1000;
+      background: #161b22;
+      border-bottom: 1px solid #30363d;
+      padding: 10px 15px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    nav .logo {
+      font-weight: bold;
+      color: #58a6ff;
+      font-size: 1.2em;
+    }
+
+    nav ul {
+      display: flex;
+      gap: 20px;
+      list-style: none;
+      margin: 0;
+      padding: 0;
+    }
+
+    nav a {
+      color: #58a6ff;
+      font-weight: 500;
+      text-decoration: none;
+      transition: color 0.3s;
+    }
+
+    nav a:hover {
+      color: #00ccff;
+    }
+
+    /* 🔹 Hamburger Button */
+    .hamburger {
+      display: none;
+      flex-direction: column;
+      cursor: pointer;
+      gap: 5px;
+      width: 25px;
+      height: 20px;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .hamburger div {
+      width: 25px;
+      height: 3px;
+      background: #58a6ff;
+      border-radius: 2px;
+      transition: all 0.4s ease;
+    }
+
+    /* Animation to X */
+    .hamburger.open div:nth-child(1) {
+      transform: rotate(45deg) translate(5px, 5px);
+    }
+    .hamburger.open div:nth-child(2) {
+      opacity: 0;
+    }
+    .hamburger.open div:nth-child(3) {
+      transform: rotate(-45deg) translate(6px, -6px);
+    }
+
+    /* 🔹 Mobile Menu with Slide Animation */
+    .mobile-menu {
+      display: flex;
+      flex-direction: column;
+      background: #161b22;
+      overflow: hidden;
+      max-height: 0;
+      opacity: 0;
+      transition: max-height 0.4s ease, opacity 0.4s ease;
+    }
+
+    .mobile-menu.show {
+      max-height: 300px; /* enough space for menu items */
+      opacity: 1;
+    }
+
+    .mobile-menu a {
+      padding: 12px 0;
+      border-bottom: 1px solid #30363d;
+    }
+
+    /* Show hamburger on small screens */
+    @media (max-width: 768px) {
+      nav ul {
+        display: none;
+      }
+      .hamburger {
+        display: flex;
+      }
+    }
+
     header {
       padding: 40px 20px;
       background: linear-gradient(135deg, #4b0082, #8a2be2);
@@ -38,7 +140,7 @@
       margin-top: 10px;
     }
 
-    /* Animated Glowing QR Code Styling */
+    /* 🔹 Glowing QR Code (steady cyan) */
     .qr-code {
       display: block;
       margin: 20px auto;
@@ -46,42 +148,16 @@
       max-width: 200px;
       aspect-ratio: 1 / 1;
       object-fit: contain;
-
       border: 6px solid #00ccff;
       border-radius: 20px;
       background: #fff;
-
-      /* Neon glow animation */
-      animation: neonGlow 4s infinite alternate;
+      box-shadow: 0 0 15px #00ccff,
+                  0 0 30px #00ccff,
+                  0 0 45px #00ccff;
       transition: 0.3s;
     }
 
-    @keyframes neonGlow {
-      0% {
-        box-shadow: 0 0 15px #00ccff, 0 0 30px #00ccff, 0 0 45px #00ccff;
-        border-color: #00ccff;
-      }
-      25% {
-        box-shadow: 0 0 15px #ff00ff, 0 0 30px #ff00ff, 0 0 45px #ff00ff;
-        border-color: #ff00ff;
-      }
-      50% {
-        box-shadow: 0 0 15px #00ff99, 0 0 30px #00ff99, 0 0 45px #00ff99;
-        border-color: #00ff99;
-      }
-      75% {
-        box-shadow: 0 0 15px #ffcc00, 0 0 30px #ffcc00, 0 0 45px #ffcc00;
-        border-color: #ffcc00;
-      }
-      100% {
-        box-shadow: 0 0 15px #ff4444, 0 0 30px #ff4444, 0 0 45px #ff4444;
-        border-color: #ff4444;
-      }
-    }
-
-    .qr-code:hover {
-      transform: scale(1.05);
-    }
+    .qr-code:hover { transform: scale(1.05); }
 
     .contract-section {
       display: flex;
@@ -89,20 +165,18 @@
       align-items: center;
       justify-content: center;
     }
+    .contract-section small { word-break: break-all; }
 
-    section {
-      padding: 60px 20px;
-    }
-    h2 {
-      color: #00ccff;
-      margin-bottom: 20px;
-    }
+    section { padding: 60px 20px; }
+    h2 { color: #00ccff; margin-bottom: 20px; }
+
     .tokenomics {
       display: flex;
       justify-content: center;
       flex-wrap: wrap;
       gap: 20px;
     }
+
     .card {
       background: #161b22;
       border: 1px solid #30363d;
@@ -111,24 +185,14 @@
       width: 250px;
       box-shadow: 0 4px 8px rgba(0,0,0,0.2);
     }
-    .card h3 {
-      margin-top: 0;
-      color: #58a6ff;
-    }
-    ul {
-      list-style: none;
-      padding: 0;
-    }
-    ul li {
-      margin: 10px 0;
-    }
-    a {
-      color: #58a6ff;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
+
+    .card h3 { margin-top: 0; color: #58a6ff; }
+
+    ul { list-style: none; padding: 0; }
+    ul li { margin: 10px 0; }
+    a { color: #58a6ff; text-decoration: none; }
+    a:hover { text-decoration: underline; }
+
     footer {
       background: #161b22;
       padding: 20px;
@@ -141,7 +205,7 @@
       border-radius: 50%;
     }
 
-    /* Buy button style */
+    /* 🔹 Buy button with pulsing glow */
     .buy-btn {
       display: inline-block;
       padding: 15px 30px;
@@ -152,16 +216,73 @@
       font-weight: bold;
       border-radius: 8px;
       text-decoration: none;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+      box-shadow: 0 0 15px #00ccff,
+                  0 0 30px #00ccff,
+                  0 0 45px #00ccff;
       transition: 0.3s;
+      animation: pulseGlow 2s infinite alternate;
     }
+
+    @keyframes pulseGlow {
+      from {
+        box-shadow: 0 0 10px #00ccff,
+                    0 0 20px #00ccff,
+                    0 0 30px #00ccff;
+      }
+      to {
+        box-shadow: 0 0 20px #00ccff,
+                    0 0 40px #00ccff,
+                    0 0 60px #00ccff;
+      }
+    }
+
     .buy-btn:hover {
       background: linear-gradient(135deg, #0066ff, #00ccff);
       transform: scale(1.05);
     }
+
+    /* ✅ Mobile Responsive */
+    @media (max-width: 600px) {
+      header h1 { font-size: 2em; }
+      header p { font-size: 1em; }
+      section { padding: 30px 15px; }
+      .card { width: 100%; max-width: 320px; }
+      .buy-btn { width: 100%; max-width: 320px; }
+    }
+    @media (max-width: 400px) {
+      header h1 { font-size: 1.6em; }
+      .qr-code { max-width: 150px; }
+    }
   </style>
 </head>
 <body>
+
+  <!-- 🔹 Navbar -->
+  <nav>
+    <div class="logo">SHAM</div>
+    <ul>
+      <li><a href="#about">About</a></li>
+      <li><a href="#tokenomics">Tokenomics</a></li>
+      <li><a href="#roadmap">Roadmap</a></li>
+      <li><a href="#buy">Buy</a></li>
+      <li><a href="#links">Links</a></li>
+    </ul>
+    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
+      <div></div>
+      <div></div>
+      <div></div>
+    </div>
+  </nav>
+
+  <!-- Mobile Menu -->
+  <div class="mobile-menu" id="mobileMenu">
+    <a href="#about" onclick="toggleMenu()">About</a>
+    <a href="#tokenomics" onclick="toggleMenu()">Tokenomics</a>
+    <a href="#roadmap" onclick="toggleMenu()">Roadmap</a>
+    <a href="#buy" onclick="toggleMenu()">Buy</a>
+    <a href="#links" onclick="toggleMenu()">Links</a>
+  </div>
+
   <header>
     <img src="logo2.png" width="120" style="margin-bottom: 20px; border-radius: 50%;" 
          onerror="this.style.display='none'">
@@ -179,14 +300,14 @@
     </div>
   </header>
 
-  <section>
+  <section id="about">
     <h2>🔹 About Sham Coin</h2>
     <p>Sham Coin (SHAM) is a decentralized token built on Binance Smart Chain (BSC). 
        With a fixed supply of 5 billion tokens, SHAM introduces deflationary mechanics 
        through burn functionality, ensuring long-term scarcity and value growth.</p>
   </section>
 
-  <section>
+  <section id="tokenomics">
     <h2>📊 Tokenomics</h2>
     <div class="tokenomics">
       <div class="card">
@@ -204,7 +325,7 @@
     </div>
   </section>
 
-  <section>
+  <section id="roadmap">
     <h2>🗺 Roadmap</h2>
     <ul>
       <li>✅ Token Launch</li>
@@ -216,8 +337,7 @@
     </ul>
   </section>
 
-  <!-- Buy Button Section -->
-  <section>
+  <section id="buy">
     <h2>💰 Buy SHAM</h2>
     <a href="https://pancakeswap.finance/swap?outputCurrency=0x55d43bfede19f035ff03df042a53708565ff17af" 
        target="_blank" 
@@ -226,7 +346,7 @@
     </a>
   </section>
 
-  <section>
+  <section id="links">
     <h2>🔗 Useful Links</h2>
     <ul>
       <li><a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af">View on BscScan</a></li>
@@ -239,6 +359,13 @@
     <p>© 2025 Sham Coin | Built with ❤️ for the community</p>
     <img src="logo2.png" alt="ShamCoin Logo" onerror="this.style.display='none'">
   </footer>
+
+  <script>
+    function toggleMenu() {
+      document.getElementById("mobileMenu").classList.toggle("show");
+      document.getElementById("hamburger").classList.toggle("open");
+    }
+  </script>
 </body>
 </html>
 
