@@ -1,6 +1,5 @@
-
 <!doctype html>
-<html lang="en">
+<html lang="en" data-lang="en">
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
@@ -88,7 +87,6 @@
     }
     .btn:hover{filter:brightness(1.08)}
 
-    /* language toggle */
     .lang{
       display:flex; gap:6px; align-items:center;
       padding:6px;
@@ -255,11 +253,9 @@
     .footer{padding:22px 0 40px; color:var(--muted)}
     .footer small{opacity:.92}
 
-    /* bilingual helper */
     [data-lang]{display:none}
     html[data-lang="en"] [data-lang="en"]{display:inline}
     html[data-lang="de"] [data-lang="de"]{display:inline}
-    /* blocks */
     html[data-lang="en"] [data-lang-block="en"]{display:block}
     html[data-lang="de"] [data-lang-block="de"]{display:block}
     [data-lang-block]{display:none}
@@ -278,7 +274,6 @@
 <body>
   <div class="texture" aria-hidden="true"></div>
 
-  <!-- NAV -->
   <header class="nav">
     <div class="container">
       <div class="nav-inner">
@@ -294,32 +289,13 @@
         </a>
 
         <nav class="nav-links" aria-label="Primary">
-          <a href="#history">
-            <span data-lang="en">History</span>
-            <span data-lang="de">Geschichte</span>
-          </a>
-          <a href="#about">
-            <span data-lang="en">About</span>
-            <span data-lang="de">Über uns</span>
-          </a>
-          <a href="#vision">
-            <span data-lang="en">Vision &amp; Mission</span>
-            <span data-lang="de">Vision &amp; Auftrag</span>
-          </a>
-          <a href="#ministries">
-            <span data-lang="en">Ministries</span>
-            <span data-lang="de">Dienste</span>
-          </a>
-          <a href="#services">
-            <span data-lang="en">Service Times</span>
-            <span data-lang="de">Gottesdienstzeiten</span>
-          </a>
-          <a href="#contact" class="btn">
-            <span data-lang="en">Contact</span>
-            <span data-lang="de">Kontakt</span>
-          </a>
+          <a href="#history"><span data-lang="en">History</span><span data-lang="de">Geschichte</span></a>
+          <a href="#about"><span data-lang="en">About</span><span data-lang="de">Über uns</span></a>
+          <a href="#vision"><span data-lang="en">Vision &amp; Mission</span><span data-lang="de">Vision &amp; Auftrag</span></a>
+          <a href="#ministries"><span data-lang="en">Ministries</span><span data-lang="de">Dienste</span></a>
+          <a href="#services"><span data-lang="en">Service Times</span><span data-lang="de">Gottesdienstzeiten</span></a>
+          <a href="#contact" class="btn"><span data-lang="en">Contact</span><span data-lang="de">Kontakt</span></a>
 
-          <!-- language toggle -->
           <div class="lang" role="group" aria-label="Language">
             <button id="btn-en" type="button" aria-pressed="true">EN</button>
             <button id="btn-de" type="button" aria-pressed="false">DE</button>
@@ -329,7 +305,6 @@
     </div>
   </header>
 
-  <!-- HERO -->
   <main id="top" class="hero">
     <div class="container">
       <div class="hero-grid">
@@ -359,32 +334,16 @@
           </p>
 
           <div class="pill-row" aria-label="Highlights">
-            <span class="pill">
-              <span data-lang="en">Indigenous discipleship</span>
-              <span data-lang="de">Jüngerschaft unter Indigenen</span>
-            </span>
-            <span class="pill">
-              <span data-lang="en">Culture redeemed for worship</span>
-              <span data-lang="de">Kultur für Anbetung erneuert</span>
-            </span>
-            <span class="pill">
-              <span data-lang="en">Evangelism &amp; mission</span>
-              <span data-lang="de">Evangelisation &amp; Mission</span>
-            </span>
-            <span class="pill">
-              <span data-lang="en">Philippines &amp; abroad</span>
-              <span data-lang="de">Philippinen &amp; weltweit</span>
-            </span>
+            <span class="pill"><span data-lang="en">Indigenous discipleship</span><span data-lang="de">Jüngerschaft unter Indigenen</span></span>
+            <span class="pill"><span data-lang="en">Culture redeemed for worship</span><span data-lang="de">Kultur für Anbetung erneuert</span></span>
+            <span class="pill"><span data-lang="en">Evangelism &amp; mission</span><span data-lang="de">Evangelisation &amp; Mission</span></span>
+            <span class="pill"><span data-lang="en">Philippines &amp; abroad</span><span data-lang="de">Philippinen &amp; weltweit</span></span>
           </div>
 
           <div class="cta-row">
-            <a class="btn" href="#services">
-              <span data-lang="en">Plan a Visit</span>
-              <span data-lang="de">Besuch planen</span>
-            </a>
+            <a class="btn" href="#services"><span data-lang="en">Plan a Visit</span><span data-lang="de">Besuch planen</span></a>
             <a class="btn" href="#vision" style="border-color:rgba(214,177,94,.40); background:linear-gradient(135deg, rgba(214,177,94,.18), rgba(134,208,255,.10));">
-              <span data-lang="en">Our Vision</span>
-              <span data-lang="de">Unsere Vision</span>
+              <span data-lang="en">Our Vision</span><span data-lang="de">Unsere Vision</span>
             </a>
           </div>
         </div>
@@ -394,40 +353,22 @@
             <div class="row">
               <div class="badge">⛪</div>
               <div>
-                <h3>
-                  <span data-lang="en">Sunday Worship</span>
-                  <span data-lang="de">Sonntagsgottesdienst</span>
-                </h3>
-                <p>
-                  <span data-lang="en">10:00 AM • Main Service</span>
-                  <span data-lang="de">10:00 • Hauptgottesdienst</span>
-                </p>
+                <h3><span data-lang="en">Sunday Worship</span><span data-lang="de">Sonntagsgottesdienst</span></h3>
+                <p><span data-lang="en">10:00 AM • Main Service</span><span data-lang="de">10:00 • Hauptgottesdienst</span></p>
               </div>
             </div>
             <div class="row">
               <div class="badge">🙏</div>
               <div>
-                <h3>
-                  <span data-lang="en">Prayer Night</span>
-                  <span data-lang="de">Gebetsabend</span>
-                </h3>
-                <p>
-                  <span data-lang="en">Wednesday • 7:00 PM</span>
-                  <span data-lang="de">Mittwoch • 19:00</span>
-                </p>
+                <h3><span data-lang="en">Prayer Night</span><span data-lang="de">Gebetsabend</span></h3>
+                <p><span data-lang="en">Wednesday • 7:00 PM</span><span data-lang="de">Mittwoch • 19:00</span></p>
               </div>
             </div>
             <div class="row">
               <div class="badge">📍</div>
               <div>
-                <h3>
-                  <span data-lang="en">Location</span>
-                  <span data-lang="de">Ort</span>
-                </h3>
-                <p>
-                  <span data-lang="en">Baguio City, Philippines</span>
-                  <span data-lang="de">Baguio City, Philippinen</span>
-                </p>
+                <h3><span data-lang="en">Location</span><span data-lang="de">Ort</span></h3>
+                <p><span data-lang="en">Baguio City, Philippines</span><span data-lang="de">Baguio City, Philippinen</span></p>
               </div>
             </div>
           </div>
@@ -442,18 +383,11 @@
     </div>
   </main>
 
-  <!-- HISTORY -->
   <section id="history">
     <div class="container">
       <div class="section-title">
-        <h2>
-          <span data-lang="en">Church History</span>
-          <span data-lang="de">Gemeindegeschichte</span>
-        </h2>
-        <p class="hint">
-          <span data-lang="en">How God has been faithful since 1992</span>
-          <span data-lang="de">Wie Gott seit 1992 treu war</span>
-        </p>
+        <h2><span data-lang="en">Church History</span><span data-lang="de">Gemeindegeschichte</span></h2>
+        <p class="hint"><span data-lang="en">How God has been faithful since 1992</span><span data-lang="de">Wie Gott seit 1992 treu war</span></p>
       </div>
 
       <div class="card">
@@ -510,13 +444,10 @@
             </div>
           </div>
           <div class="titem">
-            <div class="year">
-              <span data-lang="en">Today</span>
-              <span data-lang="de">Heute</span>
-            </div>
+            <div class="year"><span data-lang="en">Today</span><span data-lang="de">Heute</span></div>
             <div class="desc">
               <span data-lang="en">Continuing outreach in Vogtareuth—building faith, community, and mission in Germany.</span>
-              <span data-lang="de">Fortlaufende Outreach in Vogtareuth—Glaube, Gemeinschaft und Mission in Deutschland aufbauen.</span>
+              <span data-lang="de">Fortsetzung der Arbeit in Vogtareuth—Glaube, Gemeinschaft und Mission in Deutschland.</span>
             </div>
           </div>
         </div>
@@ -524,84 +455,50 @@
     </div>
   </section>
 
-  <!-- ABOUT -->
   <section id="about">
     <div class="container">
       <div class="section-title">
-        <h2>
-          <span data-lang="en">About Us</span>
-          <span data-lang="de">Über uns</span>
-        </h2>
-        <p class="hint">
-          <span data-lang="en">Who we are and what we carry</span>
-          <span data-lang="de">Wer wir sind und was wir tragen</span>
-        </p>
+        <h2><span data-lang="en">About Us</span><span data-lang="de">Über uns</span></h2>
+        <p class="hint"><span data-lang="en">Who we are and what we carry</span><span data-lang="de">Wer wir sind und was wir tragen</span></p>
       </div>
 
       <div class="grid-3">
         <div class="card">
-          <h3>
-            <span data-lang="en">What We Believe</span>
-            <span data-lang="de">Was wir glauben</span>
-          </h3>
+          <h3><span data-lang="en">What We Believe</span><span data-lang="de">Was wir glauben</span></h3>
           <p>
-            <span data-lang="en">
-              We believe the Bible is God’s Word, salvation is through Jesus Christ alone,
-              and the Holy Spirit empowers believers for holy living and mission.
-            </span>
-            <span data-lang="de">
-              Wir glauben, dass die Bibel Gottes Wort ist, Rettung allein durch Jesus Christus kommt
-              und der Heilige Geist Gläubige zu einem heiligen Leben und zur Mission befähigt.
-            </span>
+            <span data-lang="en">We believe the Bible is God’s Word, salvation is through Jesus Christ alone, and the Holy Spirit empowers believers for holy living and mission.</span>
+            <span data-lang="de">Wir glauben, dass die Bibel Gottes Wort ist, dass Rettung allein durch Jesus Christus kommt und dass der Heilige Geist Gläubige für ein heiliges Leben und Mission befähigt.</span>
           </p>
           <ul class="list">
             <li><span data-lang="en">Jesus is Lord and Savior</span><span data-lang="de">Jesus ist Herr und Retter</span></li>
             <li><span data-lang="en">God’s Word shapes our life</span><span data-lang="de">Gottes Wort prägt unser Leben</span></li>
-            <li><span data-lang="en">Prayer and worship are central</span><span data-lang="de">Gebet und Anbetung sind zentral</span></li>
+            <li><span data-lang="en">Prayer and worship are central</span><span data-lang="de">Gebet und Anbetung stehen im Zentrum</span></li>
           </ul>
         </div>
 
         <div class="card">
-          <h3>
-            <span data-lang="en">Culture Redeemed</span>
-            <span data-lang="de">Kultur erneuert</span>
-          </h3>
+          <h3><span data-lang="en">Culture Redeemed</span><span data-lang="de">Kultur erneuert</span></h3>
           <p>
-            <span data-lang="en">
-              We use God-given culture and submit it to Christ—so worship and witness
-              become much more meaningful, authentic, pure, and powerful for communities.
-            </span>
-            <span data-lang="de">
-              Wir nehmen gottgegebene Kultur an und ordnen sie Christus unter—damit Anbetung und Zeugnis
-              für Gemeinschaften bedeutungsvoll, authentisch, rein und kraftvoll werden.
-            </span>
+            <span data-lang="en">We honor God-given culture and submit it to Christ—so worship and witness become authentic, pure, and powerful for indigenous communities.</span>
+            <span data-lang="de">Wir ehren gottgegebene Kultur und ordnen sie Christus unter—damit Anbetung und Zeugnis authentisch, rein und kraftvoll für indigene Gemeinschaften werden.</span>
           </p>
           <ul class="list">
-            <li><span data-lang="en">Honor what is God-given</span><span data-lang="de">Ehre, was gottgegeben ist</span></li>
-            <li><span data-lang="en">Transform what is broken</span><span data-lang="de">Wandle, was zerbrochen ist</span></li>
-            <li><span data-lang="en">Use culture for worship &amp; evangelism</span><span data-lang="de">Nutze Kultur für Anbetung &amp; Evangelisation</span></li>
+            <li><span data-lang="en">Honor what is God-given</span><span data-lang="de">Gottgegebenes ehren</span></li>
+            <li><span data-lang="en">Transform what is broken</span><span data-lang="de">Gebrochenes erneuern</span></li>
+            <li><span data-lang="en">Use culture for worship & evangelism</span><span data-lang="de">Kultur für Anbetung & Evangelisation einsetzen</span></li>
           </ul>
         </div>
 
         <div class="card">
-          <h3>
-            <span data-lang="en">Leadership &amp; Community</span>
-            <span data-lang="de">Leitung &amp; Gemeinschaft</span>
-          </h3>
+          <h3><span data-lang="en">Leadership & Community</span><span data-lang="de">Leitung & Gemeinschaft</span></h3>
           <p>
-            <span data-lang="en">
-              We equip and release indigenous believers to become leaders to win and disciple their families,
-              communities, and nations.
-            </span>
-            <span data-lang="de">
-              Wir rüsten indigene Gläubige aus und setzen sie frei, Leiter zu werden—um ihre Familien,
-              Gemeinschaften und Nationen zu erreichen und zu Jüngern zu machen.
-            </span>
+            <span data-lang="en">We equip and release indigenous believers to become leaders who disciple families, communities, and nations.</span>
+            <span data-lang="de">Wir rüsten indigene Gläubige aus und senden sie, damit sie Leiter werden, die Familien, Gemeinschaften und Nationen zu Jüngern machen.</span>
           </p>
           <ul class="list">
-            <li><span data-lang="en">Pastor/Founder: Jones Padeo</span><span data-lang="de">Pastor/Gründer: Jones Padeo</span></li>
-            <li><span data-lang="en">Leaders/Workers: Sham Sherwood Torio</span><span data-lang="de">Leiter/Mitarbeiter: Sham Sherwood Torio</span></li>
-            <li><span data-lang="en">Ministry Outreach: Vogtareuth, Germany</span><span data-lang="de">Outreach: Vogtareuth, Deutschland</span></li>
+            <li><span data-lang="en">Pastor/Founder: (Name)</span><span data-lang="de">Pastor/Gründer: (Name)</span></li>
+            <li><span data-lang="en">Leaders/Workers: (Names)</span><span data-lang="de">Leiter/Mitarbeiter: (Namen)</span></li>
+            <li><span data-lang="en">Outreach: Vogtareuth, Germany</span><span data-lang="de">Outreach: Vogtareuth, Deutschland</span></li>
           </ul>
         </div>
       </div>
@@ -609,41 +506,25 @@
       <div style="margin-top:14px">
         <blockquote class="quote">
           <span data-lang="en">Our heart is to raise indigenous followers of Christ who disciple indigenous communities—locally and globally.</span>
-          <span data-lang="de">Unser Herz ist es, indigene Nachfolger Christi aufzubauen, die indigene Gemeinschaften zu Jüngern machen—lokal und weltweit.</span>
+          <span data-lang="de">Unser Herz ist es, indigene Nachfolger Christi aufzubauen, die indigene Gemeinschaften—lokal und global—zu Jüngern machen.</span>
         </blockquote>
       </div>
     </div>
   </section>
 
-  <!-- VISION & MISSION -->
   <section id="vision">
     <div class="container">
       <div class="section-title">
-        <h2>
-          <span data-lang="en">Vision &amp; Mission</span>
-          <span data-lang="de">Vision &amp; Auftrag</span>
-        </h2>
-        <p class="hint">
-          <span data-lang="en">Our calling</span>
-          <span data-lang="de">Unsere Berufung</span>
-        </p>
+        <h2><span data-lang="en">Vision & Mission</span><span data-lang="de">Vision & Auftrag</span></h2>
+        <p class="hint"><span data-lang="en">Our calling</span><span data-lang="de">Unsere Berufung</span></p>
       </div>
 
       <div class="grid-2">
         <div class="card">
-          <h3>
-            <span data-lang="en">Our Vision</span>
-            <span data-lang="de">Unsere Vision</span>
-          </h3>
+          <h3><span data-lang="en">Our Vision</span><span data-lang="de">Unsere Vision</span></h3>
           <p style="color:var(--muted); max-width:92ch">
-            <span data-lang="en">
-              <strong>We are indigenous followers of Christ, bringing indigenous communities in the Philippines and abroad</strong>
-              into a genuine relationship with God—establishing Christ-centered worship, discipleship, and mission.
-            </span>
-            <span data-lang="de">
-              <strong>Wir sind indigene Nachfolger Christi und führen indigene Gemeinschaften auf den Philippinen und im Ausland</strong>
-              in eine echte Beziehung zu Gott—mit christuszentrierter Anbetung, Jüngerschaft und Mission.
-            </span>
+            <span data-lang="en"><strong>We are indigenous followers of Christ, bringing indigenous communities in the Philippines and abroad</strong> into a genuine relationship with God—establishing Christ-centered worship, discipleship, and mission.</span>
+            <span data-lang="de"><strong>Wir sind indigene Nachfolger Christi und bringen indigene Gemeinschaften auf den Philippinen und im Ausland</strong> in eine echte Beziehung zu Gott—durch christuszentrierte Anbetung, Jüngerschaft und Mission.</span>
           </p>
           <ul class="list">
             <li><span data-lang="en">Communities transformed by the Gospel</span><span data-lang="de">Gemeinschaften, die durch das Evangelium verändert werden</span></li>
@@ -651,79 +532,44 @@
         </div>
 
         <div class="card">
-          <h3>
-            <span data-lang="en">Our Mission</span>
-            <span data-lang="de">Unser Auftrag</span>
-          </h3>
+          <h3><span data-lang="en">Our Mission</span><span data-lang="de">Unser Auftrag</span></h3>
           <p style="color:var(--muted); max-width:92ch">
-            <span data-lang="en">
-              <strong>To win influential indigenous people to Christ</strong> to genuinely encounter God,
-              redeeming their God-given culture for Christian worship and evangelism.
-            </span>
-            <span data-lang="de">
-              <strong>Einflussreiche indigene Menschen für Christus zu gewinnen</strong>, damit sie Gott wirklich begegnen,
-              und ihre gottgegebene Kultur für christliche Anbetung und Evangelisation zu erneuern.
-            </span>
+            <span data-lang="en"><strong>To win influential indigenous people to Christ</strong> to genuinely encounter God, redeeming their God-given culture for Christian worship and evangelism.</span>
+            <span data-lang="de"><strong>Einflussreiche indigene Menschen für Christus zu gewinnen</strong>, damit sie Gott wirklich begegnen—und ihre gottgegebene Kultur für christliche Anbetung und Evangelisation zu erneuern.</span>
           </p>
           <ul class="list">
             <li><span data-lang="en">Win influential indigenous people to Christ</span><span data-lang="de">Einflussreiche indigene Menschen für Christus gewinnen</span></li>
             <li><span data-lang="en">Lead genuine encounters with God</span><span data-lang="de">Echte Begegnungen mit Gott ermöglichen</span></li>
-            <li><span data-lang="en">Redeem culture for worship &amp; evangelism</span><span data-lang="de">Kultur für Anbetung &amp; Evangelisation erneuern</span></li>
+            <li><span data-lang="en">Redeem culture for worship & evangelism</span><span data-lang="de">Kultur für Anbetung & Evangelisation erneuern</span></li>
           </ul>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MINISTRIES -->
   <section id="ministries">
     <div class="container">
       <div class="section-title">
-        <h2>
-          <span data-lang="en">Ministries</span>
-          <span data-lang="de">Dienste</span>
-        </h2>
-        <p class="hint">
-          <span data-lang="en">Ways to connect and serve</span>
-          <span data-lang="de">Möglichkeiten zum Mitmachen und Dienen</span>
-        </p>
+        <h2><span data-lang="en">Ministries</span><span data-lang="de">Dienste</span></h2>
+        <p class="hint"><span data-lang="en">Ways to connect and serve</span><span data-lang="de">Möglichkeiten zum Mitmachen</span></p>
       </div>
 
       <div class="grid-3">
-        <div class="card">
-          <h3><span data-lang="en">Indigenous Discipleship</span><span data-lang="de">Indigene Jüngerschaft</span></h3>
-          <p><span data-lang="en">Small groups, mentoring, and Bible training for leaders and families.</span><span data-lang="de">Kleingruppen, Mentoring und Bibelschulung für Leiter und Familien.</span></p>
-        </div>
-        <div class="card">
-          <h3><span data-lang="en">Worship &amp; Prayer</span><span data-lang="de">Anbetung &amp; Gebet</span></h3>
-          <p><span data-lang="en">Gatherings centered on Scripture, Spirit-led worship, and prayer.</span><span data-lang="de">Treffen mit Fokus auf Gottes Wort, geistgeleitete Anbetung und Gebet.</span></p>
-        </div>
-        <div class="card">
-          <h3><span data-lang="en">Evangelism &amp; Outreach</span><span data-lang="de">Evangelisation &amp; Outreach</span></h3>
-          <p><span data-lang="en">Community missions and Gospel sharing among indigenous communities.</span><span data-lang="de">Mission in der Gemeinschaft und Evangelium teilen unter indigenen Gemeinschaften.</span></p>
-        </div>
-        <div class="card">
-          <h3><span data-lang="en">Youth &amp; Kids</span><span data-lang="de">Jugend &amp; Kinder</span></h3>
-          <p><span data-lang="en">Building a strong foundation of faith for the next generation.</span><span data-lang="de">Ein starkes Glaubensfundament für die nächste Generation bauen.</span></p>
-        </div>
-        <div class="card">
-          <h3><span data-lang="en">Training &amp; Leadership</span><span data-lang="de">Training &amp; Leiterschaft</span></h3>
-          <p><span data-lang="en">Equipping indigenous influencers to disciple, lead, and plant works.</span><span data-lang="de">Indigene Multiplikatoren ausrüsten, um zu Jüngern zu machen, zu leiten und Werke zu gründen.</span></p>
-        </div>
-        <div class="card">
-          <h3><span data-lang="en">Global Community</span><span data-lang="de">Globale Gemeinschaft</span></h3>
-          <p><span data-lang="en">Encouraging indigenous believers in the Philippines and abroad.</span><span data-lang="de">Indigene Gläubige auf den Philippinen und im Ausland ermutigen.</span></p>
-        </div>
+        <div class="card"><h3><span data-lang="en">Indigenous Discipleship</span><span data-lang="de">Indigene Jüngerschaft</span></h3><p><span data-lang="en">Small groups, mentoring, and Bible training for leaders and families.</span><span data-lang="de">Kleingruppen, Mentoring und Bibelschulung für Leiter und Familien.</span></p></div>
+        <div class="card"><h3><span data-lang="en">Worship & Prayer</span><span data-lang="de">Anbetung & Gebet</span></h3><p><span data-lang="en">Gatherings centered on Scripture, Spirit-led worship, and prayer.</span><span data-lang="de">Treffen mit Fokus auf Gottes Wort, geistgeleiteter Anbetung und Gebet.</span></p></div>
+        <div class="card"><h3><span data-lang="en">Evangelism & Outreach</span><span data-lang="de">Evangelisation & Outreach</span></h3><p><span data-lang="en">Community mission and Gospel sharing among indigenous communities.</span><span data-lang="de">Gemeindemission und Evangeliumsteilung unter indigenen Gemeinschaften.</span></p></div>
+        <div class="card"><h3><span data-lang="en">Youth & Kids</span><span data-lang="de">Jugend & Kinder</span></h3><p><span data-lang="en">Building a strong foundation of faith for the next generation.</span><span data-lang="de">Ein starkes Glaubensfundament für die nächste Generation.</span></p></div>
+        <div class="card"><h3><span data-lang="en">Training & Leadership</span><span data-lang="de">Training & Leitung</span></h3><p><span data-lang="en">Equipping indigenous influencers to disciple, lead, and plant works.</span><span data-lang="de">Indigene Leiter ausrüsten, um zu Jüngern zu machen, zu leiten und Werke zu gründen.</span></p></div>
+        <div class="card"><h3><span data-lang="en">Global Community</span><span data-lang="de">Globale Gemeinschaft</span></h3><p><span data-lang="en">Encouraging believers in the Philippines and abroad.</span><span data-lang="de">Gläubige auf den Philippinen und im Ausland ermutigen.</span></p></div>
       </div>
     </div>
   </section>
 
-  <!-- SERVICE TIMES -->
   <section id="services">
     <div class="container">
       <div class="section-title">
         <h2><span data-lang="en">Service Times</span><span data-lang="de">Gottesdienstzeiten</span></h2>
-        <p class="hint"><span data-lang="en">Join us this week</span><span data-lang="de">Sei diese Woche dabei</span></p>
+        <p class="hint"><span data-lang="en">Join us this week</span><span data-lang="de">Komm diese Woche dazu</span></p>
       </div>
 
       <div class="grid-2">
@@ -736,7 +582,7 @@
           </ul>
         </div>
         <div class="card">
-          <h3><span data-lang="en">Weekdays</span><span data-lang="de">Wochentage</span></h3>
+          <h3><span data-lang="en">Weekdays</span><span data-lang="de">Wochentags</span></h3>
           <ul class="list">
             <li><span data-lang="en">Wednesday 7:00 PM — Prayer Meeting</span><span data-lang="de">Mittwoch 19:00 — Gebetstreffen</span></li>
             <li><span data-lang="en">Friday 7:30 PM — Youth Gathering</span><span data-lang="de">Freitag 19:30 — Jugendtreffen</span></li>
@@ -747,36 +593,31 @@
     </div>
   </section>
 
-  <!-- CONTACT -->
   <section id="contact">
     <div class="container">
       <div class="section-title">
         <h2><span data-lang="en">Contact Us</span><span data-lang="de">Kontakt</span></h2>
-        <p class="hint"><span data-lang="en">We’d love to connect</span><span data-lang="de">Wir freuen uns auf den Kontakt</span></p>
+        <p class="hint"><span data-lang="en">We’d love to connect</span><span data-lang="de">Wir freuen uns auf deine Nachricht</span></p>
       </div>
 
       <div class="contact-grid">
         <div class="card">
-          <h3><span data-lang="en">Church Info</span><span data-lang="de">Gemeindeinfo</span></h3>
+          <h3><span data-lang="en">Church Info</span><span data-lang="de">Gemeinde-Info</span></h3>
           <p style="color:var(--muted); margin-top:8px">
             <strong style="color:var(--text)"><span data-lang="en">Address:</span><span data-lang="de">Adresse:</span></strong>
-            <span data-lang="en">4th Floor Abriol Building, Magsaysay Avenue, Baguio City, Philippines</span>
-            <span data-lang="de">4. Stock Abriol Building, Magsaysay Avenue, Baguio City, Philippinen</span><br/>
-            <strong style="color:var(--text)"><span data-lang="en">Phone:</span><span data-lang="de">Telefon:</span></strong>
-            <span data-lang="en">(Add number)</span><span data-lang="de">(Nummer hinzufügen)</span><br/>
-            <strong style="color:var(--text)"><span data-lang="en">Email:</span><span data-lang="de">E-Mail:</span></strong>
-            srmbaguio@gmail.com
+            <span data-lang="en">Baguio City, Philippines</span><span data-lang="de">Baguio City, Philippinen</span><br/>
+            <strong style="color:var(--text)"><span data-lang="en">Email:</span><span data-lang="de">E-Mail:</span></strong> srmbaguio@gmail.com
           </p>
           <div class="divider"></div>
           <p style="color:var(--muted); margin:0">
-            <span data-lang="en">Add your Google Maps embed here (optional).</span>
-            <span data-lang="de">Füge hier Google Maps ein (optional).</span>
+            <span data-lang="en">Tip: Add your Google Maps embed here (optional).</span>
+            <span data-lang="de">Tipp: Füge hier eine Google-Maps-Karte ein (optional).</span>
           </p>
         </div>
 
         <div class="card">
           <h3><span data-lang="en">Send a Message</span><span data-lang="de">Nachricht senden</span></h3>
-          <form onsubmit="event.preventDefault(); alert(document.documentElement.dataset.lang==='de' ? 'Nachricht gesendet! (Demo-Formular)' : 'Message sent! (Demo form)');">
+          <form onsubmit="event.preventDefault(); alert('Message sent! (Demo form)');">
             <label for="name"><span data-lang="en">Full Name</span><span data-lang="de">Vollständiger Name</span></label>
             <input id="name" name="name" placeholder="Your name" required />
 
@@ -787,12 +628,8 @@
             <textarea id="msg" name="msg" placeholder="How can we help?" required></textarea>
 
             <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-              <button class="btn" type="submit" style="cursor:pointer">
-                <span data-lang="en">Send</span><span data-lang="de">Senden</span>
-              </button>
-              <a class="btn" href="#services" style="border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.04)">
-                <span data-lang="en">View Service Times</span><span data-lang="de">Gottesdienstzeiten</span>
-              </a>
+              <button class="btn" type="submit" style="cursor:pointer"><span data-lang="en">Send</span><span data-lang="de">Senden</span></button>
+              <a class="btn" href="#services" style="border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.04)"><span data-lang="en">View Service Times</span><span data-lang="de">Gottesdienstzeiten ansehen</span></a>
             </div>
           </form>
         </div>
@@ -800,13 +637,11 @@
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer class="footer">
     <div class="container">
       <div class="divider"></div>
       <small>
         © <span id="year"></span> Solid Rock Ministries •
-        <span data-lang="en">All rights reserved</span><span data-lang="de">Alle Rechte vorbehalten</span> •
         <a href="#top" style="color:var(--muted)"><span data-lang="en">Back to top</span><span data-lang="de">Nach oben</span></a>
       </small>
     </div>
@@ -816,27 +651,25 @@
     // year
     document.getElementById("year").textContent = new Date().getFullYear();
 
-    // language toggle with localStorage + URL ?lang=
-    const html = document.documentElement;
+    // language: keep in localStorage
+    const htmlEl = document.documentElement;
     const btnEn = document.getElementById("btn-en");
     const btnDe = document.getElementById("btn-de");
 
     function setLang(lang){
-      html.setAttribute("data-lang", lang);
-      html.lang = lang;
+      htmlEl.setAttribute("data-lang", lang);
       btnEn.setAttribute("aria-pressed", lang === "en" ? "true" : "false");
       btnDe.setAttribute("aria-pressed", lang === "de" ? "true" : "false");
-      localStorage.setItem("srmlang", lang);
+      try { localStorage.setItem("sr_lang", lang); } catch(e) {}
     }
-
-    const params = new URLSearchParams(location.search);
-    const urlLang = params.get("lang");
-    const saved = localStorage.getItem("srmlang");
-    const initial = (urlLang === "de" || urlLang === "en") ? urlLang : (saved || "en");
-    setLang(initial);
 
     btnEn.addEventListener("click", () => setLang("en"));
     btnDe.addEventListener("click", () => setLang("de"));
+
+    // init
+    let saved = "en";
+    try { saved = localStorage.getItem("sr_lang") || "en"; } catch(e) {}
+    setLang(saved);
   </script>
 </body>
 </html>
