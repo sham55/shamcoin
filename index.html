@@ -7,39 +7,71 @@
   <meta name="description" content="Solid Rock Ministries — established in Baguio City, Philippines (1992). History, about us, vision, mission, ministries, and service times." />
   <style>
     :root{
+      /* Churchy palette: deep navy + warm gold + parchment */
       --bg:#0b1220;
-      --card:#121b2e;
-      --text:#eaf0ff;
-      --muted:#b9c6ff;
-      --line:rgba(255,255,255,.10);
-      --accent:#7dd3fc;
-      --accent2:#a78bfa;
-      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --surface:#101a30;
+      --card: rgba(255,255,255,.05);
+      --text:#f5f1e6;
+      --muted:#d6cdb8;
+      --line:rgba(255,255,255,.12);
+      --gold:#d6b15e;
+      --gold2:#f2d08a;
+      --accent:#86d0ff;
+      --shadow: 0 14px 34px rgba(0,0,0,.40);
       --radius:18px;
       --max:1100px;
     }
     *{box-sizing:border-box}
-    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:radial-gradient(1200px 700px at 30% 0%, rgba(125,211,252,.15), transparent 50%),
-      radial-gradient(900px 600px at 80% 20%, rgba(167,139,250,.12), transparent 55%),
-      var(--bg); color:var(--text); line-height:1.55}
+    html,body{
+      margin:0;padding:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+      color:var(--text);
+      line-height:1.6;
+      background:
+        radial-gradient(1200px 600px at 35% 0%, rgba(214,177,94,.16), transparent 60%),
+        radial-gradient(900px 700px at 85% 10%, rgba(134,208,255,.12), transparent 55%),
+        radial-gradient(700px 500px at 20% 90%, rgba(242,208,138,.10), transparent 55%),
+        var(--bg);
+    }
     a{color:inherit}
     .container{max-width:var(--max); margin:0 auto; padding:0 18px}
+
+    /* Subtle “stained glass” texture */
+    .texture{
+      position:fixed; inset:0; pointer-events:none; z-index:-1;
+      background:
+        repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 6px, transparent 6px 18px),
+        radial-gradient(600px 420px at 15% 20%, rgba(214,177,94,.08), transparent 60%),
+        radial-gradient(520px 360px at 85% 25%, rgba(134,208,255,.06), transparent 60%);
+      mix-blend-mode:soft-light;
+      opacity:.55;
+      filter: blur(.2px);
+    }
+
+    /* NAV */
     .nav{
       position:sticky; top:0; z-index:20;
       backdrop-filter: blur(10px);
-      background: rgba(11,18,32,.75);
+      background: rgba(11,18,32,.78);
       border-bottom:1px solid var(--line);
     }
     .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:12px 0; gap:14px}
     .brand{display:flex; align-items:center; gap:12px; text-decoration:none}
     .logo{
-      width:40px; height:40px; border-radius:12px;
-      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
-      box-shadow: 0 10px 25px rgba(125,211,252,.15);
+      width:44px; height:44px; border-radius:14px;
+      background: linear-gradient(135deg, rgba(214,177,94,.95), rgba(242,208,138,.75));
+      box-shadow: 0 12px 28px rgba(214,177,94,.18);
       display:grid; place-items:center;
-      font-weight:900; color:#071022;
+      font-weight:900; color:#1b1407;
+      position:relative;
+      overflow:hidden;
     }
-    .brand .name{font-weight:800; letter-spacing:.2px}
+    .logo:after{
+      content:"✝";
+      font-size:18px;
+      transform: translateY(-.5px);
+    }
+    .brand .name{font-weight:900; letter-spacing:.2px}
     .brand .tag{font-size:12px; color:var(--muted); margin-top:2px}
     .nav-links{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
     .nav-links a{
@@ -49,35 +81,59 @@
       color:var(--muted);
     }
     .nav-links a:hover{border-color:var(--line); color:var(--text); background:rgba(255,255,255,.03)}
+
     .btn{
       display:inline-flex; align-items:center; justify-content:center;
       padding:10px 14px; border-radius:14px;
-      border:1px solid rgba(125,211,252,.35);
-      background: linear-gradient(135deg, rgba(125,211,252,.18), rgba(167,139,250,.12));
-      color:var(--text); text-decoration:none; font-weight:700; font-size:14px;
+      border:1px solid rgba(214,177,94,.40);
+      background: linear-gradient(135deg, rgba(214,177,94,.20), rgba(242,208,138,.10));
+      color:var(--text); text-decoration:none; font-weight:800; font-size:14px;
       box-shadow: 0 10px 25px rgba(0,0,0,.18);
     }
     .btn:hover{filter:brightness(1.08)}
-    .hero{padding:56px 0 22px}
+
+    /* HERO */
+    .hero{padding:58px 0 22px}
     .hero-grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px; align-items:stretch}
     .hero-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
       border:1px solid var(--line);
       border-radius: var(--radius);
       box-shadow: var(--shadow);
-      padding:24px;
+      padding:26px;
       position:relative;
       overflow:hidden;
     }
     .hero-card:before{
       content:"";
       position:absolute; inset:-2px;
-      background: radial-gradient(500px 200px at 20% 0%, rgba(125,211,252,.18), transparent 60%),
-                  radial-gradient(400px 180px at 80% 10%, rgba(167,139,250,.14), transparent 60%);
+      background:
+        radial-gradient(560px 210px at 20% 0%, rgba(214,177,94,.20), transparent 60%),
+        radial-gradient(430px 200px at 80% 10%, rgba(134,208,255,.14), transparent 60%);
       pointer-events:none;
     }
-    .hero h1{margin:0 0 10px; font-size:42px; line-height:1.1; position:relative}
-    .hero p{margin:0 0 18px; color:var(--muted); position:relative; max-width:70ch}
+    .kicker{
+      position:relative;
+      display:inline-flex; gap:10px; align-items:center;
+      padding:6px 10px; border-radius:999px;
+      border:1px solid rgba(214,177,94,.25);
+      background: rgba(214,177,94,.10);
+      color:var(--gold2);
+      font-weight:800;
+      font-size:12px;
+      letter-spacing:.35px;
+      text-transform:uppercase;
+      margin-bottom:12px;
+    }
+    .hero h1{
+      margin:0 0 10px;
+      font-size:44px;
+      line-height:1.06;
+      position:relative;
+      font-family: Georgia, "Times New Roman", serif; /* Churchy serif heading */
+      letter-spacing:.2px;
+    }
+    .hero p{margin:0 0 18px; color:var(--muted); position:relative; max-width:72ch}
     .pill-row{display:flex; gap:10px; flex-wrap:wrap; position:relative}
     .pill{
       padding:8px 10px; border-radius:999px;
@@ -86,6 +142,7 @@
       font-size:13px; color:var(--muted);
     }
     .cta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; position:relative}
+
     .mini{
       background: rgba(255,255,255,.03);
       border:1px solid var(--line);
@@ -101,16 +158,22 @@
     .kv .row{display:flex; gap:10px; align-items:flex-start}
     .badge{
       min-width:34px; height:34px; border-radius:12px;
-      background: rgba(125,211,252,.16);
-      border:1px solid rgba(125,211,252,.25);
+      background: rgba(214,177,94,.14);
+      border:1px solid rgba(214,177,94,.25);
       display:grid; place-items:center;
-      font-weight:800; color:var(--accent)
+      font-weight:900; color:var(--gold2)
     }
 
+    /* Sections */
     section{padding:26px 0}
     .section-title{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:12px}
-    h2{margin:0; font-size:24px}
+    h2{
+      margin:0; font-size:26px;
+      font-family: Georgia, "Times New Roman", serif;
+      letter-spacing:.2px;
+    }
     .hint{margin:0; color:var(--muted); font-size:14px}
+
     .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
     .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
     .card{
@@ -119,18 +182,31 @@
       border-radius: var(--radius);
       padding:18px;
       box-shadow: var(--shadow);
+      position:relative;
     }
+    .card:before{
+      content:"";
+      position:absolute; inset:0;
+      border-radius: var(--radius);
+      pointer-events:none;
+      background: radial-gradient(320px 160px at 20% 0%, rgba(214,177,94,.10), transparent 60%);
+      opacity:.8;
+    }
+    .card > *{position:relative}
     .card h3{margin:0 0 8px; font-size:16px}
     .card p{margin:0; color:var(--muted)}
     .list{margin:10px 0 0; padding-left:18px; color:var(--muted)}
     .list li{margin:8px 0}
+
     .quote{
       margin:0;
       padding:16px 18px;
       border-radius: var(--radius);
-      border:1px solid rgba(167,139,250,.25);
-      background: rgba(167,139,250,.08);
+      border:1px solid rgba(214,177,94,.28);
+      background: rgba(214,177,94,.10);
       color:var(--text);
+      font-family: Georgia, "Times New Roman", serif;
+      font-size:16px;
     }
 
     .timeline{display:grid; gap:10px; margin-top:10px}
@@ -140,41 +216,48 @@
       border:1px solid var(--line);
       background: rgba(255,255,255,.02);
     }
-    .titem .year{color:var(--accent); font-weight:800}
+    .titem .year{color:var(--gold2); font-weight:900}
     .titem .desc{color:var(--muted)}
+
     .divider{height:1px; background:var(--line); margin:14px 0}
+
+    /* Contact */
     .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
     label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px}
     input,textarea{
       width:100%; border-radius:14px;
       border:1px solid var(--line);
-      background: rgba(0,0,0,.18);
+      background: rgba(0,0,0,.20);
       color:var(--text);
       padding:12px 12px;
       outline:none;
     }
     textarea{min-height:110px; resize:vertical}
+
+    /* Footer */
     .footer{padding:22px 0 40px; color:var(--muted)}
-    .footer small{opacity:.9}
+    .footer small{opacity:.92}
 
     @media (max-width: 920px){
       .hero-grid{grid-template-columns:1fr}
       .grid-3{grid-template-columns:1fr}
       .grid-2{grid-template-columns:1fr}
       .contact-grid{grid-template-columns:1fr}
-      .hero h1{font-size:34px}
+      .hero h1{font-size:36px}
       .titem{grid-template-columns: 1fr}
     }
   </style>
 </head>
 
 <body>
+  <div class="texture" aria-hidden="true"></div>
+
   <!-- NAV -->
   <header class="nav">
     <div class="container">
       <div class="nav-inner">
         <a class="brand" href="#top" aria-label="Go to top">
-          <div class="logo">SR</div>
+          <div class="logo" aria-hidden="true"></div>
           <div>
             <div class="name">Solid Rock Ministries</div>
             <div class="tag">Established 1992 • Baguio City, Philippines</div>
@@ -198,11 +281,12 @@
     <div class="container">
       <div class="hero-grid">
         <div class="hero-card">
+          <div class="kicker">Solid Rock • Philippines • Since 1992</div>
           <h1>Welcome to Solid Rock Ministries</h1>
           <p>
             Established in <strong>1992</strong> in <strong>Baguio City, Philippines</strong>,
-            Solid Rock Ministries exists to see indigenous people genuinely encounter God—so that
-            their God-given culture is redeemed for Christian worship and evangelism.
+            Solid Rock Ministries exists to see influential indigenous people genuinely encounter God—redeeming
+            their God-given culture for Christian worship and evangelism.
           </p>
 
           <div class="pill-row" aria-label="Highlights">
@@ -214,7 +298,7 @@
 
           <div class="cta-row">
             <a class="btn" href="#services">Plan a Visit</a>
-            <a class="btn" href="#vision" style="border-color:rgba(167,139,250,.35); background:linear-gradient(135deg, rgba(167,139,250,.14), rgba(125,211,252,.10));">Our Vision</a>
+            <a class="btn" href="#vision" style="border-color:rgba(214,177,94,.40); background:linear-gradient(135deg, rgba(214,177,94,.18), rgba(134,208,255,.10));">Our Vision</a>
           </div>
         </div>
 
@@ -243,8 +327,8 @@
             </div>
           </div>
           <div class="divider"></div>
-          <p style="margin:0;color:var(--muted);font-size:14px">
-            “Christ is the solid Rock.” — (Theme)
+          <p style="margin:0;color:var(--muted);font-size:14px;font-family:Georgia, 'Times New Roman', serif;">
+            “The Lord is my rock…” — Psalm 18:2
           </p>
         </aside>
       </div>
@@ -256,14 +340,14 @@
     <div class="container">
       <div class="section-title">
         <h2>Church History</h2>
-        <p class="hint">Established 1992 • Baguio City, Philippines</p>
+        <p class="hint">How God has been faithful since 1992</p>
       </div>
 
       <div class="card">
-        <p style="margin:0;color:var(--muted);max-width:90ch">
+        <p style="margin:0;color:var(--muted);max-width:92ch">
           Solid Rock Ministries was established in <strong>1992</strong> in <strong>Baguio City</strong>
-          with a clear burden: to reach and disciple indigenous people and leaders, so that entire communities
-          may know Christ and worship Him with redeemed, God-honoring expressions of their culture.
+          with a burden to reach and disciple indigenous people and leaders—so that entire communities may
+          know Christ and worship Him with redeemed, God-honoring expressions of their culture.
         </p>
 
         <div class="timeline" aria-label="Timeline">
@@ -273,21 +357,17 @@
           </div>
           <div class="titem">
             <div class="year">1990s</div>
-            <div class="desc">Early outreach and discipleship among indigenous communities; leadership development begins.</div>
+            <div class="desc">Early outreach, discipleship, and leadership development among indigenous communities.</div>
           </div>
           <div class="titem">
             <div class="year">2000s</div>
-            <div class="desc">Expansion of evangelism and training; partnerships and missions beyond local areas.</div>
+            <div class="desc">Expansion of evangelism, training, and missions in more areas.</div>
           </div>
           <div class="titem">
             <div class="year">Today</div>
-            <div class="desc">Continuing the work in the Philippines and abroad—raising indigenous followers of Christ.</div>
+            <div class="desc">Continuing the work in the Philippines and abroad—building indigenous followers of Christ.</div>
           </div>
         </div>
-
-        <p style="margin:14px 0 0;color:var(--muted)">
-          <strong style="color:var(--text)">Note:</strong> You can edit the timeline items to match your exact milestones, founders, and locations.
-        </p>
       </div>
     </div>
   </section>
@@ -297,44 +377,45 @@
     <div class="container">
       <div class="section-title">
         <h2>About Us</h2>
-        <p class="hint">Who we are</p>
+        <p class="hint">Who we are and what we carry</p>
       </div>
 
       <div class="grid-3">
         <div class="card">
-          <h3>Our Identity</h3>
+          <h3>What We Believe</h3>
           <p>
-            We are a Christ-centered ministry rooted in indigenous communities, committed to the Word of God,
-            prayer, discipleship, and mission.
+            We believe the Bible is God’s Word, salvation is through Jesus Christ alone,
+            and the Holy Spirit empowers believers for holy living and mission.
           </p>
           <ul class="list">
             <li>Jesus is Lord and Savior</li>
-            <li>Bible-based teaching and training</li>
-            <li>Spirit-led worship and prayer</li>
+            <li>God’s Word shapes our life</li>
+            <li>Prayer and worship are central</li>
           </ul>
         </div>
 
         <div class="card">
-          <h3>Our Heart</h3>
+          <h3>Culture Redeemed</h3>
           <p>
-            We believe God created culture with purpose. In Christ, culture can be redeemed—becoming
-            a vehicle for worship and evangelism.
+            We honor God-given culture and submit it to Christ—so worship and witness
+            become authentic, pure, and powerful for indigenous communities.
           </p>
           <ul class="list">
             <li>Honor what is God-given</li>
             <li>Transform what is broken</li>
-            <li>Point everything to Christ</li>
+            <li>Use culture for worship &amp; evangelism</li>
           </ul>
         </div>
 
         <div class="card">
-          <h3>Leadership</h3>
+          <h3>Leadership &amp; Community</h3>
           <p>
-            Our leaders serve to equip believers and develop indigenous influencers to disciple their communities.
+            We equip and release indigenous influencers and leaders to disciple their families,
+            communities, and nations.
           </p>
           <ul class="list">
             <li>Pastor/Director: (Name)</li>
-            <li>Leaders: (Names)</li>
+            <li>Leaders/Workers: (Names)</li>
             <li>Ministry Teams</li>
           </ul>
         </div>
@@ -353,26 +434,26 @@
     <div class="container">
       <div class="section-title">
         <h2>Vision &amp; Mission</h2>
-        <p class="hint">Why we exist and what we are building</p>
+        <p class="hint">Our calling</p>
       </div>
 
       <div class="grid-2">
         <div class="card">
           <h3>Our Vision</h3>
-          <p style="color:var(--muted); max-width:90ch">
+          <p style="color:var(--muted); max-width:92ch">
             <strong>We are indigenous followers of Christ, bringing indigenous communities in the Philippines and abroad</strong>
             into a genuine relationship with God—establishing Christ-centered worship, discipleship, and mission.
           </p>
           <ul class="list">
             <li>Indigenous followers of Christ</li>
-            <li>Indigenous communities reached locally and abroad</li>
+            <li>Indigenous communities reached in the Philippines and abroad</li>
             <li>Communities transformed by the Gospel</li>
           </ul>
         </div>
 
         <div class="card">
           <h3>Our Mission</h3>
-          <p style="color:var(--muted); max-width:90ch">
+          <p style="color:var(--muted); max-width:92ch">
             <strong>To win influential indigenous people to Christ</strong> to genuinely encounter God,
             redeeming their God-given culture for Christian worship and evangelism.
           </p>
@@ -401,23 +482,23 @@
         </div>
         <div class="card">
           <h3>Worship &amp; Prayer</h3>
-          <p>Worship gatherings that honor God and encourage Spirit-led prayer.</p>
+          <p>Gatherings centered on Scripture, Spirit-led worship, and prayer.</p>
         </div>
         <div class="card">
           <h3>Evangelism &amp; Outreach</h3>
-          <p>Community missions, visitation, and Gospel sharing among indigenous communities.</p>
+          <p>Community missions and Gospel sharing among indigenous communities.</p>
         </div>
         <div class="card">
           <h3>Youth &amp; Kids</h3>
-          <p>Teaching the next generation to love Christ and live out their faith.</p>
+          <p>Building a strong foundation of faith for the next generation.</p>
         </div>
         <div class="card">
           <h3>Training &amp; Leadership</h3>
-          <p>Equipping influential indigenous believers to disciple others and plant works.</p>
+          <p>Equipping indigenous influencers to disciple, lead, and plant works.</p>
         </div>
         <div class="card">
           <h3>Global Community</h3>
-          <p>Connecting indigenous believers in the Philippines and abroad for encouragement and mission.</p>
+          <p>Encouraging indigenous believers in the Philippines and abroad.</p>
         </div>
       </div>
     </div>
@@ -435,7 +516,7 @@
         <div class="card">
           <h3>Sunday</h3>
           <ul class="list">
-            <li>10:00 AM — Main Worship Service</li>
+            <li>10:00 AM — Worship Service</li>
             <li>10:00 AM — Kids Ministry</li>
             <li>After service — Fellowship</li>
           </ul>
