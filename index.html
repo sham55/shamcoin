@@ -1,373 +1,525 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Sham Coin (SHAM)</title>
-
-  <!-- Favicon links -->
-  <link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
-  <link rel="icon" type="image/png" sizes="32x32" href="favicon-32x32.png">
-  <link rel="icon" type="image/png" sizes="16x16" href="favicon-16x16.png">
-  <link rel="manifest" href="site.webmanifest">
-
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Grace River Church</title>
+  <meta name="description" content="Grace River Church — history, about us, vision, mission, ministries, and service times." />
   <style>
-    body {
-      margin: 0;
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background: #0d1117;
-      color: #f0f6fc;
-      text-align: center;
-      scroll-behavior: smooth;
+    :root{
+      --bg:#0b1220;
+      --card:#121b2e;
+      --text:#eaf0ff;
+      --muted:#b9c6ff;
+      --line:rgba(255,255,255,.10);
+      --accent:#7dd3fc;
+      --accent2:#a78bfa;
+      --shadow: 0 12px 30px rgba(0,0,0,.35);
+      --radius:18px;
+      --max:1100px;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;padding:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;background:radial-gradient(1200px 700px at 30% 0%, rgba(125,211,252,.15), transparent 50%),
+      radial-gradient(900px 600px at 80% 20%, rgba(167,139,250,.12), transparent 55%),
+      var(--bg); color:var(--text); line-height:1.55}
+    a{color:inherit}
+    .container{max-width:var(--max); margin:0 auto; padding:0 18px}
+    .nav{
+      position:sticky; top:0; z-index:20;
+      backdrop-filter: blur(10px);
+      background: rgba(11,18,32,.75);
+      border-bottom:1px solid var(--line);
+    }
+    .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:12px 0; gap:14px}
+    .brand{display:flex; align-items:center; gap:12px; text-decoration:none}
+    .logo{
+      width:40px; height:40px; border-radius:12px;
+      background: linear-gradient(135deg, rgba(125,211,252,.95), rgba(167,139,250,.95));
+      box-shadow: 0 10px 25px rgba(125,211,252,.15);
+      display:grid; place-items:center;
+      font-weight:800; color:#071022;
+    }
+    .brand .name{font-weight:800; letter-spacing:.2px}
+    .brand .tag{font-size:12px; color:var(--muted); margin-top:2px}
+    .nav-links{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .nav-links a{
+      text-decoration:none; font-size:14px;
+      padding:9px 12px; border-radius:12px;
+      border:1px solid transparent;
+      color:var(--muted);
+    }
+    .nav-links a:hover{border-color:var(--line); color:var(--text); background:rgba(255,255,255,.03)}
+    .btn{
+      display:inline-flex; align-items:center; justify-content:center;
+      padding:10px 14px; border-radius:14px;
+      border:1px solid rgba(125,211,252,.35);
+      background: linear-gradient(135deg, rgba(125,211,252,.18), rgba(167,139,250,.12));
+      color:var(--text); text-decoration:none; font-weight:700; font-size:14px;
+      box-shadow: 0 10px 25px rgba(0,0,0,.18);
+    }
+    .btn:hover{filter:brightness(1.08)}
+    .hero{padding:56px 0 22px}
+    .hero-grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px; align-items:stretch}
+    .hero-card{
+      background: linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.02));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding:24px;
+      position:relative;
+      overflow:hidden;
+    }
+    .hero-card:before{
+      content:"";
+      position:absolute; inset:-2px;
+      background: radial-gradient(500px 200px at 20% 0%, rgba(125,211,252,.18), transparent 60%),
+                  radial-gradient(400px 180px at 80% 10%, rgba(167,139,250,.14), transparent 60%);
+      pointer-events:none;
+    }
+    .hero h1{margin:0 0 10px; font-size:42px; line-height:1.1; position:relative}
+    .hero p{margin:0 0 18px; color:var(--muted); position:relative; max-width:64ch}
+    .pill-row{display:flex; gap:10px; flex-wrap:wrap; position:relative}
+    .pill{
+      padding:8px 10px; border-radius:999px;
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.03);
+      font-size:13px; color:var(--muted);
+    }
+    .cta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; position:relative}
+    .mini{
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+      display:flex; flex-direction:column; justify-content:space-between;
+      gap:14px;
+    }
+    .mini h3{margin:0; font-size:16px}
+    .mini p{margin:0; color:var(--muted); font-size:14px}
+    .kv{display:grid; gap:10px}
+    .kv .row{display:flex; gap:10px; align-items:flex-start}
+    .badge{
+      min-width:34px; height:34px; border-radius:12px;
+      background: rgba(125,211,252,.16);
+      border:1px solid rgba(125,211,252,.25);
+      display:grid; place-items:center;
+      font-weight:800; color:var(--accent)
     }
 
-    /* 🔹 Sticky Navbar */
-    nav {
-      position: sticky;
-      top: 0;
-      z-index: 1000;
-      background: #161b22;
-      border-bottom: 1px solid #30363d;
-      padding: 10px 15px;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
+    section{padding:26px 0}
+    .section-title{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:12px}
+    h2{margin:0; font-size:24px}
+    .hint{margin:0; color:var(--muted); font-size:14px}
+    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
+    .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
+    .card{
+      background: rgba(255,255,255,.03);
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      padding:18px;
+      box-shadow: var(--shadow);
+    }
+    .card h3{margin:0 0 8px; font-size:16px}
+    .card p{margin:0; color:var(--muted)}
+    .list{margin:10px 0 0; padding-left:18px; color:var(--muted)}
+    .list li{margin:8px 0}
+    .quote{
+      margin:0;
+      padding:16px 18px;
+      border-radius: var(--radius);
+      border:1px solid rgba(167,139,250,.25);
+      background: rgba(167,139,250,.08);
+      color:var(--text);
     }
 
-    nav .logo {
-      font-weight: bold;
-      color: #58a6ff;
-      font-size: 1.2em;
+    .timeline{display:grid; gap:10px; margin-top:10px}
+    .titem{
+      display:grid; grid-template-columns: 120px 1fr; gap:12px;
+      padding:14px; border-radius: var(--radius);
+      border:1px solid var(--line);
+      background: rgba(255,255,255,.02);
     }
+    .titem .year{color:var(--accent); font-weight:800}
+    .titem .desc{color:var(--muted)}
+    .divider{height:1px; background:var(--line); margin:14px 0}
+    .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
+    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px}
+    input,textarea{
+      width:100%; border-radius:14px;
+      border:1px solid var(--line);
+      background: rgba(0,0,0,.18);
+      color:var(--text);
+      padding:12px 12px;
+      outline:none;
+    }
+    textarea{min-height:110px; resize:vertical}
+    .footer{padding:22px 0 40px; color:var(--muted)}
+    .footer small{opacity:.9}
 
-    nav ul {
-      display: flex;
-      gap: 20px;
-      list-style: none;
-      margin: 0;
-      padding: 0;
-    }
-
-    nav a {
-      color: #58a6ff;
-      font-weight: 500;
-      text-decoration: none;
-      transition: color 0.3s;
-    }
-
-    nav a:hover {
-      color: #00ccff;
-    }
-
-    /* 🔹 Hamburger Button */
-    .hamburger {
-      display: none;
-      flex-direction: column;
-      cursor: pointer;
-      gap: 5px;
-      width: 25px;
-      height: 20px;
-      justify-content: center;
-      align-items: center;
-    }
-
-    .hamburger div {
-      width: 25px;
-      height: 3px;
-      background: #58a6ff;
-      border-radius: 2px;
-      transition: all 0.4s ease;
-    }
-
-    /* Animation to X */
-    .hamburger.open div:nth-child(1) {
-      transform: rotate(45deg) translate(5px, 5px);
-    }
-    .hamburger.open div:nth-child(2) {
-      opacity: 0;
-    }
-    .hamburger.open div:nth-child(3) {
-      transform: rotate(-45deg) translate(6px, -6px);
-    }
-
-    /* 🔹 Mobile Menu with Slide Animation */
-    .mobile-menu {
-      display: flex;
-      flex-direction: column;
-      background: #161b22;
-      overflow: hidden;
-      max-height: 0;
-      opacity: 0;
-      transition: max-height 0.4s ease, opacity 0.4s ease;
-    }
-
-    .mobile-menu.show {
-      max-height: 300px; /* enough space for menu items */
-      opacity: 1;
-    }
-
-    .mobile-menu a {
-      padding: 12px 0;
-      border-bottom: 1px solid #30363d;
-    }
-
-    /* Show hamburger on small screens */
-    @media (max-width: 768px) {
-      nav ul {
-        display: none;
-      }
-      .hamburger {
-        display: flex;
-      }
-    }
-
-    header {
-      padding: 40px 20px;
-      background: linear-gradient(135deg, #4b0082, #8a2be2);
-      color: white;
-    }
-    header img {
-      width: 120px;
-      margin-bottom: 20px;
-      border-radius: 50%;
-    }
-    header h1 {
-      font-size: 3em;
-      margin: 0;
-    }
-    header p {
-      font-size: 1.2em;
-      margin-top: 10px;
-    }
-
-    /* 🔹 Glowing QR Code (steady cyan) */
-    .qr-code {
-      display: block;
-      margin: 20px auto;
-      width: 100%;
-      max-width: 200px;
-      aspect-ratio: 1 / 1;
-      object-fit: contain;
-      border: 6px solid #00ccff;
-      border-radius: 20px;
-      background: #fff;
-      box-shadow: 0 0 15px #00ccff,
-                  0 0 30px #00ccff,
-                  0 0 45px #00ccff;
-      transition: 0.3s;
-    }
-
-    .qr-code:hover { transform: scale(1.05); }
-
-    .contract-section {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-    }
-    .contract-section small { word-break: break-all; }
-
-    section { padding: 60px 20px; }
-    h2 { color: #00ccff; margin-bottom: 20px; }
-
-    .tokenomics {
-      display: flex;
-      justify-content: center;
-      flex-wrap: wrap;
-      gap: 20px;
-    }
-
-    .card {
-      background: #161b22;
-      border: 1px solid #30363d;
-      border-radius: 10px;
-      padding: 20px;
-      width: 250px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-    }
-
-    .card h3 { margin-top: 0; color: #58a6ff; }
-
-    ul { list-style: none; padding: 0; }
-    ul li { margin: 10px 0; }
-    a { color: #58a6ff; text-decoration: none; }
-    a:hover { text-decoration: underline; }
-
-    footer {
-      background: #161b22;
-      padding: 20px;
-      font-size: 0.9em;
-      border-top: 1px solid #30363d;
-    }
-    footer img {
-      width: 60px;
-      margin-top: 10px;
-      border-radius: 50%;
-    }
-
-    /* 🔹 Buy button with pulsing glow */
-    .buy-btn {
-      display: inline-block;
-      padding: 15px 30px;
-      margin-top: 20px;
-      background: linear-gradient(135deg, #00ccff, #0066ff);
-      color: #fff;
-      font-size: 1.2em;
-      font-weight: bold;
-      border-radius: 8px;
-      text-decoration: none;
-      box-shadow: 0 0 15px #00ccff,
-                  0 0 30px #00ccff,
-                  0 0 45px #00ccff;
-      transition: 0.3s;
-      animation: pulseGlow 2s infinite alternate;
-    }
-
-    @keyframes pulseGlow {
-      from {
-        box-shadow: 0 0 10px #00ccff,
-                    0 0 20px #00ccff,
-                    0 0 30px #00ccff;
-      }
-      to {
-        box-shadow: 0 0 20px #00ccff,
-                    0 0 40px #00ccff,
-                    0 0 60px #00ccff;
-      }
-    }
-
-    .buy-btn:hover {
-      background: linear-gradient(135deg, #0066ff, #00ccff);
-      transform: scale(1.05);
-    }
-
-    /* ✅ Mobile Responsive */
-    @media (max-width: 600px) {
-      header h1 { font-size: 2em; }
-      header p { font-size: 1em; }
-      section { padding: 30px 15px; }
-      .card { width: 100%; max-width: 320px; }
-      .buy-btn { width: 100%; max-width: 320px; }
-    }
-    @media (max-width: 400px) {
-      header h1 { font-size: 1.6em; }
-      .qr-code { max-width: 150px; }
+    @media (max-width: 920px){
+      .hero-grid{grid-template-columns:1fr}
+      .grid-3{grid-template-columns:1fr}
+      .grid-2{grid-template-columns:1fr}
+      .contact-grid{grid-template-columns:1fr}
+      .hero h1{font-size:34px}
+      .titem{grid-template-columns: 1fr}
     }
   </style>
 </head>
+
 <body>
+  <!-- NAV -->
+  <header class="nav">
+    <div class="container">
+      <div class="nav-inner">
+        <a class="brand" href="#top" aria-label="Go to top">
+          <div class="logo">G</div>
+          <div>
+            <div class="name">Grace River Church</div>
+            <div class="tag">A Christ-centered family • Faith • Hope • Love</div>
+          </div>
+        </a>
 
-  <!-- 🔹 Navbar -->
-  <nav>
-    <div class="logo">SHAM</div>
-    <ul>
-      <li><a href="#about">About</a></li>
-      <li><a href="#tokenomics">Tokenomics</a></li>
-      <li><a href="#roadmap">Roadmap</a></li>
-      <li><a href="#buy">Buy</a></li>
-      <li><a href="#links">Links</a></li>
-    </ul>
-    <div class="hamburger" id="hamburger" onclick="toggleMenu()">
-      <div></div>
-      <div></div>
-      <div></div>
-    </div>
-  </nav>
-
-  <!-- Mobile Menu -->
-  <div class="mobile-menu" id="mobileMenu">
-    <a href="#about" onclick="toggleMenu()">About</a>
-    <a href="#tokenomics" onclick="toggleMenu()">Tokenomics</a>
-    <a href="#roadmap" onclick="toggleMenu()">Roadmap</a>
-    <a href="#buy" onclick="toggleMenu()">Buy</a>
-    <a href="#links" onclick="toggleMenu()">Links</a>
-  </div>
-
-  <header>
-    <img src="logo (1).png" width="120" style="margin-bottom: 20px; border-radius: 50%;" 
-         onerror="this.style.display='none'">
-    <h1>🚀 Sham Coin (SHAM)</h1>
-    <p>5 Billion Fixed-Supply Token with Burn Functionality</p>
-
-    <div class="contract-section">
-      <p><b>Contract Address:</b></p>
-      <a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af" target="_blank">
-        <img class="qr-code"
-             src="https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=https%3A%2F%2Fbscscan.com%2Ftoken%2F0x55d43bfede19f035ff03df042a53708565ff17af"
-             alt="Contract Address QR Code">
-      </a>
-      <p><small>0x55d43bfede19f035ff03df042a53708565ff17af</small></p>
+        <nav class="nav-links" aria-label="Primary">
+          <a href="#history">History</a>
+          <a href="#about">About</a>
+          <a href="#vision">Vision & Mission</a>
+          <a href="#ministries">Ministries</a>
+          <a href="#services">Service Times</a>
+          <a href="#contact" class="btn">Contact</a>
+        </nav>
+      </div>
     </div>
   </header>
 
-  <section id="about">
-    <h2>🔹 About Sham Coin</h2>
-    <p>Sham Coin (SHAM) is a decentralized token built on Binance Smart Chain (BSC). 
-       With a fixed supply of 5 billion tokens, SHAM introduces deflationary mechanics 
-       through burn functionality, ensuring long-term scarcity and value growth.</p>
-  </section>
+  <!-- HERO -->
+  <main id="top" class="hero">
+    <div class="container">
+      <div class="hero-grid">
+        <div class="hero-card">
+          <h1>Welcome to Grace River Church</h1>
+          <p>
+            We’re a church committed to worship, discipleship, fellowship, and mission—
+            helping people follow Jesus with joy, courage, and compassion.
+          </p>
 
-  <section id="tokenomics">
-    <h2>📊 Tokenomics</h2>
-    <div class="tokenomics">
-      <div class="card">
-        <h3>Total Supply</h3>
-        <p>5,000,000,000 SHAM</p>
+          <div class="pill-row" aria-label="Highlights">
+            <span class="pill">Bible-based preaching</span>
+            <span class="pill">Family-friendly community</span>
+            <span class="pill">Prayer & worship</span>
+            <span class="pill">Outreach & service</span>
+          </div>
+
+          <div class="cta-row">
+            <a class="btn" href="#services">Plan a Visit</a>
+            <a class="btn" href="#vision" style="border-color:rgba(167,139,250,.35); background:linear-gradient(135deg, rgba(167,139,250,.14), rgba(125,211,252,.10));">Our Vision</a>
+          </div>
+        </div>
+
+        <aside class="mini" aria-label="Quick info">
+          <div class="kv">
+            <div class="row">
+              <div class="badge">⛪</div>
+              <div>
+                <h3>Sunday Worship</h3>
+                <p>10:00 AM • Main Service</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="badge">🙏</div>
+              <div>
+                <h3>Prayer Night</h3>
+                <p>Wednesday • 7:00 PM</p>
+              </div>
+            </div>
+            <div class="row">
+              <div class="badge">📍</div>
+              <div>
+                <h3>Location</h3>
+                <p>Church Street 1, Your City</p>
+              </div>
+            </div>
+          </div>
+          <div class="divider"></div>
+          <p style="margin:0;color:var(--muted);font-size:14px">
+            “We love because He first loved us.” — 1 John 4:19
+          </p>
+        </aside>
       </div>
-      <div class="card">
-        <h3>Burnable</h3>
-        <p>Yes (deflationary)</p>
+    </div>
+  </main>
+
+  <!-- HISTORY -->
+  <section id="history">
+    <div class="container">
+      <div class="section-title">
+        <h2>Church History</h2>
+        <p class="hint">How God has been faithful through the years</p>
       </div>
+
       <div class="card">
-        <h3>Decimals</h3>
-        <p>18</p>
+        <p style="margin:0;color:var(--muted);max-width:85ch">
+          Grace River Church began as a small home fellowship with a simple desire:
+          to worship Jesus, grow in the Word, and serve our community. Over time,
+          the Lord added people, leaders, and opportunities—forming a church family
+          rooted in grace and guided by Scripture.
+        </p>
+
+        <div class="timeline" aria-label="Timeline">
+          <div class="titem">
+            <div class="year">2015</div>
+            <div class="desc">A prayer group started meeting weekly in a living room.</div>
+          </div>
+          <div class="titem">
+            <div class="year">2017</div>
+            <div class="desc">First public worship service held with children’s ministry.</div>
+          </div>
+          <div class="titem">
+            <div class="year">2020</div>
+            <div class="desc">Expanded outreach, food support, and online services.</div>
+          </div>
+          <div class="titem">
+            <div class="year">2024</div>
+            <div class="desc">Moved into a larger space and launched discipleship groups.</div>
+          </div>
+        </div>
+
+        <p style="margin:14px 0 0;color:var(--muted)">
+          <strong style="color:var(--text)">Tip:</strong> Replace the years and details above with your real church story.
+        </p>
       </div>
     </div>
   </section>
 
-  <section id="roadmap">
-    <h2>🗺 Roadmap</h2>
-    <ul>
-      <li>✅ Token Launch</li>
-      <li>✅ Contract Verified on BscScan</li>
-      <li>🔜 Listing on PancakeSwap</li>
-      <li>🔜 Community Growth</li>
-      <li>🔜 Exchange Listings</li>
-      <li>🔜 Ecosystem Expansion</li>
-    </ul>
+  <!-- ABOUT -->
+  <section id="about">
+    <div class="container">
+      <div class="section-title">
+        <h2>About Us</h2>
+        <p class="hint">Who we are and what we value</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>What We Believe</h3>
+          <p>
+            We believe in the Bible as God’s Word, salvation through Jesus Christ,
+            and the work of the Holy Spirit empowering the church today.
+          </p>
+          <ul class="list">
+            <li>Jesus is Lord and Savior</li>
+            <li>Grace and truth in the Word</li>
+            <li>Prayer, worship, and obedience</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>What We Value</h3>
+          <p>
+            We pursue a culture of love, integrity, and spiritual growth—where
+            people are welcomed, discipled, and sent on mission.
+          </p>
+          <ul class="list">
+            <li>Christ-centered worship</li>
+            <li>Healthy community & care</li>
+            <li>Mission and generosity</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Our Leadership</h3>
+          <p>
+            Our leaders serve with humility, accountability, and a passion to equip
+            believers for the work of ministry.
+          </p>
+          <ul class="list">
+            <li>Pastor: (Name)</li>
+            <li>Elders/Leaders: (Names)</li>
+            <li>Ministry Teams</li>
+          </ul>
+        </div>
+      </div>
+
+      <div style="margin-top:14px">
+        <blockquote class="quote">
+          Our heart is simple: love God, love people, make disciples.
+        </blockquote>
+      </div>
+    </div>
   </section>
 
-  <section id="buy">
-    <h2>💰 Buy SHAM</h2>
-    <a href="https://pancakeswap.finance/swap?outputCurrency=0x55d43bfede19f035ff03df042a53708565ff17af" 
-       target="_blank" 
-       class="buy-btn">
-      🚀💰 Buy SHAM on PancakeSwap
-    </a>
+  <!-- VISION & MISSION -->
+  <section id="vision">
+    <div class="container">
+      <div class="section-title">
+        <h2>Vision & Mission</h2>
+        <p class="hint">Where we are going and why we exist</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Our Vision</h3>
+          <p style="color:var(--muted); max-width:80ch">
+            To be a Spirit-filled church that transforms lives and communities by
+            making disciples who live like Jesus and shine His love everywhere.
+          </p>
+          <ul class="list">
+            <li>Raise strong disciples</li>
+            <li>Build Christ-centered families</li>
+            <li>Impact our city and nations</li>
+          </ul>
+        </div>
+
+        <div class="card">
+          <h3>Our Mission</h3>
+          <p style="color:var(--muted); max-width:80ch">
+            To worship God, preach the Gospel, disciple believers, and serve our
+            community through practical love and faithful outreach.
+          </p>
+          <ul class="list">
+            <li>Worship: honor God wholeheartedly</li>
+            <li>Discipleship: grow in Word & Spirit</li>
+            <li>Fellowship: belong and build one another</li>
+            <li>Evangelism & Compassion: share Jesus, serve people</li>
+          </ul>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <section id="links">
-    <h2>🔗 Useful Links</h2>
-    <ul>
-      <li><a href="https://bscscan.com/token/0x55d43bfede19f035ff03df042a53708565ff17af">View on BscScan</a></li>
-      <li><a href="https://pancakeswap.finance/">Trade on PancakeSwap</a></li>
-      <li><a href="https://github.com/sham55/shamcoin">GitHub Repository</a></li>
-    </ul>
+  <!-- MINISTRIES -->
+  <section id="ministries">
+    <div class="container">
+      <div class="section-title">
+        <h2>Ministries</h2>
+        <p class="hint">Places to grow, serve, and belong</p>
+      </div>
+
+      <div class="grid-3">
+        <div class="card">
+          <h3>Kids & Youth</h3>
+          <p>Safe, joyful programs that teach children and teens to follow Jesus.</p>
+        </div>
+        <div class="card">
+          <h3>Worship Team</h3>
+          <p>Leading the church into God’s presence through heartfelt worship.</p>
+        </div>
+        <div class="card">
+          <h3>Care & Counseling</h3>
+          <p>Prayer, encouragement, and support for life’s challenges.</p>
+        </div>
+        <div class="card">
+          <h3>Small Groups</h3>
+          <p>Weekly gatherings for Bible study, prayer, and real community.</p>
+        </div>
+        <div class="card">
+          <h3>Outreach</h3>
+          <p>Serving the community through compassion, help, and evangelism.</p>
+        </div>
+        <div class="card">
+          <h3>Media & Tech</h3>
+          <p>Helping communicate the Gospel through sound, video, and online tools.</p>
+        </div>
+      </div>
+    </div>
   </section>
 
-  <footer>
-    <p>© 2025 Sham Coin | Built with ❤️ for the community</p>
-    <img src="logo (1).png" alt="ShamCoin Logo" onerror="this.style.display='none'">
+  <!-- SERVICE TIMES -->
+  <section id="services">
+    <div class="container">
+      <div class="section-title">
+        <h2>Service Times</h2>
+        <p class="hint">Join us this week</p>
+      </div>
+
+      <div class="grid-2">
+        <div class="card">
+          <h3>Sunday</h3>
+          <ul class="list">
+            <li>10:00 AM — Main Worship Service</li>
+            <li>10:00 AM — Kids Church (ages 4–12)</li>
+            <li>12:00 PM — Fellowship / Coffee</li>
+          </ul>
+        </div>
+        <div class="card">
+          <h3>Weekdays</h3>
+          <ul class="list">
+            <li>Wednesday 7:00 PM — Prayer Meeting</li>
+            <li>Friday 7:30 PM — Youth Night</li>
+            <li>Saturday — Outreach / Community Service (monthly)</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT -->
+  <section id="contact">
+    <div class="container">
+      <div class="section-title">
+        <h2>Contact Us</h2>
+        <p class="hint">We’d love to hear from you</p>
+      </div>
+
+      <div class="contact-grid">
+        <div class="card">
+          <h3>Church Info</h3>
+          <p style="color:var(--muted); margin-top:8px">
+            <strong style="color:var(--text)">Address:</strong> Church Street 1, Your City<br/>
+            <strong style="color:var(--text)">Phone:</strong> +49 000 000000<br/>
+            <strong style="color:var(--text)">Email:</strong> hello@yourchurch.org
+          </p>
+          <div class="divider"></div>
+          <p style="color:var(--muted); margin:0">
+            Add your Google Maps embed here (optional).
+          </p>
+          <!-- Example Map Embed:
+          <iframe
+            title="Church Location"
+            src="https://www.google.com/maps/embed?pb=..."
+            width="100%" height="260"
+            style="border:0;border-radius:18px;margin-top:12px"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"></iframe>
+          -->
+        </div>
+
+        <div class="card">
+          <h3>Send a Message</h3>
+          <form onsubmit="event.preventDefault(); alert('Message sent! (Demo form)');">
+            <label for="name">Full Name</label>
+            <input id="name" name="name" placeholder="Your name" required />
+
+            <label for="email">Email</label>
+            <input id="email" name="email" type="email" placeholder="you@email.com" required />
+
+            <label for="msg">Message</label>
+            <textarea id="msg" name="msg" placeholder="How can we help?" required></textarea>
+
+            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
+              <button class="btn" type="submit" style="cursor:pointer">Send</button>
+              <a class="btn" href="#services" style="border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.04)">View Service Times</a>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container">
+      <div class="divider"></div>
+      <small>
+        © <span id="year"></span> Grace River Church • All rights reserved •
+        <a href="#top" style="color:var(--muted)">Back to top</a>
+      </small>
+    </div>
   </footer>
 
   <script>
-    function toggleMenu() {
-      document.getElementById("mobileMenu").classList.toggle("show");
-      document.getElementById("hamburger").classList.toggle("open");
-    }
+    document.getElementById("year").textContent = new Date().getFullYear();
   </script>
 </body>
 </html>
-
-
-
