@@ -130,7 +130,7 @@
       font-size:44px;
       line-height:1.06;
       position:relative;
-      font-family: Georgia, "Times New Roman", serif; /* Churchy serif heading */
+      font-family: Georgia, "Times New Roman", serif;
       letter-spacing:.2px;
     }
     .hero p{margin:0 0 18px; color:var(--muted); position:relative; max-width:72ch}
@@ -238,6 +238,83 @@
     .footer{padding:22px 0 40px; color:var(--muted)}
     .footer small{opacity:.92}
 
+    /* ===== Founder thumbnail (MERGED) ===== */
+    .founder-card{
+      display:flex;
+      gap:14px;
+      align-items:center;
+    }
+    .founder-photo{
+      width:96px;
+      height:96px;
+      border-radius:999px;
+      border:1px solid rgba(214,177,94,.35);
+      background:
+        radial-gradient(circle at 30% 30%, rgba(242,208,138,.25), transparent 55%),
+        rgba(255,255,255,.04);
+      overflow:hidden;
+      flex:0 0 auto;
+      box-shadow: 0 12px 28px rgba(0,0,0,.25);
+      cursor:pointer;
+    }
+    .founder-photo img{
+      width:100%;
+      height:100%;
+      object-fit:cover;
+      display:block;
+    }
+    .founder-info h3{
+      margin:0;
+      font-size:16px;
+    }
+    .founder-role{
+      margin:2px 0 8px;
+      color:var(--gold2);
+      font-weight:800;
+      font-size:13px;
+    }
+    .founder-bio{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+    }
+
+    /* ===== Lightbox (MERGED) ===== */
+    .lightbox{
+      position:fixed;
+      inset:0;
+      background:rgba(0,0,0,.85);
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      z-index:999;
+      opacity:0;
+      pointer-events:none;
+      transition:opacity .3s ease;
+    }
+    .lightbox.active{
+      opacity:1;
+      pointer-events:auto;
+    }
+    .lightbox img{
+      max-width:90%;
+      max-height:85%;
+      border-radius:12px;
+      border:2px solid var(--gold);
+      box-shadow:0 20px 50px rgba(0,0,0,.6);
+    }
+    .lightbox-close{
+      position:absolute;
+      top:20px;
+      right:28px;
+      font-size:30px;
+      color:white;
+      cursor:pointer;
+      font-weight:bold;
+      line-height:1;
+      user-select:none;
+    }
+
     @media (max-width: 920px){
       .hero-grid{grid-template-columns:1fr}
       .grid-3{grid-template-columns:1fr}
@@ -245,6 +322,10 @@
       .contact-grid{grid-template-columns:1fr}
       .hero h1{font-size:36px}
       .titem{grid-template-columns: 1fr}
+
+      /* founder responsive */
+      .founder-card{align-items:flex-start}
+      .founder-photo{width:86px;height:86px}
     }
   </style>
 </head>
@@ -344,39 +425,38 @@
       </div>
 
       <div class="card">
-  <p style="margin:0;color:var(--muted);max-width:92ch">
-    Solid Rock Ministries was established in <strong>1992</strong> in <strong>Baguio City, Philippines</strong>
-    with a burden to reach and disciple indigenous people and leaders—so that entire communities may
-    know Christ and worship Him with redeemed, God-honoring expressions of their culture.
-  </p>
+        <p style="margin:0;color:var(--muted);max-width:92ch">
+          Solid Rock Ministries was established in <strong>1992</strong> in <strong>Baguio City, Philippines</strong>
+          with a burden to reach and disciple indigenous people and leaders—so that entire communities may
+          know Christ and worship Him with redeemed, God-honoring expressions of their culture.
+        </p>
 
-  <div class="divider"></div>
+        <div class="divider"></div>
 
-  <h3 style="margin:0 0 8px; font-size:16px;">Vogtareuth Outreach (Germany)</h3>
-  <p style="margin:0;color:var(--muted);max-width:92ch">
-    The Vogtareuth Outreach began in <strong>2022</strong> as a small Filipino group of believers gathering in
-    <strong>Reuther Feld, Vogtareuth</strong>. What started with simple prayer, worship, and Bible sharing grew
-    into a regular fellowship—strengthening believers and reaching friends and families with the love of Christ.
-    Today, the outreach continues as a testimony that God can plant His work anywhere, using ordinary people
-    with an extraordinary calling.
-  </p>
+        <h3 style="margin:0 0 8px; font-size:16px;">Vogtareuth Outreach (Germany)</h3>
+        <p style="margin:0;color:var(--muted);max-width:92ch">
+          The Vogtareuth Outreach began in <strong>2022</strong> as a small Filipino group of believers gathering in
+          <strong>Reuther Feld, Vogtareuth</strong>. What started with simple prayer, worship, and Bible sharing grew
+          into a regular fellowship—strengthening believers and reaching friends and families with the love of Christ.
+          Today, the outreach continues as a testimony that God can plant His work anywhere, using ordinary people
+          with an extraordinary calling.
+        </p>
 
-  <div class="timeline" aria-label="Timeline">
-    <div class="titem">
-      <div class="year">2022</div>
-      <div class="desc">A small Filipino believers’ group began meeting in Reuther Feld, Vogtareuth for prayer and Bible sharing.</div>
-    </div>
-    <div class="titem">
-      <div class="year">2023</div>
-      <div class="desc">Fellowship grew in unity—regular worship, encouragement, and welcoming new friends and families.</div>
-    </div>
-    <div class="titem">
-      <div class="year">Today</div>
-      <div class="desc">Continuing outreach in Vogtareuth—building faith, community, and mission in Germany.</div>
-    </div>
-  </div>
-</div>
-        
+        <div class="timeline" aria-label="Timeline">
+          <div class="titem">
+            <div class="year">2022</div>
+            <div class="desc">A small Filipino believers’ group began meeting in Reuther Feld, Vogtareuth for prayer and Bible sharing.</div>
+          </div>
+          <div class="titem">
+            <div class="year">2023</div>
+            <div class="desc">Fellowship grew in unity—regular worship, encouragement, and welcoming new friends and families.</div>
+          </div>
+          <div class="titem">
+            <div class="year">Today</div>
+            <div class="desc">Continuing outreach in Vogtareuth—building faith, community, and mission in Germany.</div>
+          </div>
+        </div>
+      </div>
   </section>
 
   <!-- ABOUT -->
@@ -385,6 +465,25 @@
       <div class="section-title">
         <h2>About Us</h2>
         <p class="hint">Who we are and what we carry</p>
+      </div>
+
+      <!-- Founder Thumbnail + Lightbox trigger (MERGED) -->
+      <div class="card" style="margin-bottom:14px">
+        <div class="founder-card">
+          <div class="founder-photo" aria-label="Church founder photo">
+            <!-- Change the image path to your real founder photo -->
+            <img src="images/founder.jpg" alt="Pastor/Founder: Jones Padeo" onclick="openLightbox(this.src)" />
+          </div>
+
+          <div class="founder-info">
+            <h3>Ptr. Jones Padeo</h3>
+            <div class="founder-role">Pastor / Founder</div>
+            <p class="founder-bio">
+              Founder of Solid Rock Ministries (1992). Burdened to reach, disciple, and raise indigenous Christ-centered leaders
+              in the Philippines and abroad.
+            </p>
+          </div>
+        </div>
       </div>
 
       <div class="grid-3">
@@ -405,7 +504,7 @@
           <h3>Culture Redeemed</h3>
           <p>
             We use God-given culture and submit it to Christ—so worship and witness
-            become  much more meaningful, authentic, pure, and powerful for indigenous communities.
+            become much more meaningful, authentic, pure, and powerful for indigenous communities.
           </p>
           <ul class="list">
             <li>Honor what is God-given</li>
@@ -555,18 +654,7 @@
             <strong style="color:var(--text)">Email:</strong> srmbaguio@gmail.com
           </p>
           <div class="divider"></div>
-          <p style="color:var(--muted); margin:0">
-        
-          </p>
-          <!-- Example Map Embed:
-          <iframe
-            title="Church Location"
-            src="https://www.google.com/maps/embed?pb=..."
-            width="100%" height="260"
-            style="border:0;border-radius:18px;margin-top:12px"
-            loading="lazy"
-            referrerpolicy="no-referrer-when-downgrade"></iframe>
-          -->
+          <p style="color:var(--muted); margin:0"></p>
         </div>
 
         <div class="card">
@@ -602,8 +690,31 @@
     </div>
   </footer>
 
+  <!-- Lightbox (MERGED) -->
+  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
+    <span class="lightbox-close" aria-label="Close">&times;</span>
+    <img id="lightbox-img" alt="Founder photo enlarged">
+  </div>
+
   <script>
+    // Footer year
     document.getElementById("year").textContent = new Date().getFullYear();
+
+    // Lightbox functions
+    function openLightbox(src){
+      const lightbox = document.getElementById("lightbox");
+      const img = document.getElementById("lightbox-img");
+      img.src = src;
+      lightbox.classList.add("active");
+    }
+    function closeLightbox(){
+      document.getElementById("lightbox").classList.remove("active");
+    }
+
+    // Optional: Close on ESC key
+    document.addEventListener("keydown", function(e){
+      if(e.key === "Escape") closeLightbox();
+    });
   </script>
 </body>
 </html>
