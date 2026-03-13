@@ -2199,11 +2199,17 @@ function getOutreachDisplayName(outreachId) {
   </div>
 
   <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
-    <ul class="list">
-      ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
-        .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
-    </ul>
-  </div>
+  ${
+    ((outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || [])).length)
+      ? `
+        <ul class="list">
+          ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
+            .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+        </ul>
+      `
+      : `<div style="height:8px;"></div>`
+  }
+</div>
 
   ${outreachAdminState[outreach.id] ? `
     <div id="${escapeHtml(outreach.id)}-ministry-scope-edit-wrap" class="hidden" style="margin-top:12px;">
@@ -2406,39 +2412,22 @@ function getOutreachDisplayName(outreachId) {
     feedback.textContent = "Creating outreach...";
     feedback.className = "smallmuted";
 
-    await setDoc(doc(db, "outreaches", outreachId), {
-      name,
-      shortName: name,
-      location,
-      address: address || location,
-      historyTitle: historyTitle || name,
-      historyText: historyText || description || `The ${name} continues fellowship, worship, prayer, and evangelism.`,
-      description: description || `Latest updates for the ${name} group`,
-      ministryType: "Fellowship Ministry",
-      category: "Prayer • Discipleship • Evangelism",
-      badgeText: "New Outreach",
-      fallbackLogo: "srm.png",
-      prayerFocus: [
-        "Salvation & spiritual growth",
-        "Healing & provision for families",
-        "Unity and stronger faith",
-        `Open doors for outreach in ${location}`
-      ],
-      volunteers: [
-        "Song leading / musicians",
-        "Setup & cleanup",
-        "Snacks / fellowship food",
-        "Welcoming newcomers"
-      ],
-      createdAt: serverTimestamp()
-    }, { merge: true });
-
-    await setDoc(doc(db, "outreachAdmins", outreachId, "members", currentUser.uid), {
-      uid: currentUser.uid,
-      email: currentUser.email || "",
-      role: "owner",
-      createdAt: serverTimestamp()
-    });
+   await setDoc(doc(db, "outreaches", outreachId), {
+  name,
+  shortName: name,
+  location,
+  address: address || location,
+  historyTitle: historyTitle || name,
+  historyText: historyText || description || `The ${name} continues fellowship, worship, prayer, and evangelism.`,
+  description: description || `Latest updates for the ${name} group`,
+  ministryType: "Fellowship Ministry",
+  category: "Prayer • Discipleship • Evangelism",
+  badgeText: "New Outreach",
+  fallbackLogo: "srm.png",
+  prayerFocus: [],
+  volunteers: [],
+  createdAt: serverTimestamp()
+}, { merge: true });
 
     feedback.textContent = `Outreach "${name}" created successfully.`;
     feedback.className = "smallmuted success-text";
@@ -3615,16 +3604,15 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   await enrichOutreaches();
 
   if (currentUser) {
-  isSuperAdmin = await isUserSuperAdmin(currentUser);
-  for (const outreach of currentOutreaches) {
-    outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
-  }
-} else {
-  isSuperAdmin = false;
-  for (const outreach of currentOutreaches) {
-    outreachAdminState[outreach.id] = false;
-  }
+    isSuperAdmin = await isUserSuperAdmin(currentUser);
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
+    }
+  } else {
+    for (const outreach of currentOutreaches) {
+  outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
 }
+  }
 
   renderOutreaches();
   updateSuperAdminUI();
