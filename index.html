@@ -4,370 +4,785 @@
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Solid Rock Ministries</title>
-  <meta name="description" content="Solid Rock Ministries — established in Baguio City, Philippines (1992). History, about us, vision, mission, ministries, and service times." />
+  <meta name="description" content="Solid Rock Ministries — established in Baguio City, Philippines (1992)." />
+  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
+<link rel="icon" type="image/svg+xml" href="/favicon.svg">
+<link rel="shortcut icon" href="/favicon.ico">
+<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+<link rel="manifest" href="/site.webmanifest">
+<meta name="theme-color" content="#0b1220">
   <style>
     :root{
-      /* Churchy palette: deep navy + warm gold + parchment */
       --bg:#0b1220;
       --surface:#101a30;
-      --card: rgba(255,255,255,.05);
+      --card:rgba(255,255,255,.05);
       --text:#f5f1e6;
       --muted:#d6cdb8;
       --line:rgba(255,255,255,.12);
       --gold:#d6b15e;
       --gold2:#f2d08a;
       --accent:#86d0ff;
-      --shadow: 0 14px 34px rgba(0,0,0,.40);
+      --shadow:0 14px 34px rgba(0,0,0,.40);
       --radius:18px;
       --max:1100px;
+      --danger:#b42828;
+      --success:#1e7d4d;
     }
-    *{box-sizing:border-box}
-    html,body{
-      margin:0;padding:0;
+
+
+    html{
+  scroll-behavior:smooth;
+}
+
+body{
+  min-width:320px;
+}
+
+.container{
+  max-width:var(--max);
+  width:100%;
+  margin:0 auto;
+  padding:0 clamp(12px, 2vw, 20px);
+}
+
+.hero h1{
+  margin:0 0 10px;
+  font-size:clamp(28px, 5vw, 44px);
+  line-height:1.08;
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:.2px;
+}
+
+h2{
+  margin:0;
+  font-size:clamp(22px, 3.5vw, 26px);
+  font-family:Georgia,"Times New Roman",serif;
+  letter-spacing:.2px;
+}
+
+
+
+.outreach-title{
+  margin:0;
+  font-size:clamp(22px, 4vw, 28px);
+  font-family:Georgia,"Times New Roman",serif;
+}
+
+.gitem{
+  width:320px;
+  min-width:320px;
+  max-width:320px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  box-shadow:var(--shadow);
+  flex:0 0 auto;
+}
+
+.gitem img{
+  width:100%;
+  aspect-ratio: 4 / 3;
+  height:auto;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+@media (max-width:900px){
+  .gitem{
+    width:85vw;
+    min-width:85vw;
+    max-width:85vw;
+  }
+
+.outreach-panels{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:14px;
+  margin-top:16px;
+}
+
+.toolbar-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+@media (max-width:900px){
+  .outreach-panels{
+    grid-template-columns:1fr;
+  }
+
+  .toolbar-row{
+    flex-direction:column;
+  }
+
+  .toolbar-row > *{
+    width:100%;
+  }
+}
+
+}
+*{box-sizing:border-box;}
+.panel, .card, .outreach-shell, .container{min-width:0; max-width:100%;}
+    body{
       font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
       color:var(--text);
       line-height:1.6;
+      overflow-x:hidden;
       background:
         radial-gradient(1200px 600px at 35% 0%, rgba(214,177,94,.16), transparent 60%),
         radial-gradient(900px 700px at 85% 10%, rgba(134,208,255,.12), transparent 55%),
         radial-gradient(700px 500px at 20% 90%, rgba(242,208,138,.10), transparent 55%),
         var(--bg);
     }
-    a{color:inherit}
-    .container{max-width:var(--max); margin:0 auto; padding:0 18px}
 
-    /* Subtle “stained glass” texture */
+    a{color:inherit}
+    img{max-width:100%;display:block}
+    .container{max-width:var(--max);width:100%;margin:0 auto;padding:0 16px}
+
     .texture{
-      position:fixed; inset:0; pointer-events:none; z-index:-1;
+      position:fixed;inset:0;pointer-events:none;z-index:-1;
       background:
         repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 6px, transparent 6px 18px),
         radial-gradient(600px 420px at 15% 20%, rgba(214,177,94,.08), transparent 60%),
         radial-gradient(520px 360px at 85% 25%, rgba(134,208,255,.06), transparent 60%);
-      mix-blend-mode:soft-light;
-      opacity:.55;
-      filter: blur(.2px);
+      mix-blend-mode:soft-light;opacity:.55;filter:blur(.2px);
     }
 
-    /* NAV */
     .nav{
-      position:sticky; top:0; z-index:20;
-      backdrop-filter: blur(10px);
-      background: rgba(11,18,32,.78);
-      border-bottom:1px solid var(--line);
+  position:sticky;
+  top:0;
+  z-index:40;
+  backdrop-filter:blur(10px);
+  background:rgba(11,18,32,.78);
+  border-bottom:1px solid var(--line);
+  transition:transform .25s ease;
+}
+
+.nav-hidden{
+  transform:translateY(-100%);
+}
+
+    .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:14px}
+    .brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}
+    
+
+.outreach-logo{
+  width:140px;
+  height:140px;
+  object-fit:contain;
+  border-radius:0 !important;
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  cursor:pointer;
+  display:block;
+  transition:transform .25s ease, filter .25s ease;
+}
+
+.outreach-logo:hover{
+  transform:scale(1.05);
+  filter:drop-shadow(0 0 10px rgba(214,177,94,.45));
+}
+
+
+    .logo-img{width:52px;height:52px;object-fit:contain;cursor:pointer;transition:transform .25s ease, filter .25s ease;flex:0 0 auto}
+    .logo-img:hover{transform:scale(1.05);filter:drop-shadow(0 0 8px rgba(214,177,94,.45))}
+    .brand .name{font-weight:900;letter-spacing:.2px}
+    .brand .tag{font-size:12px;color:var(--muted);margin-top:2px}
+
+    .nav-right{display:flex;align-items:center;gap:10px}
+    .menu-btn,.icon-btn{
+      border:1px solid var(--line);background:rgba(255,255,255,.04);
+      color:var(--text);border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:900;line-height:1;
     }
-    .nav-inner{display:flex; align-items:center; justify-content:space-between; padding:12px 0; gap:14px}
-    .brand{display:flex; align-items:center; gap:12px; text-decoration:none}
-    .logo{
-      width:44px; height:44px; border-radius:14px;
-      background: linear-gradient(135deg, rgba(214,177,94,.95), rgba(242,208,138,.75));
-      box-shadow: 0 12px 28px rgba(214,177,94,.18);
-      display:grid; place-items:center;
-      font-weight:900; color:#1b1407;
-      position:relative;
-      overflow:hidden;
-    }
-    .logo:after{
-      content:"✝";
-      font-size:18px;
-      transform: translateY(-.5px);
-    }
-    .brand .name{font-weight:900; letter-spacing:.2px}
-    .brand .tag{font-size:12px; color:var(--muted); margin-top:2px}
-    .nav-links{display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end}
+    .menu-btn{display:none}
+    .nav-links{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
     .nav-links a{
-      text-decoration:none; font-size:14px;
-      padding:9px 12px; border-radius:12px;
-      border:1px solid transparent;
-      color:var(--muted);
+      text-decoration:none;font-size:14px;padding:9px 12px;border-radius:12px;
+      border:1px solid transparent;color:var(--muted);display:inline-flex;align-items:center;
     }
-    .nav-links a:hover{border-color:var(--line); color:var(--text); background:rgba(255,255,255,.03)}
+    .nav-links a:hover{border-color:var(--line);color:var(--text);background:rgba(255,255,255,.03)}
 
+    .btn,.ghost-btn,.danger-btn,.approve-btn{
+      display:inline-flex;align-items:center;justify-content:center;cursor:pointer;font-weight:800;
+      border-radius:14px;padding:10px 14px;text-decoration:none;font-size:14px;border:none;
+    }
     .btn{
-      display:inline-flex; align-items:center; justify-content:center;
-      padding:10px 14px; border-radius:14px;
       border:1px solid rgba(214,177,94,.40);
-      background: linear-gradient(135deg, rgba(214,177,94,.20), rgba(242,208,138,.10));
-      color:var(--text); text-decoration:none; font-weight:800; font-size:14px;
-      box-shadow: 0 10px 25px rgba(0,0,0,.18);
+      background:linear-gradient(135deg, rgba(214,177,94,.20), rgba(242,208,138,.10));
+      color:var(--text);box-shadow:0 10px 25px rgba(0,0,0,.18);
     }
-    .btn:hover{filter:brightness(1.08)}
+    .btn:hover,.ghost-btn:hover,.danger-btn:hover,.approve-btn:hover{filter:brightness(1.08)}
+    .ghost-btn{border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text)}
+    .danger-btn{border:1px solid rgba(180,40,40,.4);background:rgba(180,40,40,.9);color:#fff}
+    .approve-btn{border:1px solid rgba(30,125,77,.4);background:rgba(30,125,77,.9);color:#fff}
 
-    /* HERO */
     .hero{padding:58px 0 22px}
-    .hero-grid{display:grid; grid-template-columns: 1.2fr .8fr; gap:18px; align-items:stretch}
-    .hero-card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      padding:26px;
-      position:relative;
-      overflow:hidden;
+    .hero-grid{display:grid;grid-template-columns:1.2fr .8fr;gap:18px;align-items:stretch}
+    .hero-card,.mini,.card,.outreach-shell,.panel,.modal-card,.message-card,.admin-card{
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border:1px solid var(--line);border-radius:var(--radius);box-shadow:var(--shadow);
     }
-    .hero-card:before{
-      content:"";
-      position:absolute; inset:-2px;
-      background:
-        radial-gradient(560px 210px at 20% 0%, rgba(214,177,94,.20), transparent 60%),
-        radial-gradient(430px 200px at 80% 10%, rgba(134,208,255,.14), transparent 60%);
-      pointer-events:none;
-    }
-    .kicker{
-      position:relative;
-      display:inline-flex; gap:10px; align-items:center;
-      padding:6px 10px; border-radius:999px;
-      border:1px solid rgba(214,177,94,.25);
-      background: rgba(214,177,94,.10);
-      color:var(--gold2);
-      font-weight:800;
-      font-size:12px;
-      letter-spacing:.35px;
-      text-transform:uppercase;
-      margin-bottom:12px;
-    }
-    .hero h1{
-      margin:0 0 10px;
-      font-size:44px;
-      line-height:1.06;
-      position:relative;
-      font-family: Georgia, "Times New Roman", serif;
-      letter-spacing:.2px;
-    }
-    .hero p{margin:0 0 18px; color:var(--muted); position:relative; max-width:72ch}
-    .pill-row{display:flex; gap:10px; flex-wrap:wrap; position:relative}
-    .pill{
-      padding:8px 10px; border-radius:999px;
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.03);
-      font-size:13px; color:var(--muted);
-    }
-    .cta-row{display:flex; gap:10px; flex-wrap:wrap; margin-top:18px; position:relative}
-
-    .mini{
-      background: rgba(255,255,255,.03);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding:18px;
-      box-shadow: var(--shadow);
-      display:flex; flex-direction:column; justify-content:space-between;
-      gap:14px;
-    }
-    .mini h3{margin:0; font-size:16px}
-    .mini p{margin:0; color:var(--muted); font-size:14px}
-    .kv{display:grid; gap:10px}
-    .kv .row{display:flex; gap:10px; align-items:flex-start}
-    .badge{
-      min-width:34px; height:34px; border-radius:12px;
-      background: rgba(214,177,94,.14);
-      border:1px solid rgba(214,177,94,.25);
-      display:grid; place-items:center;
-      font-weight:900; color:var(--gold2)
-    }
-
-    /* Sections */
-    section{padding:26px 0}
-    .section-title{display:flex; align-items:flex-end; justify-content:space-between; gap:12px; margin-bottom:12px}
-    h2{
-      margin:0; font-size:26px;
-      font-family: Georgia, "Times New Roman", serif;
-      letter-spacing:.2px;
-    }
-    .hint{margin:0; color:var(--muted); font-size:14px}
-
-    .grid-3{display:grid; grid-template-columns:repeat(3,1fr); gap:14px}
-    .grid-2{display:grid; grid-template-columns:repeat(2,1fr); gap:14px}
-    .card{
-      background: rgba(255,255,255,.03);
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      padding:18px;
-      box-shadow: var(--shadow);
-      position:relative;
-    }
-    .card:before{
-      content:"";
-      position:absolute; inset:0;
-      border-radius: var(--radius);
-      pointer-events:none;
-      background: radial-gradient(320px 160px at 20% 0%, rgba(214,177,94,.10), transparent 60%);
+    .hero-card,.card,.outreach-shell,.modal-card,.message-card,.admin-card{position:relative;overflow:hidden}
+    .hero-card:before,.card:before,.outreach-shell:before,.modal-card:before,.admin-card:before{
+      content:"";position:absolute;inset:0;border-radius:var(--radius);pointer-events:none;
+      background:radial-gradient(320px 160px at 20% 0%, rgba(214,177,94,.10), transparent 60%);
       opacity:.8;
     }
-    .card > *{position:relative}
-    .card h3{margin:0 0 8px; font-size:16px}
-    .card p{margin:0; color:var(--muted)}
-    .list{margin:10px 0 0; padding-left:18px; color:var(--muted)}
-    .list li{margin:8px 0}
+    .hero-card > *, .card > *, .outreach-shell > *, .modal-card > *, .admin-card > *{position:relative}
+    .hero-card{padding:26px}
+    .mini{padding:18px;display:flex;flex-direction:column;justify-content:space-between;gap:14px}
 
-    .quote{
-      margin:0;
-      padding:16px 18px;
-      border-radius: var(--radius);
-      border:1px solid rgba(214,177,94,.28);
-      background: rgba(214,177,94,.10);
-      color:var(--text);
-      font-family: Georgia, "Times New Roman", serif;
-      font-size:16px;
+    .cinematic-hero-intro{
+      position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;
+      text-align:center;padding:18px 10px 22px;margin-bottom:10px;overflow:hidden;z-index:1;
     }
-
-    .timeline{display:grid; gap:10px; margin-top:10px}
-    .titem{
-      display:grid; grid-template-columns: 120px 1fr; gap:12px;
-      padding:14px; border-radius: var(--radius);
-      border:1px solid var(--line);
-      background: rgba(255,255,255,.02);
-    }
-    .titem .year{color:var(--gold2); font-weight:900}
-    .titem .desc{color:var(--muted)}
-
-    .divider{height:1px; background:var(--line); margin:14px 0}
-
-    /* Contact */
-    .contact-grid{display:grid; grid-template-columns:1fr 1fr; gap:14px}
-    label{display:block; font-size:13px; color:var(--muted); margin:10px 0 6px}
-    input,textarea{
-      width:100%; border-radius:14px;
-      border:1px solid var(--line);
-      background: rgba(0,0,0,.20);
-      color:var(--text);
-      padding:12px 12px;
-      outline:none;
-    }
-    textarea{min-height:110px; resize:vertical}
-
-    /* Footer */
-    .footer{padding:22px 0 40px; color:var(--muted)}
-    .footer small{opacity:.92}
-
-    /* ===== Founder thumbnail (MERGED) ===== */
-    .founder-card{
-      display:flex;
-      gap:14px;
-      align-items:center;
-    }
-    .founder-photo{
-      width:96px;
-      height:96px;
-      border-radius:999px;
-      border:1px solid rgba(214,177,94,.35);
+    .light-rays{
+      position:absolute;inset:-20% -10%;
       background:
-        radial-gradient(circle at 30% 30%, rgba(242,208,138,.25), transparent 55%),
-        rgba(255,255,255,.04);
-      overflow:hidden;
-      flex:0 0 auto;
-      box-shadow: 0 12px 28px rgba(0,0,0,.25);
-      cursor:pointer;
+        radial-gradient(circle at 50% 20%, rgba(255,255,255,.18), transparent 28%),
+        repeating-conic-gradient(from 0deg at 50% 18%, rgba(242,208,138,.14) 0deg 8deg, transparent 8deg 22deg);
+      filter:blur(10px);opacity:0;transform:scale(.85);animation:raysReveal 3.2s ease forwards;pointer-events:none;
     }
-    .founder-photo img{
-      width:100%;
-      height:100%;
-      object-fit:cover;
-      display:block;
+    .hero-rock-glow{
+      position:absolute;width:260px;height:260px;border-radius:999px;
+      background:
+        radial-gradient(circle at 50% 50%, rgba(214,177,94,.18), transparent 52%),
+        radial-gradient(circle at 50% 60%, rgba(134,208,255,.10), transparent 65%);
+      filter:blur(10px);opacity:0;animation:rockGlowRise 2.6s ease .25s forwards;pointer-events:none;
     }
-    .founder-info h3{
-      margin:0;
-      font-size:16px;
+    .hero-logo-wrap{position:relative;z-index:2;display:flex;justify-content:center;align-items:center}
+    .hero-logo{width:220px;max-width:72%;object-fit:contain;cursor:pointer}
+    .cinematic-logo{
+      opacity:0;transform:translateY(18px) scale(.82);
+      filter:drop-shadow(0 0 0 rgba(214,177,94,0)) drop-shadow(0 14px 28px rgba(0,0,0,.40));
+      animation:logoReveal 2.8s cubic-bezier(.2,.8,.2,1) .35s forwards, logoFloat 4.8s ease-in-out 3.2s infinite;
     }
-    .founder-role{
-      margin:2px 0 8px;
-      color:var(--gold2);
-      font-weight:800;
-      font-size:13px;
-    }
-    .founder-bio{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
+    .hero-verse{
+      position:relative;z-index:2;margin-top:14px;max-width:540px;color:var(--gold2);
+      font-family:Georgia,"Times New Roman",serif;font-size:16px;line-height:1.5;
+      opacity:0;transform:translateY(10px);animation:verseFade 1.7s ease 1.6s forwards;
+      text-shadow:0 2px 16px rgba(0,0,0,.30);
     }
 
-    /* ===== Lightbox (MERGED) ===== */
+    @keyframes raysReveal{0%{opacity:0;transform:scale(.8) rotate(-8deg)}100%{opacity:1;transform:scale(1) rotate(0deg)}}
+    @keyframes rockGlowRise{0%{opacity:0;transform:scale(.7)}100%{opacity:1;transform:scale(1)}}
+    @keyframes logoReveal{
+      0%{opacity:0;transform:translateY(18px) scale(.82);filter:drop-shadow(0 0 0 rgba(214,177,94,0)) drop-shadow(0 14px 28px rgba(0,0,0,.20))}
+      60%{opacity:1;transform:translateY(-3px) scale(1.03);filter:drop-shadow(0 0 18px rgba(214,177,94,.45)) drop-shadow(0 18px 35px rgba(0,0,0,.35))}
+      100%{opacity:1;transform:translateY(0) scale(1);filter:drop-shadow(0 0 10px rgba(214,177,94,.32)) drop-shadow(0 16px 30px rgba(0,0,0,.40))}
+    }
+    @keyframes logoFloat{0%,100%{transform:translateY(0) scale(1)}50%{transform:translateY(-6px) scale(1.01)}}
+    @keyframes verseFade{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+
+    .kicker{
+      display:inline-flex;gap:10px;align-items:center;padding:6px 10px;border-radius:999px;
+      border:1px solid rgba(214,177,94,.25);background:rgba(214,177,94,.10);color:var(--gold2);
+      font-weight:800;font-size:12px;letter-spacing:.35px;text-transform:uppercase;margin-bottom:12px;
+    }
+    .hero h1{margin:0 0 10px;font-size:44px;line-height:1.06;font-family:Georgia,"Times New Roman",serif;letter-spacing:.2px}
+    .hero p{margin:0 0 18px;color:var(--muted);max-width:72ch}
+    .pill-row,.cta-row,.admin-actions,.toolbar-row,.meta-row,.member-actions{display:flex;gap:10px;flex-wrap:wrap}
+    .pill,.tagpill,.select-chip,.status-pill{
+      padding:8px 10px;border-radius:999px;border:1px solid var(--line);
+      background:rgba(255,255,255,.03);font-size:13px;color:var(--muted);
+    }
+    .status-pill.success{border-color:rgba(30,125,77,.35);color:#7de3ab;background:rgba(30,125,77,.12)}
+    .status-pill.info{border-color:rgba(134,208,255,.35);color:#a6dbff;background:rgba(134,208,255,.12)}
+
+    .kv{display:grid;gap:10px}
+    .kv .row{display:flex;gap:10px;align-items:flex-start}
+    .badge{
+      min-width:34px;height:34px;border-radius:12px;background:rgba(214,177,94,.14);
+      border:1px solid rgba(214,177,94,.25);display:grid;place-items:center;font-weight:900;color:var(--gold2)
+    }
+
+    section{padding:26px 0}
+    .section-title{display:flex;align-items:flex-end;justify-content:space-between;gap:12px;margin-bottom:12px}
+    h2{margin:0;font-size:26px;font-family:Georgia,"Times New Roman",serif;letter-spacing:.2px}
+    h3{margin:0 0 10px}
+    .grid-3{display:grid;grid-template-columns:repeat(auto-fit, minmax(250px, 1fr));gap:14px}
+    .grid-2{display:grid;grid-template-columns:repeat(auto-fit, minmax(260px, 1fr));gap:14px}
+    .card{padding:18px}
+    .panel{padding:18px}
+    .list{margin:10px 0 0;padding-left:18px;color:var(--muted)}
+    .list li{margin:8px 0}
+    .quote{
+      margin:0;padding:16px 18px;border-radius:var(--radius);border:1px solid rgba(214,177,94,.28);
+      background:rgba(214,177,94,.10);color:var(--text);font-family:Georgia,"Times New Roman",serif;font-size:16px
+    }
+    .timeline{display:grid;gap:10px;margin-top:10px}
+    .titem{
+      display:grid;grid-template-columns:140px 1fr;gap:12px;padding:14px;border-radius:var(--radius);
+      border:1px solid var(--line);background:rgba(255,255,255,.02)
+    }
+    .titem .year{color:var(--gold2);font-weight:900}
+    .divider{height:1px;background:var(--line);margin:14px 0}
+    .smallmuted,.hint{color:var(--muted);font-size:13px}
+    .success-text{color:#7de3ab}
+    .error-text{color:#ff9e9e}
+    .hidden{display:none !important}
+
+    .contact-grid{display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:14px}
+    label{display:block;font-size:13px;color:var(--muted);margin:10px 0 6px}
+    input,textarea,select{
+      width:100%;border-radius:14px;border:1px solid var(--line);background:rgba(0,0,0,.20);
+      color:var(--text);padding:12px 12px;outline:none;font:inherit;
+    }
+    textarea{min-height:110px;resize:vertical}
+    .footer{padding:22px 0 40px;color:var(--muted)}
+
+    .founder-card{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+    .founder-photo{
+      width:96px;height:96px;border-radius:999px;border:1px solid rgba(214,177,94,.35);
+      background:radial-gradient(circle at 30% 30%, rgba(242,208,138,.25), transparent 55%), rgba(255,255,255,.04);
+      overflow:hidden;flex:0 0 auto;box-shadow:0 12px 28px rgba(0,0,0,.25);cursor:pointer;
+    }
+    .founder-photo img{width:100%;height:100%;object-fit:cover;display:block}
+    .founder-role{margin:2px 0 8px;color:var(--gold2);font-weight:800;font-size:13px}
+
     .lightbox{
-      position:fixed;
-      inset:0;
-      background:rgba(0,0,0,.85);
-      display:flex;
-      align-items:center;
-      justify-content:center;
-      z-index:999;
-      opacity:0;
-      pointer-events:none;
-      transition:opacity .3s ease;
+      position:fixed;inset:0;background:rgba(0,0,0,.85);display:flex;align-items:center;justify-content:center;
+      z-index:9999;opacity:0;pointer-events:none;transition:opacity .25s ease;
     }
-    .lightbox.active{
-      opacity:1;
-      pointer-events:auto;
-    }
+    .lightbox.active{opacity:1;pointer-events:auto}
     .lightbox img{
-      max-width:90%;
-      max-height:85%;
-      border-radius:12px;
-      border:2px solid var(--gold);
-      box-shadow:0 20px 50px rgba(0,0,0,.6);
+      max-width:90%;max-height:85%;border-radius:12px;border:2px solid var(--gold);
+      box-shadow:0 20px 50px rgba(0,0,0,.6)
     }
     .lightbox-close{
-      position:absolute;
-      top:20px;
-      right:28px;
-      font-size:30px;
-      color:white;
-      cursor:pointer;
-      font-weight:bold;
-      line-height:1;
-      user-select:none;
+      position:absolute;top:20px;right:28px;font-size:30px;color:white;cursor:pointer;font-weight:bold;
+      line-height:1;user-select:none;background:none;border:none
     }
 
-    @media (max-width: 920px){
+    .modal-overlay{
+      position:fixed;inset:0;background:rgba(0,0,0,.6);display:flex;align-items:center;justify-content:center;
+      opacity:0;pointer-events:none;transition:.22s ease;z-index:9998;padding:16px;
+    }
+    .modal-overlay.active{opacity:1;pointer-events:auto}
+    .modal-card{
+      width:min(92vw,540px);background:#101a30;border:1px solid rgba(255,255,255,.12);
+      border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);padding:20px;
+    }
+    .modal-close{
+      position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:999px;border:none;
+      background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:22px;
+    }
+    
+
+    .outreach-stack{display:grid;gap:18px}
+    .outreach-shell{padding:18px}
+    .outreach-header{display:grid;grid-template-columns:140px 1fr;gap:18px;align-items:start}
+
+    .outreach-title{margin:0;font-size:28px;font-family:Georgia,"Times New Roman",serif}
+    .outreach-subtitle{margin:4px 0 10px;color:var(--gold2);font-weight:800}
+    .outreach-panels{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px;margin-top:16px}
+
+
+    .gallery{
+  overflow-x:auto;
+  overflow-y:hidden;
+  width:100%;
+  position:relative;
+  border-radius:18px;
+  margin-top:14px;
+  cursor:grab;
+  -webkit-tap-highlight-color:transparent;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  touch-action:pan-x;
+  scroll-snap-type:x mandatory;
+}
+
+.gallery::-webkit-scrollbar{
+  display:none;
+}
+
+.gallery-track{
+  display:flex;
+  gap:12px;
+  width:max-content;
+}
+
+.gallery.dragging{
+  cursor:grabbing;
+}
+
+.gitem{
+  width:320px;
+  min-width:320px;
+  max-width:320px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  box-shadow:var(--shadow);
+  flex:0 0 auto;
+  scroll-snap-align:start;
+}
+
+.gitem img{
+  width:100%;
+  aspect-ratio:4/3;
+  height:auto;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+@media (max-width:900px){
+  .gitem{
+    width:85vw;
+    min-width:85vw;
+    max-width:85vw;
+  }
+}
+   
+.gitem{
+  min-width:300px;
+  border-radius:16px;
+  overflow:hidden;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.02);
+  box-shadow:var(--shadow);
+  flex:0 0 auto;
+}
+
+.gitem img{
+  width:100%;
+  height:190px;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+  user-select:none;
+  -webkit-user-drag:none;
+  pointer-events:auto;
+}
+
+
+.gitem{
+  scroll-snap-align:start;
+}
+  
+  
+    .gcap{padding:10px 12px;color:var(--muted);font-size:13px}
+    .photo-toolbar{
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin:12px 0 0;
+      padding:12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03);
+    }
+    .select-chip{display:inline-flex;align-items:center;gap:8px}
+    .admin-photo-select{margin-right:8px;transform:scale(1.1);accent-color:#d6b15e;vertical-align:middle}
+    .admin-delete-btn{
+      width:100%;border:none;border-radius:12px;padding:10px 12px;cursor:pointer;font-weight:800;
+      color:#fff;background:rgba(180,40,40,.85);margin-top:10px
+    }
+
+    .announcement-card{
+      border:1px solid rgba(214,177,94,.22);
+      background:linear-gradient(180deg, rgba(214,177,94,.10), rgba(255,255,255,.02));
+      border-radius:16px;padding:14px;margin-top:12px;
+    }
+    .announcement-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;flex-wrap:wrap}
+    .announcement-title{margin:0;color:var(--gold2);font-weight:900}
+    .announcement-meta{display:grid;gap:6px;margin-top:8px;color:var(--muted);font-size:14px}
+    .mini-cd{margin-top:10px;display:flex;gap:8px;flex-wrap:wrap}
+    .timebox{
+      min-width:70px;padding:8px 10px;border-radius:14px;border:1px solid var(--line);
+      background:rgba(0,0,0,.18);text-align:center;flex:1 1 auto
+    }
+    .timebox .num{font-weight:900;font-size:16px;line-height:1.1;color:var(--text)}
+    .timebox .lab{font-size:11px;color:var(--muted)}
+    .schedule-actions,.attendee-actions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .schedule-reactions{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .schedule-reaction-btn{min-width:130px}
+    .schedule-reaction-summary{display:flex;gap:12px;flex-wrap:wrap;margin-top:8px;font-size:13px;color:var(--muted)}
+    .attendee-list{
+      margin-top:10px;padding:10px 12px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.03)
+    }
+    .attendee-list h4{margin:0 0 8px;font-size:14px;color:var(--gold2)}
+    .attendee-list ul{margin:0;padding-left:18px;color:var(--muted)}
+
+    .member-row{display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap}
+    .member-count-badge{
+      padding:8px 12px;border-radius:999px;border:1px solid rgba(214,177,94,.28);
+      background:rgba(214,177,94,.10);color:var(--gold2);font-weight:800;
+    }
+    .member-list{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
+    .member-tag{
+      display:inline-flex;align-items:center;gap:10px;padding:8px 12px;border-radius:999px;
+      border:1px solid var(--line);background:rgba(255,255,255,.04);color:var(--text)
+    }
+    .member-avatar,.mini-avatar{
+      width:34px;height:34px;border-radius:50%;object-fit:cover;border:1px solid rgba(214,177,94,.35);
+      background:rgba(255,255,255,.06);flex:0 0 auto;
+    }
+    .member-avatar.big{width:42px;height:42px}
+    .member-card{
+      display:flex;align-items:center;justify-content:space-between;gap:12px;padding:12px;border-radius:14px;
+      border:1px solid var(--line);background:rgba(255,255,255,.03);margin-top:10px;flex-wrap:wrap;
+    }
+
+    .active-reaction{
+  border-color: rgba(214,177,94,.55) !important;
+  background: linear-gradient(135deg, rgba(214,177,94,.22), rgba(242,208,138,.14)) !important;
+  color: var(--gold2) !important;
+  box-shadow: 0 8px 18px rgba(0,0,0,.18);
+}
+
+    .message-card{padding:14px;margin-top:12px}
+    .message-meta{display:flex;gap:10px;flex-wrap:wrap;color:var(--muted);font-size:13px;margin:6px 0 0}
+    .message-body{white-space:pre-wrap;margin-top:10px}
+
+    @media (max-width:900px){
+      .hero{padding:40px 0 18px}
       .hero-grid{grid-template-columns:1fr}
-      .grid-3{grid-template-columns:1fr}
-      .grid-2{grid-template-columns:1fr}
-      .contact-grid{grid-template-columns:1fr}
-      .hero h1{font-size:36px}
-      .titem{grid-template-columns: 1fr}
-
-      /* founder responsive */
-      .founder-card{align-items:flex-start}
-      .founder-photo{width:86px;height:86px}
+      .hero h1{font-size:30px;line-height:1.15}
+      .nav-inner{align-items:flex-start}
+      .menu-btn{display:inline-flex}
+      .nav-right{width:100%;justify-content:space-between}
+      .nav-links{width:100%;display:none;flex-direction:column;align-items:stretch;gap:8px;padding:10px 0 4px}
+      .nav-links.open{display:flex}
+      .nav-links a{width:100%;justify-content:flex-start}
+      .titem{grid-template-columns:1fr}
+      .gitem{min-width:85vw}
+      .gitem img{height:220px}
+      .hero-logo{width:170px;max-width:78%}
+      .hero-verse{font-size:14px;max-width:92%}
+      .hero-rock-glow{width:210px;height:210px}
+      .outreach-header{grid-template-columns:1fr}
+      .outreach-panels{grid-template-columns:1fr}
     }
+
+    @media (max-width:640px){
+      .outreach-title{font-size:24px}
+      .outreach-logo{width:118px;height:118px}
+    }
+
+    .modal{
+  position: fixed;
+  inset: 0;
+  display: none;
+  align-items: center;
+  justify-content: center;
+  background: rgba(0,0,0,0.55);
+  backdrop-filter: blur(6px);
+  z-index: 9999;
+}
+
+.lightbox{
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,.88);
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:9999;
+  opacity:0;
+  pointer-events:none;
+  transition:opacity .25s ease;
+  overflow:hidden;
+  touch-action:none;
+}
+
+.lightbox.active{
+  opacity:1;
+  pointer-events:auto;
+}
+
+.lightbox img{
+  max-width:90%;
+  max-height:85%;
+  border-radius:12px;
+  border:2px solid var(--gold);
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  object-fit:contain;
+  user-select:none;
+  -webkit-user-drag:none;
+}
+
+.lightbox-close{
+  position:absolute;
+  top:20px;
+  right:28px;
+  font-size:30px;
+  color:white;
+  cursor:pointer;
+  font-weight:bold;
+  line-height:1;
+  user-select:none;
+  background:none;
+  border:none;
+  z-index:2;
+}
+
+.lightbox-nav{
+  position:absolute;
+  top:50%;
+  transform:translateY(-50%);
+  width:52px;
+  height:52px;
+  border-radius:999px;
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.08);
+  color:#fff;
+  font-size:30px;
+  font-weight:900;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:2;
+  backdrop-filter:blur(4px);
+}
+
+.lightbox-prev{
+  left:18px;
+}
+
+.lightbox-next{
+  right:18px;
+}
+
+.lightbox-nav:hover{
+  background:rgba(255,255,255,.14);
+}
+
+@media (max-width:640px){
+  .lightbox-nav{
+    width:44px;
+    height:44px;
+    font-size:24px;
+  }
+
+  .lightbox-prev{
+    left:10px;
+  }
+
+  .lightbox-next{
+    right:10px;
+  }
+
+  .lightbox-close{
+    top:14px;
+    right:16px;
+  }
+}
+
+
+img{
+  max-width:100%;
+  height:auto;
+  display:block;
+}
+
+input, textarea, select, button{
+  font:inherit;
+}
+
+
+.modal.active{
+  display: flex;
+}
+
+.modal-box{
+  width: 420px;
+  max-width: 90%;
+  background: linear-gradient(145deg,#0e1a34,#0a1426);
+  border: 1px solid rgba(255,255,255,.15);
+  border-radius: 18px;
+  padding: 28px;
+  box-shadow: 0 20px 40px rgba(0,0,0,.6);
+}
+
+
+.general-announcement-card{
+  border:1px solid rgba(214,177,94,.22);
+  background:linear-gradient(180deg, rgba(214,177,94,.10), rgba(255,255,255,.02));
+  border-radius:16px;
+  padding:16px;
+}
+
+.general-announcement-title{
+  margin:0;
+  color:var(--gold2);
+  font-weight:900;
+}
+
+.general-announcement-meta{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.general-announcement-body{
+  margin-top:12px;
+  white-space:pre-wrap;
+  color:var(--text);
+}
+
   </style>
 </head>
-
 <body>
   <div class="texture" aria-hidden="true"></div>
 
-  <!-- NAV -->
   <header class="nav">
     <div class="container">
       <div class="nav-inner">
-        <a class="brand" href="#top" aria-label="Go to top">
-          <div class="logo" aria-hidden="true"></div>
+        <a class="brand" href="#top">
+          <img src="srm.png" id="siteLogo" class="logo-img" alt="Solid Rock Ministries Logo" onclick="openLightbox(this.src)" />
           <div>
             <div class="name">Solid Rock Ministries</div>
             <div class="tag">Since 1992 • Baguio City, Philippines</div>
           </div>
         </a>
 
-        <nav class="nav-links" aria-label="Primary">
-          <a href="#history">History</a>
-          <a href="#about">About</a>
-          <a href="#vision">Vision &amp; Mission</a>
-          <a href="#ministries">Ministries</a>
-          <a href="#services">Service Times</a>
-          <a href="#contact" class="btn">Contact</a>
-        </nav>
+        <div class="nav-right">
+          
+          <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">☰ Menu</button>
+          <nav class="nav-links" id="primaryNav" aria-label="Primary">
+            <a href="#history">History</a>
+            <a href="#about">About</a>
+            <a href="#vision">Vision &amp; Mission</a>
+            <a href="#ministries">Ministries</a>
+            <a href="#services">Service Times</a>
+            <a href="#outreaches">Outreaches</a>
+            <a href="#contact" class="btn">Contact</a>
+          </nav>
+        </div>
       </div>
     </div>
   </header>
 
-  <!-- HERO -->
   <main id="top" class="hero">
     <div class="container">
       <div class="hero-grid">
         <div class="hero-card">
+          <div class="cinematic-hero-intro">
+            <div class="light-rays"></div>
+            <div class="hero-rock-glow"></div>
+            <div class="hero-logo-wrap">
+              <img src="srm.png" class="hero-logo cinematic-logo" alt="Solid Rock Ministries Logo" onclick="openLightbox(this.src)" />
+            </div>
+            <div class="hero-verse">“The Lord is my rock, my fortress and my deliverer.” — Psalm 18:2</div>
+          </div>
+
           <div class="kicker">Solid Rock • Philippines • Since 1992</div>
+
           <h1>Welcome to Solid Rock Ministries</h1>
           <p>
             Established in <strong>1992</strong> in <strong>Baguio City, Philippines</strong>,
-            We exist as a religious organization to win influential indigenous people for Christ to genuinely encounter and experience God. Redeeming
-            their God-given culture for Christian worship and evangelism.
+            we exist to win influential indigenous people for Christ, lead them into a genuine encounter with God,
+            and redeem their God-given culture for Christian worship and evangelism.
           </p>
 
           <div class="pill-row" aria-label="Highlights">
@@ -377,46 +792,56 @@
             <span class="pill">Philippines &amp; abroad</span>
           </div>
 
-          <div class="cta-row">
+          <div class="cta-row" style="margin-top:18px;">
             <a class="btn" href="#services">Plan a Visit</a>
-            <a class="btn" href="#vision" style="border-color:rgba(214,177,94,.40); background:linear-gradient(135deg, rgba(214,177,94,.18), rgba(134,208,255,.10));">Our Vision</a>
+            <a class="btn" href="#vision" style="border-color:rgba(214,177,94,.40);background:linear-gradient(135deg, rgba(214,177,94,.18), rgba(134,208,255,.10));">Our Vision</a>
           </div>
         </div>
 
         <aside class="mini" aria-label="Quick info">
           <div class="kv">
-            <div class="row">
-              <div class="badge">⛪</div>
-              <div>
-                <h3>Sunday Worship</h3>
-                <p>10:00 AM • Main Service</p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="badge">🙏</div>
-              <div>
-                <h3>Prayer Night</h3>
-                <p>Wednesday • 7:00 PM</p>
-              </div>
-            </div>
-            <div class="row">
-              <div class="badge">📍</div>
-              <div>
-                <h3>Location</h3>
-                <p>Baguio City, Philippines</p>
-              </div>
-            </div>
+            <div class="row"><div class="badge">⛪</div><div><h3>Sunday Worship</h3><p class="smallmuted">10:00 AM • Main Service</p></div></div>
+            <div class="row"><div class="badge">🙏</div><div><h3>Prayer Night</h3><p class="smallmuted">Wednesday • 7:00 PM</p></div></div>
+            <div class="row"><div class="badge">📍</div><div><h3>Location</h3><p class="smallmuted">Baguio City, Philippines</p></div></div>
           </div>
           <div class="divider"></div>
-          <p style="margin:0;color:var(--muted);font-size:14px;font-family:Georgia, 'Times New Roman', serif;">
-            “The Lord is my rock…” — Psalm 18:2
-          </p>
+          <p style="margin:0;font-size:14px;font-family:Georgia,'Times New Roman',serif;">“The Lord is my rock…” — Psalm 18:2</p>
         </aside>
       </div>
     </div>
   </main>
 
-  <!-- HISTORY -->
+  <section id="generalAnnouncements">
+  <div class="container">
+    <div class="section-title">
+      <h2>General Announcements</h2>
+      <p class="hint">Posted by super admin</p>
+    </div>
+
+    <div id="generalAnnouncementAdminPanel" class="card hidden" style="margin-bottom:14px;">
+      <h3>📢 Super Admin Announcement Panel</h3>
+      <p class="smallmuted">Only super admin can post announcements shown above Church History.</p>
+
+      <label for="generalAnnouncementTitle">Title</label>
+      <input id="generalAnnouncementTitle" type="text" placeholder="Announcement title">
+
+      <label for="generalAnnouncementWhen">Date & Time</label>
+      <input id="generalAnnouncementWhen" type="datetime-local">
+
+      <label for="generalAnnouncementBody">Message</label>
+      <textarea id="generalAnnouncementBody" placeholder="Write announcement here..."></textarea>
+
+      <div class="toolbar-row" style="margin-top:12px;">
+        <button class="btn" id="saveGeneralAnnouncementBtn" type="button">Post Announcement</button>
+      </div>
+      <p id="generalAnnouncementFeedback" class="smallmuted"></p>
+    </div>
+
+    <div id="generalAnnouncementsList" class="grid-2"></div>
+  </div>
+</section>
+
+
   <section id="history">
     <div class="container">
       <div class="section-title">
@@ -425,117 +850,54 @@
       </div>
 
       <div class="card">
-        <p style="margin:0;color:var(--muted);max-width:92ch">
+        <p style="margin:0;color:var(--muted);">
           Solid Rock Ministries was established in <strong>1992</strong> in <strong>Baguio City, Philippines</strong>
-          with a burden to reach and disciple indigenous people and leaders—so that entire communities may
-          know Christ and worship Him with redeemed, God-honoring expressions of their culture.
+          with a burden to reach and disciple indigenous people and leaders so entire communities may know Christ.
         </p>
 
-        <div class="divider"></div>
-
-        <h3 style="margin:0 0 8px; font-size:16px;">Vogtareuth Outreach (Germany)</h3>
-        <p style="margin:0;color:var(--muted);max-width:92ch">
-          The Vogtareuth Outreach began in <strong>2022</strong> as a small Filipino group of believers gathering in
-          <strong>Reuther Feld, Vogtareuth</strong>. What started with simple prayer, worship, and Bible sharing grew
-          into a regular fellowship—strengthening believers and reaching friends and families with the love of Christ.
-          Today, the outreach continues as a testimony that God can plant His work anywhere, using ordinary people
-          with an extraordinary calling.
-        </p>
-
-        <div class="timeline" aria-label="Timeline">
+        <div class="timeline">
           <div class="titem">
-            <div class="year">2022</div>
-            <div class="desc">A small Filipino believers’ group began meeting in Reuther Feld, Vogtareuth for prayer and Bible sharing.</div>
+            <div class="year">1992</div>
+            <div>Solid Rock Ministries began in Baguio City, Philippines.</div>
           </div>
           <div class="titem">
-            <div class="year">2023</div>
-            <div class="desc">Fellowship grew in unity—regular worship, encouragement, and welcoming new friends and families.</div>
+            <div class="year">2022</div>
+            <div>Vogtareuth outreach fellowship gatherings continued in Germany.</div>
           </div>
           <div class="titem">
             <div class="year">Today</div>
-            <div class="desc">Continuing outreach in Vogtareuth—building faith, community, and mission in Germany.</div>
+            <div>Continuing outreach works in multiple places—building faith, community, and mission.</div>
           </div>
         </div>
-      </div>
-  </section>
-
-  <!-- ABOUT -->
-  <section id="about">
-    <div class="container">
-      <div class="section-title">
-        <h2>About Us</h2>
-        <p class="hint">Who we are and what we carry</p>
-      </div>
-
-      <!-- Founder Thumbnail + Lightbox trigger (MERGED) -->
-      <div class="card" style="margin-bottom:14px">
-        <div class="founder-card">
-          <div class="founder-photo" aria-label="Church founder photo">
-            <!-- Change the image path to your real founder photo -->
-            <img src="jones.png" alt="Pastor/Founder: Jones Padeo" onclick="openLightbox(this.src)" />
-          </div>
-
-          <div class="founder-info">
-            <h3>Ptr. Jones Padeo</h3>
-            <div class="founder-role">Pastor / Founder</div>
-            <p class="founder-bio">
-              Founder of Solid Rock Ministries (1992). Called to reach, disciple, serve, and raise indigenous Christ-centered leaders
-              in the Philippines and abroad.
-            </p>
-          </div>
-        </div>
-      </div>
-
-      <div class="grid-3">
-        <div class="card">
-          <h3>What We Believe</h3>
-          <p>
-            We believe the Bible is God’s Word, salvation is through Jesus Christ alone,
-            and the Holy Spirit empowers believers for holy living and mission.
-          </p>
-          <ul class="list">
-            <li>Jesus is Lord and Savior</li>
-            <li>God’s Word shapes our life</li>
-            <li>Prayer and worship are central</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>Culture Redeemed</h3>
-          <p>
-            We use God-given culture and submit it to Christ—so worship and witness
-            become much more meaningful, authentic, pure, and powerful for indigenous communities.
-          </p>
-          <ul class="list">
-            <li>Honor what is God-given</li>
-            <li>Transform what is broken</li>
-            <li>Use culture for worship &amp; evangelism</li>
-          </ul>
-        </div>
-
-        <div class="card">
-          <h3>Leadership &amp; Community</h3>
-          <p>
-            We equip and release indigenous believers to become leaders to win and disciple their families,
-            communities, and nations.
-          </p>
-          <ul class="list">
-            <li>Pastor/Founder: Jones Padeo</li>
-            <li>Leaders/Workers: Sham Sherwood Torio</li>
-            <li>Ministry Outreach: Vogtareuth, Germany</li>
-          </ul>
-        </div>
-      </div>
-
-      <div style="margin-top:14px">
-        <blockquote class="quote">
-          Our heart is to raise indigenous followers of Christ who disciple indigenous communities—locally and globally.
-        </blockquote>
       </div>
     </div>
   </section>
 
-  <!-- VISION & MISSION -->
+  <section id="about">
+    <div class="container">
+      <div class="section-title">
+        <h2>About</h2>
+        <p class="hint">Who we are and what we carry</p>
+      </div>
+
+      <div class="card">
+        <div class="founder-card">
+          <div class="founder-photo">
+            <img src="jones.png" alt="Ptr. Jones Padeo" onclick="openLightbox(this.src)">
+          </div>
+          <div>
+            <h3 style="margin:0;">Ptr. Jones Padeo</h3>
+            <div class="founder-role">Pastor / Founder</div>
+            <p class="smallmuted" style="margin:0;">
+              Founder of Solid Rock Ministries (1992). Called to reach, disciple, serve, and raise indigenous
+              Christ-centered leaders in the Philippines and abroad.
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <section id="vision">
     <div class="container">
       <div class="section-title">
@@ -546,32 +908,16 @@
       <div class="grid-2">
         <div class="card">
           <h3>Our Vision</h3>
-          <p style="color:var(--muted); max-width:92ch">
-            <strong>We are indigenous believers of Christ, bringing indigenous communities in the Philippines and abroad</strong>
-            into a genuine relationship with God, establishing Christ-centered worship, discipleship, and mission.
-          </p>
-          <ul class="list">
-            <li>Communities transformed by the Gospel</li>
-          </ul>
+          <p class="smallmuted">We are indigenous believers of Christ, bringing indigenous communities in the Philippines and abroad into a genuine relationship with God, establishing Christ-centered worship, discipleship, and mission.</p>
         </div>
-
         <div class="card">
           <h3>Our Mission</h3>
-          <p style="color:var(--muted); max-width:92ch">
-            <strong>To win influential indigenous people to Christ</strong> to genuinely encounter God,
-            redeeming their God-given culture for Christian worship and evangelism.
-          </p>
-          <ul class="list">
-            <li>Win influential indigenous people to Christ</li>
-            <li>Lead genuine encounters with God</li>
-            <li>Redeem culture for worship &amp; evangelism</li>
-          </ul>
+          <p class="smallmuted">To win influential indigenous people to Christ to genuinely encounter God, redeeming their God-given culture for Christian worship and evangelism.</p>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- MINISTRIES -->
   <section id="ministries">
     <div class="container">
       <div class="section-title">
@@ -579,142 +925,2918 @@
         <p class="hint">Ways to connect and serve</p>
       </div>
 
-      <div class="grid-3">
-        <div class="card">
-          <h3>Indigenous Discipleship</h3>
-          <p>Small groups, mentoring, and Bible training for leaders and families.</p>
-        </div>
-        <div class="card">
-          <h3>Worship &amp; Prayer</h3>
-          <p>Gatherings centered on Scripture, Spirit-led worship, and prayer.</p>
-        </div>
-        <div class="card">
-          <h3>Evangelism &amp; Outreach</h3>
-          <p>Community missions and Gospel sharing among indigenous communities.</p>
-        </div>
-        <div class="card">
-          <h3>Youth &amp; Kids</h3>
-          <p>Building a strong foundation of faith for the next generation.</p>
-        </div>
-        <div class="card">
-          <h3>Training &amp; Leadership</h3>
-          <p>Equipping indigenous influencers to disciple, lead, and plant works.</p>
-        </div>
-        <div class="card">
-          <h3>Global Community</h3>
-          <p>Encouraging indigenous believers in the Philippines and abroad.</p>
-        </div>
+      <div class="grid-2">
+        <div class="card"><h3>Indigenous Discipleship</h3><p class="smallmuted">Small groups, mentoring, and Bible training for leaders and families.</p></div>
+        <div class="card"><h3>Worship &amp; Prayer</h3><p class="smallmuted">Gatherings centered on Scripture, Spirit-led worship, and prayer.</p></div>
+        <div class="card"><h3>Evangelism &amp; Outreach</h3><p class="smallmuted">Community missions and Gospel sharing among indigenous communities.</p></div>
+        <div class="card"><h3>Youth &amp; Kids</h3><p class="smallmuted">Building a strong foundation of faith for the next generation.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- SERVICE TIMES -->
   <section id="services">
     <div class="container">
       <div class="section-title">
         <h2>Service Times</h2>
-        <p class="hint">Join us this week</p>
+        <p class="hint">Join us in worship and prayer</p>
       </div>
 
-      <div class="grid-2">
-        <div class="card">
-          <h3>Sunday</h3>
-          <ul class="list">
-            <li>10:00 AM — Worship Service</li>
-            <li>10:00 AM — Kids Ministry</li>
-            <li>After service — Fellowship</li>
-          </ul>
-        </div>
-        <div class="card">
-          <h3>Weekdays</h3>
-          <ul class="list">
-            <li>Wednesday 7:00 PM — Prayer Meeting</li>
-            <li>Friday 7:30 PM — Youth Gathering</li>
-            <li>Monthly — Outreach / Mission</li>
-          </ul>
-        </div>
+      <div class="grid-3">
+        <div class="card"><h3>Sunday Worship</h3><p class="smallmuted">10:00 AM • Main Service</p></div>
+        <div class="card"><h3>Prayer Night</h3><p class="smallmuted">Wednesday • 7:00 PM</p></div>
+        <div class="card"><h3>Fellowship Gathering</h3><p class="smallmuted">Contact the outreach admin for local schedules.</p></div>
       </div>
     </div>
   </section>
 
-  <!-- CONTACT -->
+  <section id="outreaches">
+    <div class="container">
+      <div class="section-title">
+        <h2>Outreach Announcements</h2>
+        <p class="hint">Dynamic Firebase-powered outreach sections</p>
+      </div>
+
+      <div id="superAdminPanel" class="card hidden" style="margin-bottom:18px;">
+        <h3>⭐ Super Admin Outreach Manager</h3>
+        <p id="superAdminStatus" class="hint">Only super admin can create new outreaches.</p>
+
+        <div id="superAdminTools" class="hidden">
+          <div class="admin-card" style="padding:16px;">
+            <h3>Create New Outreach</h3>
+
+            <label for="newOutreachName">Outreach Name</label>
+            <input id="newOutreachName" type="text" placeholder="e.g. Munich Outreach" />
+
+            <label for="newOutreachLocation">Default Location</label>
+            <input id="newOutreachLocation" type="text" placeholder="e.g. Munich, Germany" />
+
+            <label for="newOutreachAddress">Address</label>
+            <input id="newOutreachAddress" type="text" placeholder="Meeting address" />
+
+            <label for="newOutreachHistoryTitle">History Title</label>
+            <input id="newOutreachHistoryTitle" type="text" placeholder="Outreach history title" />
+
+            <label for="newOutreachHistoryText">Outreach History</label>
+            <textarea id="newOutreachHistoryText" placeholder="Write the history here..."></textarea>
+
+            <label for="newOutreachDescription">Short Description</label>
+            <textarea id="newOutreachDescription" placeholder="Short description"></textarea>
+
+            <div class="toolbar-row" style="margin-top:12px;">
+              <button class="btn" id="createOutreachBtn" type="button">Create Outreach</button>
+              <button class="ghost-btn" id="superAdminLogoutBtn" type="button">Logout</button>
+            </div>
+            <p id="createOutreachFeedback" class="smallmuted"></p>
+          </div>
+
+          <div id="contactMessagesDashboard" class="hidden" style="margin-top:14px;">
+            <div class="admin-card" style="padding:16px;">
+              <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                <h3 style="margin:0;">📩 Contact Messages Dashboard</h3>
+                <span id="contactUnreadBadge" class="status-pill info">New: 0</span>
+              </div>
+              <p class="smallmuted">Only super admin can view and manage submitted website messages.</p>
+              <div class="toolbar-row" style="margin-top:10px;">
+                <button class="btn" id="refreshMessagesBtn" type="button">Refresh Messages</button>
+              </div>
+              <div id="contactMessagesList"></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div id="dynamicOutreachSections" class="outreach-stack"></div>
+    </div>
+  </section>
+
   <section id="contact">
     <div class="container">
       <div class="section-title">
-        <h2>Contact Us</h2>
+        <h2>Contact</h2>
         <p class="hint">We’d love to connect</p>
       </div>
 
       <div class="contact-grid">
         <div class="card">
           <h3>Church Info</h3>
-          <p style="color:var(--muted); margin-top:8px">
-            <strong style="color:var(--text)">Address:</strong> 4th Floor Abriol Building, Magsaysay Avenue, Baguio City, Philippines<br/>
-            <strong style="color:var(--text)">Phone:</strong><br/>
-            <strong style="color:var(--text)">Email:</strong> srmbaguio@gmail.com
-          </p>
-          <div class="divider"></div>
-          <p style="color:var(--muted); margin:0"></p>
+          <p><strong style="color:var(--gold2)">Address:</strong><br>4th Floor Abriol Building, Magsaysay Avenue, Baguio City, Philippines</p>
+          <p><strong style="color:var(--gold2)">Email:</strong><br><a href="mailto:srmbaguio@gmail.com">srmbaguio@gmail.com</a></p>
         </div>
 
         <div class="card">
           <h3>Send a Message</h3>
-          <form onsubmit="event.preventDefault(); alert('Message sent! (Demo form)');">
-            <label for="name">Full Name</label>
-            <input id="name" name="name" placeholder="Your name" required />
+          <form id="contactForm">
+            <label for="contactName">Your Name</label>
+            <input id="contactName" type="text" placeholder="Your full name" required>
 
-            <label for="email">Email</label>
-            <input id="email" name="email" type="email" placeholder="you@email.com" required />
+            <label for="contactEmail">Your Email</label>
+            <input id="contactEmail" type="email" placeholder="Your email" required>
 
-            <label for="msg">Message</label>
-            <textarea id="msg" name="msg" placeholder="How can we help?" required></textarea>
+            <label for="contactMessage">Message</label>
+            <textarea id="contactMessage" placeholder="How can we help?" required></textarea>
 
-            <div style="margin-top:12px; display:flex; gap:10px; flex-wrap:wrap">
-              <button class="btn" type="submit" style="cursor:pointer">Send</button>
-              <a class="btn" href="#services" style="border-color:rgba(255,255,255,.18); background:rgba(255,255,255,.04)">View Service Times</a>
+            <div class="toolbar-row" style="margin-top:12px;">
+              <button class="btn" id="contactSubmitBtn" type="submit">Send</button>
+              <a class="ghost-btn" href="#outreaches">View Outreaches</a>
             </div>
+            <p id="contactFeedback" class="smallmuted"></p>
           </form>
         </div>
       </div>
     </div>
   </section>
 
-  <!-- FOOTER -->
   <footer class="footer">
-    <div class="container">
-      <div class="divider"></div>
-      <small>
-        © <span id="year"></span> Solid Rock Ministries • All rights reserved •
-        <a href="#top" style="color:var(--muted)">Back to top</a>
-      </small>
-    </div>
+    <div class="container">© <span id="year"></span> Solid Rock Ministries • All rights reserved</div>
   </footer>
 
-  <!-- Lightbox (MERGED) -->
-  <div id="lightbox" class="lightbox" onclick="closeLightbox()">
-    <span class="lightbox-close" aria-label="Close">&times;</span>
-    <img id="lightbox-img" alt="Founder photo enlarged">
+  <div id="lightbox" class="lightbox" onclick="closeLightbox(event)">
+  <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+
+  <button class="lightbox-nav lightbox-prev" type="button" aria-label="Previous photo" onclick="event.stopPropagation(); prevLightboxImage();">
+    &#10094;
+  </button>
+
+  <img id="lightbox-img" alt="Enlarged image">
+
+  <button class="lightbox-nav lightbox-next" type="button" aria-label="Next photo" onclick="event.stopPropagation(); nextLightboxImage();">
+    &#10095;
+  </button>
+</div>
+
+  <div id="adminAccessModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="closeAdminAccessModal" type="button">&times;</button>
+      <h3 style="margin-top:0;">Admin Access</h3>
+      <p class="smallmuted">Choose which admin login you want to open.</p>
+      <div class="toolbar-row" style="margin-top:12px;">
+        <button class="btn" id="openGeneralAdminBtn" type="button">Outreach Admin</button>
+        <button class="btn" id="openSuperAdminBtn" type="button">Super Admin</button>
+      </div>
+      <p class="smallmuted" style="margin-top:12px;">Shortcut: Alt + A or long press the logo.</p>
+    </div>
   </div>
 
-  <script>
-    // Footer year
-    document.getElementById("year").textContent = new Date().getFullYear();
 
-    // Lightbox functions
-    function openLightbox(src){
-      const lightbox = document.getElementById("lightbox");
-      const img = document.getElementById("lightbox-img");
-      img.src = src;
-      lightbox.classList.add("active");
+  <div id="memberLoginModal" class="modal-overlay">
+  <div class="modal-card">
+
+    <button class="modal-close" onclick="closeMemberLoginModal()">✕</button>
+
+    <h3 style="margin-top:0;">Member Login</h3>
+
+    <label for="memberLoginName">Full Name</label>
+    <input
+      id="memberLoginName"
+      type="text"
+      placeholder="Enter your full name"
+    >
+
+    <div class="toolbar-row" style="margin-top:15px;">
+      <button class="btn" onclick="memberNameLogin()">Login</button>
+      <button class="ghost-btn" onclick="closeMemberLoginModal()">Cancel</button>
+    </div>
+
+    <p id="memberLoginFeedback" class="smallmuted"></p>
+
+  </div>
+</div>
+
+</div>
+
+  <div id="adminLoginModal" class="modal-overlay">
+    <div class="modal-card">
+      <button class="modal-close" id="closeAdminLoginModal" type="button">&times;</button>
+      <h3 id="adminLoginTitle" style="margin-top:0;">Admin Login</h3>
+      <p id="adminLoginSubtext" class="smallmuted">Enter your email and password.</p>
+
+      <label for="adminEmail">Email</label>
+      <input id="adminEmail" type="email" placeholder="admin@email.com">
+
+      <label for="adminPassword">Password</label>
+      <input id="adminPassword" type="password" placeholder="Password">
+
+      <div class="toolbar-row" style="margin-top:12px;">
+        <button class="btn" id="submitAdminLoginBtn" type="button">Sign In</button>
+      </div>
+      <p id="adminLoginFeedback" class="smallmuted"></p>
+    </div>
+  </div>
+
+ <script type="module">
+  import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
+  import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
+  import {
+    getFirestore,
+    collection,
+    getDocs,
+    getDoc,
+    addDoc,
+    setDoc,
+    updateDoc,
+    deleteDoc,
+    doc,
+    serverTimestamp,
+    query,
+    orderBy
+  } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+
+  import { firebaseConfig } from "./firebase-config.js";
+
+  const app = initializeApp(firebaseConfig);
+  const auth = getAuth(app);
+  const db = getFirestore(app);
+  const storage = getStorage(app);
+
+  function bindLightboxSwipe() {
+  const lightbox = document.getElementById("lightbox");
+  if (!lightbox || lightbox.dataset.boundSwipe === "true") return;
+  lightbox.dataset.boundSwipe = "true";
+
+  let touchStartX = 0;
+  let touchEndX = 0;
+
+  lightbox.addEventListener("touchstart", e => {
+    if (!e.touches.length) return;
+    touchStartX = e.touches[0].clientX;
+  }, { passive: true });
+
+  lightbox.addEventListener("touchmove", e => {
+    if (!e.touches.length) return;
+    touchEndX = e.touches[0].clientX;
+  }, { passive: true });
+
+  lightbox.addEventListener("touchend", () => {
+    const delta = touchEndX - touchStartX;
+
+    if (Math.abs(delta) > 50) {
+      if (delta < 0) {
+        nextLightboxImage();
+      } else {
+        prevLightboxImage();
+      }
     }
-    function closeLightbox(){
+
+    touchStartX = 0;
+    touchEndX = 0;
+  });
+
+  document.addEventListener("keydown", e => {
+    const active = lightbox.classList.contains("active");
+    if (!active) return;
+
+    if (e.key === "ArrowLeft") prevLightboxImage();
+    if (e.key === "ArrowRight") nextLightboxImage();
+  });
+}
+
+    let lightboxImages = [];
+    let lightboxIndex = 0;
+
+  const DEFAULT_OUTREACHES = [
+    {
+      id: "vogtareuth",
+      name: "Vogtareuth Outreach (Germany)",
+      shortName: "Vogtareuth",
+      location: "Germany",
+      address: "Reuther Feld, Vogtareuth, Germany",
+      description: "Latest updates for the Vogtareuth group",
+      historyTitle: "Vogtareuth Outreach (Germany)",
+      historyText: "The Vogtareuth Outreach began in 2022 as a small Filipino group of believers gathering in Reuther Feld, Vogtareuth. What started with simple prayer, worship, and Bible sharing grew into a regular fellowship—strengthening believers and reaching friends and families with the love of Christ.",
+      ministryType: "Fellowship Gathering",
+      category: "Worship • Prayer • Bible Sharing",
+      badgeText: "",
+      fallbackLogo: "srm.png",
+      prayerFocus: [
+        "Salvation & spiritual growth",
+        "Healing & provision for families",
+        "Unity and stronger faith",
+        "Open doors for outreach in Germany"
+      ],
+      volunteers: [
+        "Song leading / musicians",
+        "Setup & cleanup",
+        "Snacks / fellowship food",
+        "Welcoming newcomers"
+      ],
+      fallbackPhotos: [],
+      fallbackSchedules: [
+        {
+          title: "Sunday Fellowship",
+          when: "2026-03-15T15:00:00",
+          location: "Reuther Feld, Vogtareuth",
+          note: "Worship • Prayer • Bible sharing • Fellowship snacks"
+        }
+      ]
+    },
+    {
+      id: "namatec",
+      name: "Namatec Outreach",
+      shortName: "Namatec",
+      location: "Community Outreach",
+      address: "Namatec Meeting Place",
+      description: "Latest updates for the Namatec group",
+      historyTitle: "Namatec Outreach",
+      historyText: "The Namatec Outreach continues the same heart of worship, prayer, Bible sharing, discipleship, and evangelism. It exists to strengthen believers, reach families, and build a Christ-centered fellowship in the community.",
+      ministryType: "Fellowship Ministry",
+      category: "Prayer • Discipleship • Evangelism",
+      badgeText: "",
+      fallbackLogo: "srm.png",
+      prayerFocus: [
+        "Salvation & spiritual growth",
+        "Healing & provision for families",
+        "Unity and stronger faith",
+        "Open doors for outreach in the community"
+      ],
+      volunteers: [
+        "Song leading / musicians",
+        "Setup & cleanup",
+        "Snacks / fellowship food",
+        "Welcoming newcomers"
+      ],
+      fallbackPhotos: [],
+      fallbackSchedules: []
+    }
+  ];
+
+  let currentUser = null;
+  let currentLoginMode = "outreach";
+  let isSuperAdmin = false;
+  let currentOutreaches = [];
+  let outreachAdminState = {};
+  let selectedPhotoIds = {};
+  let countdownTimer = null;
+
+  const els = {
+    nav: document.getElementById("primaryNav"),
+    menuBtn: document.getElementById("menuBtn"),
+    siteLogo: document.getElementById("siteLogo"),
+    dynamicOutreachSections: document.getElementById("dynamicOutreachSections"),
+    superAdminPanel: document.getElementById("superAdminPanel"),
+    superAdminStatus: document.getElementById("superAdminStatus"),
+    superAdminTools: document.getElementById("superAdminTools"),
+    contactMessagesDashboard: document.getElementById("contactMessagesDashboard"),
+    contactMessagesList: document.getElementById("contactMessagesList"),
+    generalAnnouncementAdminPanel: document.getElementById("generalAnnouncementAdminPanel"),
+generalAnnouncementsList: document.getElementById("generalAnnouncementsList"),
+
+    adminAccessModal: document.getElementById("adminAccessModal"),
+    adminLoginModal: document.getElementById("adminLoginModal"),
+    adminLoginTitle: document.getElementById("adminLoginTitle"),
+    adminLoginSubtext: document.getElementById("adminLoginSubtext"),
+    adminEmail: document.getElementById("adminEmail"),
+    adminPassword: document.getElementById("adminPassword"),
+    adminLoginFeedback: document.getElementById("adminLoginFeedback")
+  };
+
+  document.getElementById("year").textContent = new Date().getFullYear();
+
+  els.menuBtn.addEventListener("click", () => {
+    els.nav.classList.toggle("open");
+    els.menuBtn.setAttribute("aria-expanded", els.nav.classList.contains("open") ? "true" : "false");
+  });
+
+  document.querySelectorAll("#primaryNav a").forEach(a => {
+    a.addEventListener("click", () => {
+      els.nav.classList.remove("open");
+      els.menuBtn.setAttribute("aria-expanded", "false");
+    });
+  });
+
+  window.openLightbox = function(src, gallery = []) {
+  const imgEl = document.getElementById("lightbox-img");
+  const lightbox = document.getElementById("lightbox");
+
+  lightboxImages = Array.isArray(gallery) && gallery.length ? gallery : [src];
+  lightboxIndex = Math.max(0, lightboxImages.indexOf(src));
+  if (lightboxIndex < 0) lightboxIndex = 0;
+
+  imgEl.src = lightboxImages[lightboxIndex];
+  lightbox.classList.add("active");
+};
+
+window.closeLightbox = function(e) {
+  if (
+    e.target.id === "lightbox" ||
+    e.target.classList.contains("lightbox-close")
+  ) {
+    document.getElementById("lightbox").classList.remove("active");
+  }
+};
+
+window.prevLightboxImage = function() {
+  if (!lightboxImages.length) return;
+  lightboxIndex = (lightboxIndex - 1 + lightboxImages.length) % lightboxImages.length;
+  document.getElementById("lightbox-img").src = lightboxImages[lightboxIndex];
+};
+
+window.nextLightboxImage = function() {
+  if (!lightboxImages.length) return;
+  lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
+  document.getElementById("lightbox-img").src = lightboxImages[lightboxIndex];
+};
+
+  function escapeHtml(str) {
+    return String(str || "").replace(/[&<>"']/g, m => ({
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#039;"
+    })[m]);
+  }
+
+  function slugify(value) {
+    return String(value || "")
+      .trim()
+      .toLowerCase()
+      .replace(/[^a-z0-9]+/g, "-")
+      .replace(/^-+|-+$/g, "")
+      .slice(0, 60);
+  }
+
+  function normalizeMemberName(value) {
+    return String(value || "").trim().toLowerCase().replace(/\s+/g, " ");
+  }
+
+  function getMemberSessionKey(outreachId) {
+    return `memberName-${outreachId}`;
+  }
+
+  function saveMemberSession(outreachId, fullName) {
+    localStorage.setItem(getMemberSessionKey(outreachId), normalizeMemberName(fullName));
+  }
+
+  function getSavedMemberSession(outreachId) {
+    return normalizeMemberName(localStorage.getItem(getMemberSessionKey(outreachId)) || "");
+  }
+
+  function clearMemberSession(outreachId) {
+    localStorage.removeItem(getMemberSessionKey(outreachId));
+  }
+
+  function clearOtherMemberSessions(activeOutreachId) {
+  const allIds = ["vogtareuth", "namatec"];
+
+  currentOutreaches.forEach(outreach => {
+    if (outreach?.id && !allIds.includes(outreach.id)) {
+      allIds.push(outreach.id);
+    }
+  });
+
+  allIds.forEach(id => {
+    if (id !== activeOutreachId) {
+      clearMemberSession(id);
+    }
+  });
+}
+
+function getOutreachDisplayName(outreachId) {
+  const found = currentOutreaches.find(
+    o => String(o.id || "").toLowerCase() === String(outreachId || "").toLowerCase()
+  );
+  return found?.name || outreachId || "another outreach";
+}
+
+  function isMemberLoggedIn(outreachId) {
+    return !!getSavedMemberSession(outreachId);
+  }
+
+  function toDisplayName(value) {
+    return String(value || "")
+      .split(" ")
+      .filter(Boolean)
+      .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+
+  function formatDateLong(value) {
+  let dateObj;
+
+  if (typeof value === "string" && value.includes("T") && !value.endsWith("Z")) {
+    const ts = parseGermanyDateTime(value);
+    dateObj = new Date(ts);
+  } else {
+    dateObj = new Date(value);
+  }
+
+  if (isNaN(dateObj.getTime())) return "No date";
+
+  return dateObj.toLocaleDateString("en-US", {
+    timeZone: "Europe/Berlin",
+    weekday: "long",
+    year: "numeric",
+    month: "long",
+    day: "numeric"
+  });
+}
+
+  function formatTime(value) {
+  let dateObj;
+
+  if (typeof value === "string" && value.includes("T") && !value.endsWith("Z")) {
+    const ts = parseGermanyDateTime(value);
+    dateObj = new Date(ts);
+  } else {
+    dateObj = new Date(value);
+  }
+
+  if (isNaN(dateObj.getTime())) return "No time";
+
+  return dateObj.toLocaleTimeString("en-GB", {
+    timeZone: "Europe/Berlin",
+    hour: "2-digit",
+    minute: "2-digit",
+    hourCycle: "h23"
+  });
+}
+
+  function formatTimestamp(ts) {
+    try {
+      if (ts?.toDate) return ts.toDate().toLocaleString();
+      const d = new Date(ts);
+      if (!isNaN(d.getTime())) return d.toLocaleString();
+    } catch {}
+    return "No date";
+  }
+
+  function computeCountdown(target) {
+  const now = Date.now();
+
+  let end;
+
+  if (typeof target === "string" && target.includes("T") && !target.endsWith("Z")) {
+    end = parseGermanyDateTime(target);
+  } else {
+    end = new Date(target).getTime();
+  }
+
+  if (isNaN(end)) {
+    return { expired: true, days: "0", hours: "0", mins: "0", secs: "0" };
+  }
+
+  let diff = end - now;
+
+  if (diff <= 0) {
+    return { expired: true, days: "0", hours: "0", mins: "0", secs: "0" };
+  }
+
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  diff -= days * 1000 * 60 * 60 * 24;
+
+  const hours = Math.floor(diff / (1000 * 60 * 60));
+  diff -= hours * 1000 * 60 * 60;
+
+  const mins = Math.floor(diff / (1000 * 60));
+  diff -= mins * 1000 * 60;
+
+  const secs = Math.floor(diff / 1000);
+
+  return {
+    expired: false,
+    days: String(days),
+    hours: String(hours).padStart(2, "0"),
+    mins: String(mins).padStart(2, "0"),
+    secs: String(secs).padStart(2, "0")
+  };
+}
+
+  function countdownHtml(when) {
+    const cd = computeCountdown(when);
+    return `
+      <div class="mini-cd" data-countdown="${escapeHtml(when)}">
+        <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
+        <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
+        <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
+        <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
+      </div>
+    `;
+  }
+
+  function startCountdowns() {
+    if (countdownTimer) clearInterval(countdownTimer);
+
+    const paint = () => {
+      document.querySelectorAll("[data-countdown]").forEach(wrap => {
+        const target = wrap.getAttribute("data-countdown");
+        const cd = computeCountdown(target);
+        wrap.innerHTML = `
+          <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
+          <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
+          <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
+          <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
+        `;
+      });
+    };
+
+    paint();
+    countdownTimer = setInterval(paint, 1000);
+  }
+
+  function attachGalleryDrag() {
+  document.querySelectorAll(".gallery").forEach(gallery => {
+    if (gallery.dataset.boundDrag === "true") return;
+    gallery.dataset.boundDrag = "true";
+
+    let isDown = false;
+    let startX = 0;
+    let scrollLeft = 0;
+
+    // mouse
+    gallery.addEventListener("mousedown", e => {
+      isDown = true;
+      gallery.classList.add("dragging");
+      startX = e.pageX - gallery.offsetLeft;
+      scrollLeft = gallery.scrollLeft;
+    });
+
+    gallery.addEventListener("mouseleave", () => {
+      isDown = false;
+      gallery.classList.remove("dragging");
+    });
+
+    gallery.addEventListener("mouseup", () => {
+      isDown = false;
+      gallery.classList.remove("dragging");
+    });
+
+    gallery.addEventListener("mousemove", e => {
+      if (!isDown) return;
+      e.preventDefault();
+      const x = e.pageX - gallery.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      gallery.scrollLeft = scrollLeft - walk;
+    });
+
+    // touch
+    gallery.addEventListener("touchstart", e => {
+      if (!e.touches.length) return;
+      isDown = true;
+      gallery.classList.add("dragging");
+      startX = e.touches[0].pageX - gallery.offsetLeft;
+      scrollLeft = gallery.scrollLeft;
+    }, { passive: true });
+
+    gallery.addEventListener("touchend", () => {
+      isDown = false;
+      gallery.classList.remove("dragging");
+    });
+
+    gallery.addEventListener("touchcancel", () => {
+      isDown = false;
+      gallery.classList.remove("dragging");
+    });
+
+    gallery.addEventListener("touchmove", e => {
+      if (!isDown || !e.touches.length) return;
+      const x = e.touches[0].pageX - gallery.offsetLeft;
+      const walk = (x - startX) * 1.2;
+      gallery.scrollLeft = scrollLeft - walk;
+    }, { passive: true });
+  });
+}
+
+  function openAdminAccessModal() { els.adminAccessModal.classList.add("active"); }
+  function closeAdminAccessModal() { els.adminAccessModal.classList.remove("active"); }
+  function closeAdminLoginModal() { els.adminLoginModal.classList.remove("active"); }
+
+  function openAdminLoginModal(mode) {
+    currentLoginMode = mode;
+    els.adminLoginTitle.textContent = mode === "super" ? "Super Admin Login" : "Outreach Admin Login";
+    els.adminLoginSubtext.textContent = mode === "super" ? "Sign in as super admin." : "Sign in as outreach admin.";
+    els.adminEmail.value = "";
+    els.adminPassword.value = "";
+    els.adminLoginFeedback.textContent = "";
+    els.adminLoginFeedback.className = "smallmuted";
+    els.adminLoginModal.classList.add("active");
+  }
+  document.getElementById("saveGeneralAnnouncementBtn").addEventListener("click", saveGeneralAnnouncement);
+  document.getElementById("closeAdminAccessModal").addEventListener("click", closeAdminAccessModal);
+  document.getElementById("closeAdminLoginModal").addEventListener("click", closeAdminLoginModal);
+  document.getElementById("openGeneralAdminBtn").addEventListener("click", () => { closeAdminAccessModal(); openAdminLoginModal("outreach"); });
+  document.getElementById("openSuperAdminBtn").addEventListener("click", () => { closeAdminAccessModal(); openAdminLoginModal("super"); });
+
+  document.addEventListener("keydown", (e) => {
+    if (e.key === "Escape") {
+      closeAdminAccessModal();
+      closeAdminLoginModal();
       document.getElementById("lightbox").classList.remove("active");
     }
+    if (e.altKey && (e.key || "").toLowerCase() === "a") {
+      e.preventDefault();
+      openAdminAccessModal();
+    }
+  });
 
-    // Optional: Close on ESC key
-    document.addEventListener("keydown", function(e){
-      if(e.key === "Escape") closeLightbox();
+  if (els.siteLogo) {
+    let pressTimer = null;
+    let pressTriggered = false;
+
+    const startPress = (e) => {
+      pressTriggered = false;
+      if (e.cancelable) e.preventDefault();
+      pressTimer = setTimeout(() => {
+        pressTriggered = true;
+        openAdminAccessModal();
+        if (navigator.vibrate) navigator.vibrate(100);
+      }, 1100);
+    };
+
+    const cancelPress = () => clearTimeout(pressTimer);
+
+    els.siteLogo.addEventListener("touchstart", startPress, { passive: false });
+    els.siteLogo.addEventListener("touchend", cancelPress);
+    els.siteLogo.addEventListener("touchcancel", cancelPress);
+    els.siteLogo.addEventListener("mousedown", startPress);
+    els.siteLogo.addEventListener("mouseup", cancelPress);
+    els.siteLogo.addEventListener("mouseleave", cancelPress);
+    els.siteLogo.addEventListener("click", (e) => {
+      if (pressTriggered) {
+        e.preventDefault();
+        e.stopPropagation();
+        pressTriggered = false;
+      }
     });
-  </script>
+  }
+
+  async function ensureDefaultOutreachesExist() {
+    for (const outreach of DEFAULT_OUTREACHES) {
+      try {
+        await setDoc(doc(db, "outreaches", outreach.id), {
+          name: outreach.name,
+          shortName: outreach.shortName,
+          location: outreach.location,
+          address: outreach.address,
+          description: outreach.description,
+          historyTitle: outreach.historyTitle,
+          historyText: outreach.historyText,
+          ministryType: outreach.ministryType,
+          category: outreach.category,
+          badgeText: outreach.badgeText,
+          fallbackLogo: outreach.fallbackLogo,
+          prayerFocus: outreach.prayerFocus,
+          volunteers: outreach.volunteers,
+          updatedAt: serverTimestamp()
+        }, { merge: true });
+      } catch (error) {
+        console.error("ensureDefaultOutreachesExist failed:", error);
+      }
+    }
+  }
+
+  async function loadOutreaches() {
+    try {
+      const snap = await getDocs(collection(db, "outreaches"));
+      const dbItems = [];
+      snap.forEach(docSnap => dbItems.push({ id: docSnap.id, ...docSnap.data() }));
+
+      const mergedMap = new Map(DEFAULT_OUTREACHES.map(item => [item.id, { ...item }]));
+      dbItems.forEach(item => {
+        mergedMap.set(item.id, {
+          ...(mergedMap.get(item.id) || {}),
+          ...item,
+          id: item.id
+        });
+      });
+
+      currentOutreaches = Array.from(mergedMap.values());
+    } catch (error) {
+      console.error("Failed to load outreaches:", error);
+      currentOutreaches = DEFAULT_OUTREACHES.map(item => ({ ...item }));
+    }
+  }
+
+  async function loadPhotosForOutreach(outreachId, fallbackPhotos = []) {
+    try {
+      const snap = await getDocs(query(collection(db, "outreachPhotos"), orderBy("createdAt", "desc")));
+      const items = [];
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          items.push({ id: docSnap.id, ...data });
+        }
+      });
+      return items.length ? items : fallbackPhotos;
+    } catch (error) {
+      console.error("loadPhotosForOutreach failed:", error);
+      return fallbackPhotos;
+    }
+  }
+
+  async function loadSchedulesForOutreach(outreachId, fallbackSchedules = []) {
+    try {
+      const snap = await getDocs(query(collection(db, "outreachSchedules"), orderBy("when", "asc")));
+      const items = [];
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          items.push({ id: docSnap.id, ...data });
+        }
+      });
+      return items.length ? items : fallbackSchedules;
+    } catch (error) {
+      console.error("loadSchedulesForOutreach failed:", error);
+      return fallbackSchedules;
+    }
+  }
+
+  async function loadMembersForOutreach(outreachId) {
+    try {
+      const snap = await getDocs(query(collection(db, "outreachMembers"), orderBy("createdAt", "desc")));
+      const members = [];
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          members.push({ id: docSnap.id, ...data });
+        }
+      });
+      return members;
+    } catch (error) {
+      console.error("loadMembersForOutreach failed:", error);
+      return [];
+    }
+  }
+
+  async function loadReactionsForOutreach(outreachId) {
+    try {
+      const snap = await getDocs(query(collection(db, "scheduleReactions"), orderBy("createdAt", "desc")));
+      const items = [];
+      snap.forEach(docSnap => {
+        const data = docSnap.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          items.push({ id: docSnap.id, ...data });
+        }
+      });
+      return items;
+    } catch (error) {
+      console.error("loadReactionsForOutreach failed:", error);
+      return [];
+    }
+  }
+
+  async function enrichOutreaches() {
+    const enriched = [];
+
+    for (const outreach of currentOutreaches) {
+      const photos = await loadPhotosForOutreach(outreach.id, outreach.fallbackPhotos || []);
+      const schedules = await loadSchedulesForOutreach(outreach.id, outreach.fallbackSchedules || []);
+      const members = await loadMembersForOutreach(outreach.id);
+      const reactions = await loadReactionsForOutreach(outreach.id);
+
+      if (!selectedPhotoIds[outreach.id]) selectedPhotoIds[outreach.id] = new Set();
+
+      enriched.push({
+        ...outreach,
+        photos,
+        schedules,
+        members,
+        memberCount: members.length,
+        reactions
+      });
+    }
+
+    currentOutreaches = enriched;
+  }
+
+  async function isUserSuperAdmin(user) {
+    if (!user) return false;
+    try {
+      const checks = [];
+      if (user.uid) checks.push(getDoc(doc(db, "superAdmins", user.uid)));
+      if (user.email) checks.push(getDoc(doc(db, "superAdmins", user.email.toLowerCase())));
+      const results = await Promise.all(checks);
+      return results.some(r => r.exists());
+    } catch {
+      return false;
+    }
+  }
+
+  async function isOutreachAdmin(user, outreachId) {
+    if (!user) return false;
+    try {
+      const checks = [];
+      if (user.uid) checks.push(getDoc(doc(db, "outreachAdmins", outreachId, "members", user.uid)));
+      if (user.email) checks.push(getDoc(doc(db, "outreachAdmins", outreachId, "members", user.email.toLowerCase())));
+      const results = await Promise.all(checks);
+      return results.some(r => r.exists());
+    } catch {
+      return false;
+    }
+  }
+
+  function buildGalleryHtml(outreach) {
+  const photos = outreach.photos || [];
+  if (!photos.length) {
+    return `<p class="smallmuted" style="margin:0;">No photos uploaded yet. Photos will appear here once posted by the outreach admin.</p>`;
+  }
+
+  const galleryUrls = photos.map(photo => photo.url);
+
+  return `
+    <div class="gallery">
+      <div class="gallery-track">
+        ${photos.map(photo => `
+          <div class="gitem">
+            <img
+              src="${escapeHtml(photo.url)}"
+              alt="${escapeHtml(photo.caption || "Outreach photo")}"
+              data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+              onclick="openGalleryImage(this)">
+            <div class="gcap">
+              ${outreachAdminState[outreach.id] || isSuperAdmin ? `
+                <div class="photo-toolbar">
+                  <label class="select-chip">
+                    <input class="admin-photo-select ${escapeHtml(outreach.id)}-photo-check" type="checkbox" data-id="${escapeHtml(photo.id)}">
+                    Select
+                  </label>
+                  <button class="danger-btn delete-single-photo-btn" type="button"
+                    data-outreach="${escapeHtml(outreach.id)}"
+                    data-id="${escapeHtml(photo.id)}"
+                    data-path="${escapeHtml(photo.storagePath || "")}">
+                    Delete
+                  </button>
+                </div>
+              ` : ""}
+              <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">${escapeHtml(photo.caption || "Outreach Photo")}</div>
+            </div>
+          </div>
+        `).join("")}
+      </div>
+    </div>
+  `;
+}
+
+ function getReactionSummary(reactions, scheduleId, outreachId = "") {
+  const items = (reactions || []).filter(r => r.scheduleId === scheduleId);
+
+  const uniqueMap = new Map();
+
+  items.forEach(item => {
+    const key = normalizeMemberName(item.fullName || "");
+    if (key) uniqueMap.set(key, item);
+  });
+
+  const uniqueItems = Array.from(uniqueMap.values());
+
+  const savedMemberName = outreachId ? getSavedMemberSession(outreachId) : "";
+  let myReaction = "";
+
+  if (savedMemberName) {
+    const mine = uniqueItems.find(
+      item => normalizeMemberName(item.fullName || "") === normalizeMemberName(savedMemberName)
+    );
+    myReaction = mine?.reaction || "";
+  }
+
+  return {
+    going: uniqueItems.filter(i => i.reaction === "going"),
+    interested: uniqueItems.filter(i => i.reaction === "interested"),
+    myReaction
+  };
+}
+
+  function buildAnnouncementHtml(outreach) {
+    const schedules = (outreach.schedules || []).slice().sort((a, b) => new Date(a.when) - new Date(b.when));
+
+    if (!schedules.length) {
+      return `
+        <p><strong style="color:var(--gold2)">No announcement posted yet</strong></p>
+        <p class="smallmuted" style="margin-top:8px;">The outreach admin can post announcements here.</p>
+      `;
+    }
+
+    return schedules.map(schedule => {
+      const reactionSummary = getReactionSummary(outreach.reactions, schedule.id, outreach.id);
+      return `
+        <div class="announcement-card">
+          <div class="announcement-top">
+            <div>
+              <p class="announcement-title">${escapeHtml(schedule.title || "Upcoming Fellowship")}</p>
+              <div class="announcement-meta">
+                <div>📅 ${escapeHtml(formatDateLong(schedule.when))}</div>
+                <div>🕒 ${escapeHtml(formatTime(schedule.when))}</div>
+                <div>📍 ${escapeHtml(schedule.location || outreach.address || "Meeting Place")}</div>
+                ${schedule.note ? `<div>📝 ${escapeHtml(schedule.note)}</div>` : ""}
+              </div>
+            </div>
+
+            ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+              <div class="schedule-actions">
+                <button class="ghost-btn edit-schedule-btn" type="button"
+                  data-outreach="${escapeHtml(outreach.id)}"
+                  data-id="${escapeHtml(schedule.id || "")}"
+                  data-title="${encodeURIComponent(schedule.title || "")}"
+                  data-when="${escapeHtml(schedule.when || "")}"
+                  data-location="${encodeURIComponent(schedule.location || "")}"
+                  data-note="${encodeURIComponent(schedule.note || "")}">
+                  Edit
+                </button>
+                <button class="danger-btn delete-schedule-btn" type="button"
+                  data-id="${escapeHtml(schedule.id || "")}">
+                  Delete
+                </button>
+              </div>
+            ` : ""}
+          </div>
+
+          ${countdownHtml(schedule.when)}
+
+          <div class="schedule-reactions">
+  <button
+    class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "going" ? "active-reaction" : ""}"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}"
+    data-schedule="${escapeHtml(schedule.id || "")}"
+    data-reaction="going">
+    ✅ Going
+  </button>
+
+  <button
+    class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "interested" ? "active-reaction" : ""}"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}"
+    data-schedule="${escapeHtml(schedule.id || "")}"
+    data-reaction="interested">
+    ⭐ Interested
+  </button>
+</div>
+
+          ${(reactionSummary.going.length || reactionSummary.interested.length) ? `
+            <div class="attendee-list">
+              <h4>Responses</h4>
+              <ul>
+               ${reactionSummary.going.map(item => `<li>✅ ${escapeHtml(item.fullName || "Guest")}</li>`).join("")}
+               ${reactionSummary.interested.map(item => `<li>⭐ ${escapeHtml(item.fullName || "Guest")}</li>`).join("")}
+              </ul>
+            </div>
+          ` : ""}
+        </div>
+      `;
+    }).join("");
+  }
+
+  function buildMemberList(outreach) {
+    if (!outreach.members?.length) {
+      return `<p class="smallmuted" style="margin-top:10px;">No members yet in this outreach.</p>`;
+    }
+
+    return `
+      <div class="member-list">
+        ${outreach.members.map(m => `
+          <div class="member-tag">
+            <img class="member-avatar" src="${escapeHtml(m.photoUrl || "srm.png")}" alt="${escapeHtml(m.fullName || "Member")}" onclick="openLightbox(this.src)">
+            <span>${escapeHtml(m.fullName || "Member")}</span>
+          </div>
+        `).join("")}
+      </div>
+    `;
+  }
+
+  function buildMemberAdminList(outreach) {
+    if (!outreach.members?.length) {
+      return `<p class="smallmuted" style="margin:0;">No member signups yet.</p>`;
+    }
+
+    return `
+      ${outreach.members.map(member => {
+        const savedName = getSavedMemberSession(outreach.id);
+        const memberName = normalizeMemberName(member.normalizedName || member.fullName || "");
+        const isMe = savedName && savedName === memberName;
+
+        return `
+          <div class="member-card">
+            <div style="display:flex;align-items:center;gap:12px;">
+              <img class="member-avatar big" src="${escapeHtml(member.photoUrl || "srm.png")}" alt="${escapeHtml(member.fullName || "Member")}" onclick="openLightbox(this.src)">
+              <div>
+                <strong style="color:var(--gold2)">${escapeHtml(member.fullName || "Unnamed member")}</strong><br>
+                <span class="smallmuted">${isMe ? "You" : ""}</span>
+              </div>
+            </div>
+            <div class="member-actions">
+              ${isMe ? `
+                <button
+                  class="danger-btn remove-my-member-btn"
+                  type="button"
+                  onclick="removeMyMembership('${escapeHtml(outreach.id)}','${escapeHtml(member.id)}','${escapeHtml(member.photoStoragePath || "")}')">
+                  Remove My Name
+                </button>
+              ` : ""}
+            </div>
+          </div>
+        `;
+      }).join("")}
+    `;
+  }
+
+  function buildAdminSection(outreach) {
+    if (!outreachAdminState[outreach.id] && !isSuperAdmin) return "";
+
+    return `
+      <div class="panel" style="grid-column:1/-1;">
+        <div class="admin-card" style="padding:16px;">
+          <h3>🔐 ${escapeHtml(outreach.shortName || outreach.name)} Admin Manager</h3>
+          <p class="smallmuted">Signed in as admin: ${escapeHtml(currentUser?.email || "")}</p>
+
+          <div class="divider"></div>
+
+          <h3 style="margin-top:0;">Members</h3>
+          ${buildMemberAdminList(outreach)}
+
+          <div class="divider"></div>
+
+          <h3>Edit Outreach History</h3>
+          <label for="${escapeHtml(outreach.id)}-history-title">History Title</label>
+          <input id="${escapeHtml(outreach.id)}-history-title" type="text" value="${escapeHtml(outreach.historyTitle || "")}" placeholder="History Title">
+
+          <label for="${escapeHtml(outreach.id)}-history-address">Outreach Address</label>
+          <input id="${escapeHtml(outreach.id)}-history-address" type="text" value="${escapeHtml(outreach.address || "")}" placeholder="Outreach Address">
+
+          <label for="${escapeHtml(outreach.id)}-history-description">Short Description</label>
+          <input id="${escapeHtml(outreach.id)}-history-description" type="text" value="${escapeHtml(outreach.description || "")}" placeholder="Short Description">
+
+          <label for="${escapeHtml(outreach.id)}-history-text">History Text</label>
+          <textarea id="${escapeHtml(outreach.id)}-history-text" placeholder="Write outreach history here...">${escapeHtml(outreach.historyText || "")}</textarea>
+
+          <div class="toolbar-row" style="margin-top:12px;">
+            <button class="btn save-history-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Save History</button>
+          </div>
+          <p id="${escapeHtml(outreach.id)}-history-feedback" class="smallmuted"></p>
+
+          <div class="divider"></div>
+
+          <h3>Upload Photo(s)</h3>
+          <label for="${escapeHtml(outreach.id)}-photo-file">Photos</label>
+          <input id="${escapeHtml(outreach.id)}-photo-file" type="file" accept="image/*" multiple>
+
+          <label for="${escapeHtml(outreach.id)}-photo-caption">Caption</label>
+          <input id="${escapeHtml(outreach.id)}-photo-caption" type="text" placeholder="Photo caption">
+
+          <div class="toolbar-row" style="margin-top:12px;">
+            <button class="btn upload-photo-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Upload Photo(s)</button>
+            <button class="danger-btn delete-selected-photos-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Delete Selected</button>
+            <button class="ghost-btn logout-btn" type="button">Logout</button>
+          </div>
+          <p id="${escapeHtml(outreach.id)}-upload-feedback" class="smallmuted"></p>
+
+          <div class="divider"></div>
+
+          <h3>Post / Edit Announcement</h3>
+          <input id="${escapeHtml(outreach.id)}-editing-schedule-id" type="hidden">
+
+          <label for="${escapeHtml(outreach.id)}-event-title">Announcement Title</label>
+          <input id="${escapeHtml(outreach.id)}-event-title" type="text" placeholder="Event Title">
+
+          <label for="${escapeHtml(outreach.id)}-event-when">Date & Time</label>
+          <input id="${escapeHtml(outreach.id)}-event-when" type="datetime-local">
+
+          <label for="${escapeHtml(outreach.id)}-event-location">Event Location</label>
+          <input id="${escapeHtml(outreach.id)}-event-location" type="text" placeholder="Event Location">
+
+          <label for="${escapeHtml(outreach.id)}-event-note">Event Note</label>
+          <textarea id="${escapeHtml(outreach.id)}-event-note" placeholder="Event note or description"></textarea>
+
+          <div class="toolbar-row" style="margin-top:12px;">
+            <button class="btn save-event-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Save Announcement</button>
+            <button class="ghost-btn clear-event-form-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Clear Form</button>
+          </div>
+          <p id="${escapeHtml(outreach.id)}-event-feedback" class="smallmuted"></p>
+        </div>
+      </div>
+    `;
+  }
+
+  function buildOutreachCard(outreach) {
+    const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
+    const savedMemberName = getSavedMemberSession(outreach.id);
+
+    return `
+      <div class="outreach-shell">
+        <div class="outreach-header">
+          <div class="outreach-logo-wrap">
+            <img class="outreach-logo" src="${escapeHtml(logoSrc)}"
+              alt="${escapeHtml(outreach.name)}"
+              onclick="openLightbox(this.src)">
+          </div>
+
+          <div>
+            <h3 class="outreach-title">${escapeHtml(outreach.name)}</h3>
+            <div class="outreach-subtitle">${escapeHtml(outreach.shortName || outreach.name)}</div>
+
+            <div class="meta-row">
+              <span class="tagpill">🌍 ${escapeHtml(outreach.location || "Location")}</span>
+              <span class="tagpill">👥 ${escapeHtml(outreach.ministryType || "Fellowship Gathering")}</span>
+              <span class="tagpill">🗂️ ${escapeHtml(outreach.category || "Outreach Ministry")}</span>
+              <span class="tagpill">💒 ${escapeHtml(outreach.address || "Address not set")}</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="outreach-panels">
+          <div class="panel">
+            <h3>${escapeHtml(outreach.historyTitle || "History")}</h3>
+            <p class="smallmuted">${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}</p>
+          </div>
+
+          <div class="panel">
+            <h3>📣 Announcements</h3>
+            ${buildAnnouncementHtml(outreach)}
+          </div>
+
+          <div class="panel">
+            <div class="member-row">
+              <h3 style="margin:0;">Members</h3>
+              <span class="member-count-badge"> ${escapeHtml(outreach.memberCount || 0)}</span>
+            </div>
+            ${buildMemberList(outreach)}
+          </div>
+
+          <div class="panel">
+            <h3>${outreach.id === "namatec" ? "📌 Ministry Scope" : "📌 Ministry Scope"}</h3>
+            <ul class="list">
+              ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
+                .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+            </ul>
+          </div>
+
+          <div class="panel" style="grid-column:1/-1;">
+            <h3>Gallery</h3>
+            ${buildGalleryHtml(outreach)}
+          </div>
+
+          <div class="panel" id="${escapeHtml(outreach.id)}-memberAccessPanel">
+            <h3>Visitor / Member Access</h3>
+
+            <div id="${escapeHtml(outreach.id)}-visitor-board">
+              <div id="${escapeHtml(outreach.id)}-visitor-fields" class="hidden">
+                <label for="${escapeHtml(outreach.id)}-member-name">Full Name</label>
+                <input id="${escapeHtml(outreach.id)}-member-name" type="text" placeholder="Full Name" value="${escapeHtml(toDisplayName(savedMemberName))}">
+
+                <label for="${escapeHtml(outreach.id)}-member-photo">Photo</label>
+                <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*">
+
+                <label for="${escapeHtml(outreach.id)}-member-message">Optional Message / Prayer Request</label>
+                <textarea id="${escapeHtml(outreach.id)}-member-message" placeholder="Optional message or prayer request"></textarea>
+              </div>
+
+              <div class="toolbar-row" style="margin-top:12px;flex-wrap:wrap;gap:10px;">
+
+  <button class="ghost-btn guest-signin-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Continue as Guest
+  </button>
+
+  <button class="btn show-join-fields-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Join as Member
+  </button>
+
+  <button class="ghost-btn member-login-btn"
+    type="button"
+    onclick="openMemberLoginModal()">
+    Member Login
+  </button>
+
+  <button
+  class="danger-btn member-logout-btn hidden"
+  type="button"
+  onclick="memberLogout()">
+  Logout Member
+</button>
+
+</div>
+
+              <div id="${escapeHtml(outreach.id)}-join-actions" class="toolbar-row hidden" style="margin-top:12px;">
+                <button class="btn signup-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Submit Membership</button>
+                <button class="ghost-btn cancel-join-fields-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Cancel</button>
+              </div>
+
+              <div id="${escapeHtml(outreach.id)}-leave-board" class="hidden" style="margin-top:14px;">
+                <div class="divider"></div>
+                <h3 style="margin-bottom:10px;">Leave Membership</h3>
+                <p class="smallmuted" style="margin-top:0;">
+                  You are logged in as <strong>${escapeHtml(toDisplayName(savedMemberName) || "Member")}</strong>. Click below to remove your membership from this outreach.
+                </p>
+
+                <div class="toolbar-row" style="margin-top:12px;">
+                  <button class="danger-btn leave-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Leave Membership</button>
+                </div>
+              </div>
+
+              <p id="${escapeHtml(outreach.id)}-member-feedback" class="smallmuted"></p>
+            </div>
+          </div>
+
+          ${(isSuperAdmin) ? `
+            <div class="panel" style="grid-column:1/-1;">
+              <div class="admin-card" style="padding:16px;">
+                <h3>⚠️ Super Admin Outreach Controls</h3>
+                <p class="smallmuted">Delete this outreach and all related components.</p>
+                <div class="toolbar-row">
+                  <button class="danger-btn delete-outreach-btn" type="button"
+                    data-outreach="${escapeHtml(outreach.id)}"
+                    data-name="${escapeHtml(outreach.name)}">
+                    Delete This Outreach
+                  </button>
+                </div>
+              </div>
+            </div>
+          ` : ""}
+
+          ${buildAdminSection(outreach)}
+        </div>
+      </div>
+    `;
+  }
+
+  function renderOutreaches() {
+    if (!currentOutreaches.length) {
+      els.dynamicOutreachSections.innerHTML = `
+        <div class="card">
+          <h3>No outreach found</h3>
+          <p class="smallmuted">No outreach data is available yet.</p>
+        </div>
+      `;
+      return;
+    }
+
+    els.dynamicOutreachSections.innerHTML = currentOutreaches.map(buildOutreachCard).join("");
+    bindDynamicButtons();
+
+    document.querySelectorAll(".show-join-fields-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => {
+        const outreachId = btn.dataset.outreach;
+        const fields = document.getElementById(`${outreachId}-visitor-fields`);
+        const actions = document.getElementById(`${outreachId}-join-actions`);
+        if (fields) fields.classList.remove("hidden");
+        if (actions) actions.classList.remove("hidden");
+        btn.classList.add("hidden");
+      });
+    });
+
+    document.querySelectorAll(".cancel-join-fields-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => {
+        const outreachId = btn.dataset.outreach;
+        const fields = document.getElementById(`${outreachId}-visitor-fields`);
+        const actions = document.getElementById(`${outreachId}-join-actions`);
+        const showBtn = document.querySelector(`.show-join-fields-btn[data-outreach="${outreachId}"]`);
+
+        if (fields) fields.classList.add("hidden");
+        if (actions) actions.classList.add("hidden");
+        if (showBtn) showBtn.classList.remove("hidden");
+      });
+    });
+
+    attachGalleryDrag();
+    startCountdowns();
+    updateMemberAccessVisibility();
+  }
+
+ async function createNewOutreach() {
+  const feedback = document.getElementById("createOutreachFeedback");
+  const name = document.getElementById("newOutreachName").value.trim();
+  const location = document.getElementById("newOutreachLocation").value.trim();
+  const address = document.getElementById("newOutreachAddress").value.trim();
+  const historyTitle = document.getElementById("newOutreachHistoryTitle").value.trim();
+  const historyText = document.getElementById("newOutreachHistoryText").value.trim();
+  const description = document.getElementById("newOutreachDescription").value.trim();
+
+  if (!isSuperAdmin) {
+    feedback.textContent = "Only super admin can create a new outreach.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  if (!name || !location) {
+    feedback.textContent = "Please enter outreach name and location.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  const outreachId = slugify(name);
+
+  try {
+    feedback.textContent = "Creating outreach...";
+    feedback.className = "smallmuted";
+
+    await setDoc(doc(db, "outreaches", outreachId), {
+      name,
+      shortName: name,
+      location,
+      address: address || location,
+      historyTitle: historyTitle || name,
+      historyText: historyText || description || `The ${name} continues fellowship, worship, prayer, and evangelism.`,
+      description: description || `Latest updates for the ${name} group`,
+      ministryType: "Fellowship Ministry",
+      category: "Prayer • Discipleship • Evangelism",
+      badgeText: "New Outreach",
+      fallbackLogo: "srm.png",
+      prayerFocus: [
+        "Salvation & spiritual growth",
+        "Healing & provision for families",
+        "Unity and stronger faith",
+        `Open doors for outreach in ${location}`
+      ],
+      volunteers: [
+        "Song leading / musicians",
+        "Setup & cleanup",
+        "Snacks / fellowship food",
+        "Welcoming newcomers"
+      ],
+      createdAt: serverTimestamp()
+    }, { merge: true });
+
+    await setDoc(doc(db, "outreachAdmins", outreachId, "members", currentUser.uid), {
+      uid: currentUser.uid,
+      email: currentUser.email || "",
+      role: "owner",
+      createdAt: serverTimestamp()
+    });
+
+    feedback.textContent = `Outreach "${name}" created successfully.`;
+    feedback.className = "smallmuted success-text";
+
+    document.getElementById("newOutreachName").value = "";
+    document.getElementById("newOutreachLocation").value = "";
+    document.getElementById("newOutreachAddress").value = "";
+    document.getElementById("newOutreachHistoryTitle").value = "";
+    document.getElementById("newOutreachHistoryText").value = "";
+    document.getElementById("newOutreachDescription").value = "";
+
+    await initPage();
+  } catch (error) {
+    feedback.textContent = "Create outreach failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+  }
+}
+
+ async function signUpOutreachMember(outreachId) {
+  const nameInput = document.getElementById(`${outreachId}-member-name`);
+  const photoInput = document.getElementById(`${outreachId}-member-photo`);
+  const messageInput = document.getElementById(`${outreachId}-member-message`);
+  const feedback = document.getElementById(`${outreachId}-member-feedback`);
+
+  const fullName = (nameInput?.value || "").trim();
+  const normalizedName = normalizeMemberName(fullName);
+  const note = (messageInput?.value || "").trim();
+  const file = photoInput?.files?.[0] || null;
+
+  if (!fullName) {
+    feedback.textContent = "Please enter full name.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  try {
+    feedback.textContent = "Checking membership...";
+    feedback.className = "smallmuted";
+
+    const memberSnap = await getDocs(collection(db, "outreachMembers"));
+
+    let sameOutreachMembership = null;
+    let otherOutreachMembership = null;
+
+    memberSnap.forEach(docSnap => {
+      const data = docSnap.data();
+      const existingName = normalizeMemberName(data.fullName || data.normalizedName || "");
+      const existingOutreach = String(data.outreach || "").toLowerCase();
+
+      if (existingName === normalizedName) {
+        if (existingOutreach === outreachId.toLowerCase()) {
+          sameOutreachMembership = { id: docSnap.id, ...data };
+        } else if (!otherOutreachMembership) {
+          otherOutreachMembership = { id: docSnap.id, ...data };
+        }
+      }
+    });
+
+    if (sameOutreachMembership) {
+      feedback.textContent = "This name is already registered in this outreach.";
+      feedback.className = "smallmuted error-text";
+      return;
+    }
+
+    if (otherOutreachMembership) {
+      feedback.textContent =
+        `This member is already joined in ${getOutreachDisplayName(otherOutreachMembership.outreach)}. A member can only join one outreach.`;
+      feedback.className = "smallmuted error-text";
+      return;
+    }
+
+    feedback.textContent = file
+      ? "Uploading photo and submitting membership..."
+      : "Submitting membership...";
+    feedback.className = "smallmuted";
+
+    let photoUrl = "";
+    let photoStoragePath = "";
+
+    if (file) {
+      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/\s+/g, "-")}`;
+      const storagePath = `outreachMembers/${outreachId}/${safeName}`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file);
+      photoUrl = await getDownloadURL(storageRef);
+      photoStoragePath = storagePath;
+    }
+
+    await addDoc(collection(db, "outreachMembers"), {
+      outreach: outreachId,
+      fullName,
+      normalizedName,
+      note,
+      photoUrl,
+      photoStoragePath,
+      createdAt: serverTimestamp()
+    });
+
+    saveMemberSession(outreachId, fullName);
+    clearOtherMemberSessions(outreachId);
+
+    if (nameInput) nameInput.value = "";
+    if (messageInput) messageInput.value = "";
+    if (photoInput) photoInput.value = "";
+
+    feedback.textContent = "You have successfully joined this outreach.";
+    feedback.className = "smallmuted success-text";
+
+    await initPage();
+  } catch (error) {
+    console.error("Join failed:", error);
+    feedback.textContent = "Join failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+  }
+}
+
+  async function leaveMembership(outreachId) {
+    const feedback = document.getElementById(`${outreachId}-member-feedback`);
+    const savedName = getSavedMemberSession(outreachId);
+
+    if (!savedName) {
+      feedback.textContent = "No logged-in member found for this outreach.";
+      feedback.className = "smallmuted error-text";
+      return;
+    }
+
+    if (!confirm("Leave this outreach membership?")) return;
+
+    try {
+      feedback.textContent = "Searching for your membership...";
+      feedback.className = "smallmuted";
+
+      const snap = await getDocs(collection(db, "outreachMembers"));
+      let foundDoc = null;
+
+      snap.forEach(memberDoc => {
+        const data = memberDoc.data();
+        const existingName = normalizeMemberName(data.fullName || "");
+
+        if (
+          !foundDoc &&
+          (data.outreach || "").toLowerCase() === outreachId.toLowerCase() &&
+          existingName === savedName
+        ) {
+          foundDoc = { id: memberDoc.id, ...data };
+        }
+      });
+
+      if (!foundDoc) {
+        clearMemberSession(outreachId);
+        feedback.textContent = "No membership found for the saved member session.";
+        feedback.className = "smallmuted error-text";
+        await initPage();
+        return;
+      }
+
+      feedback.textContent = "Removing membership...";
+      feedback.className = "smallmuted";
+
+      try {
+        if (foundDoc.photoStoragePath) {
+          await deleteObject(ref(storage, foundDoc.photoStoragePath));
+        }
+      } catch (storageError) {
+        console.warn("Photo delete warning:", storageError);
+      }
+
+      await deleteDoc(doc(db, "outreachMembers", foundDoc.id));
+      clearMemberSession(outreachId);
+
+      feedback.textContent = "You have successfully left this outreach membership.";
+      feedback.className = "smallmuted success-text";
+
+      await initPage();
+    } catch (error) {
+      console.error("Leave membership failed:", error);
+      feedback.textContent = "Leave membership failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+
+  function signInAsGuest(outreachId) {
+  const feedback = document.getElementById(`${outreachId}-member-feedback`);
+
+  if (feedback) {
+    feedback.textContent = "You are now browsing as a guest.";
+    feedback.className = "smallmuted success-text";
+  }
+
+  localStorage.setItem("guestModeActive", "true");
+
+  document.querySelectorAll(".guest-signin-btn").forEach(btn => {
+    btn.classList.add("hidden");
+  });
+}
+
+  async function deleteMember(memberId) {
+    try {
+      const docRef = doc(db, "outreachMembers", memberId);
+      const snap = await getDoc(docRef);
+      if (snap.exists()) {
+        const data = snap.data();
+        if (data.photoStoragePath) {
+          try { await deleteObject(ref(storage, data.photoStoragePath)); } catch {}
+        }
+      }
+      await deleteDoc(docRef);
+      await initPage();
+    } catch (error) {
+      alert("Delete member failed: " + error.message);
+    }
+  }
+
+  async function saveScheduleEvent(outreachId) {
+    const scheduleId = document.getElementById(`${outreachId}-editing-schedule-id`).value.trim();
+    const title = document.getElementById(`${outreachId}-event-title`).value.trim();
+    const when = document.getElementById(`${outreachId}-event-when`).value;
+    const location = document.getElementById(`${outreachId}-event-location`).value.trim();
+    const note = document.getElementById(`${outreachId}-event-note`).value.trim();
+    const feedback = document.getElementById(`${outreachId}-event-feedback`);
+
+    if (!title || !when || !location) {
+      feedback.textContent = "Please complete title, date/time, and location.";
+      feedback.className = "smallmuted error-text";
+      return;
+    }
+
+    try {
+      feedback.textContent = scheduleId ? "Updating announcement..." : "Posting announcement...";
+      feedback.className = "smallmuted";
+
+      if (scheduleId) {
+        await updateDoc(doc(db, "outreachSchedules", scheduleId), {
+          title,
+          when,
+          location,
+          note,
+          updatedAt: serverTimestamp(),
+          updatedBy: currentUser?.email || ""
+        });
+      } else {
+        await addDoc(collection(db, "outreachSchedules"), {
+          outreach: outreachId,
+          title,
+          when,
+          location,
+          note,
+          createdAt: serverTimestamp(),
+          createdBy: currentUser?.email || ""
+        });
+      }
+
+      clearScheduleForm(outreachId);
+      feedback.textContent = scheduleId ? "Announcement updated successfully." : "Announcement posted successfully.";
+      feedback.className = "smallmuted success-text";
+      await initPage();
+    } catch (error) {
+      feedback.textContent = "Save announcement failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+
+  function clearScheduleForm(outreachId) {
+    document.getElementById(`${outreachId}-editing-schedule-id`).value = "";
+    document.getElementById(`${outreachId}-event-title`).value = "";
+    document.getElementById(`${outreachId}-event-when`).value = "";
+    document.getElementById(`${outreachId}-event-location`).value = "";
+    document.getElementById(`${outreachId}-event-note`).value = "";
+    function clearOtherMemberSessions(activeOutreachId) {
+  currentOutreaches.forEach(outreach => {
+    if (outreach.id !== activeOutreachId) {
+      clearMemberSession(outreach.id);
+    }
+  });
+}
+  }
+
+  function editScheduleFromButton(btn) {
+    const outreachId = btn.dataset.outreach;
+    document.getElementById(`${outreachId}-editing-schedule-id`).value = btn.dataset.id || "";
+    document.getElementById(`${outreachId}-event-title`).value = decodeURIComponent(btn.dataset.title || "");
+    document.getElementById(`${outreachId}-event-when`).value = btn.dataset.when || "";
+    document.getElementById(`${outreachId}-event-location`).value = decodeURIComponent(btn.dataset.location || "");
+    document.getElementById(`${outreachId}-event-note`).value = decodeURIComponent(btn.dataset.note || "");
+
+    const feedback = document.getElementById(`${outreachId}-event-feedback`);
+    feedback.textContent = "Editing existing announcement. Change the fields and click Save Announcement.";
+    feedback.className = "smallmuted success-text";
+
+    document.getElementById(`${outreachId}-event-title`).scrollIntoView({ behavior: "smooth", block: "center" });
+  }
+
+  async function deleteSchedule(scheduleId) {
+    if (!scheduleId) return;
+    if (!confirm("Delete this announcement?")) return;
+
+    try {
+      await deleteDoc(doc(db, "outreachSchedules", scheduleId));
+
+      const reactionSnap = await getDocs(collection(db, "scheduleReactions"));
+      for (const reactionDoc of reactionSnap.docs) {
+        const data = reactionDoc.data();
+        if (data.scheduleId === scheduleId) {
+          await deleteDoc(doc(db, "scheduleReactions", reactionDoc.id));
+        }
+      }
+
+      await initPage();
+    } catch (error) {
+      alert("Delete announcement failed: " + error.message);
+    }
+  }
+
+  async function uploadPhotos(outreachId) {
+    const fileInput = document.getElementById(`${outreachId}-photo-file`);
+    const captionInput = document.getElementById(`${outreachId}-photo-caption`);
+    const feedback = document.getElementById(`${outreachId}-upload-feedback`);
+
+    const files = Array.from(fileInput?.files || []);
+    const caption = (captionInput?.value || "").trim();
+
+    if (!files.length) {
+      feedback.textContent = "Please choose one or more image files.";
+      feedback.className = "smallmuted error-text";
+      return;
+    }
+
+    try {
+      feedback.textContent = "Uploading photo(s)...";
+      feedback.className = "smallmuted";
+
+      for (const file of files) {
+        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/\s+/g, "-")}`;
+        const storagePath = `outreach/${outreachId}/${safeName}`;
+        const storageRef = ref(storage, storagePath);
+
+        await uploadBytes(storageRef, file);
+        const url = await getDownloadURL(storageRef);
+
+        await addDoc(collection(db, "outreachPhotos"), {
+          outreach: outreachId,
+          caption: caption || `${outreachId} Outreach`,
+          url,
+          storagePath,
+          createdAt: serverTimestamp(),
+          uploadedBy: currentUser?.email || ""
+        });
+      }
+
+      fileInput.value = "";
+      captionInput.value = "";
+      feedback.textContent = "Photo(s) uploaded successfully.";
+      feedback.className = "smallmuted success-text";
+      await initPage();
+    } catch (error) {
+      feedback.textContent = "Upload failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+
+  async function deleteSinglePhoto(outreachId, photoId, storagePath) {
+    if (!outreachAdminState[outreachId] && !isSuperAdmin) return;
+    if (!confirm("Delete this photo?")) return;
+
+    try {
+      await deleteDoc(doc(db, "outreachPhotos", photoId));
+      if (storagePath) {
+        try { await deleteObject(ref(storage, storagePath)); } catch {}
+      }
+      await initPage();
+    } catch (error) {
+      alert("Delete failed: " + error.message);
+    }
+  }
+
+  async function deleteSelectedPhotos(outreachId) {
+    const ids = Array.from(selectedPhotoIds[outreachId] || []);
+    if (!ids.length) {
+      alert("No photos selected.");
+      return;
+    }
+    if (!confirm(`Delete ${ids.length} selected photo(s)?`)) return;
+
+    try {
+      const snap = await getDocs(collection(db, "outreachPhotos"));
+      const toDelete = [];
+      snap.forEach(docSnap => {
+        if (ids.includes(docSnap.id)) toDelete.push({ id: docSnap.id, ...docSnap.data() });
+      });
+
+      for (const item of toDelete) {
+        await deleteDoc(doc(db, "outreachPhotos", item.id));
+        if (item.storagePath) {
+          try { await deleteObject(ref(storage, item.storagePath)); } catch {}
+        }
+      }
+
+      selectedPhotoIds[outreachId].clear();
+      await initPage();
+    } catch (error) {
+      alert("Bulk delete failed: " + error.message);
+    }
+  }
+
+  async function deleteOutreachCompletely(outreachId, outreachName) {
+    if (!currentUser || !isSuperAdmin) {
+      alert("Only super admin can delete an outreach.");
+      return;
+    }
+
+    const confirmed = confirm(
+      `Delete outreach "${outreachName}" and all its related components?\n\n` +
+      `This will remove:\n` +
+      `- outreach info\n` +
+      `- outreach photos\n` +
+      `- outreach schedules\n` +
+      `- outreach members\n` +
+      `- schedule reactions\n` +
+      `- outreach admin entries\n\n` +
+      `This action cannot be undone.`
+    );
+
+    if (!confirmed) return;
+
+    try {
+      const photoSnap = await getDocs(collection(db, "outreachPhotos"));
+      for (const photoDoc of photoSnap.docs) {
+        const data = photoDoc.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          if (data.storagePath) {
+            try { await deleteObject(ref(storage, data.storagePath)); } catch {}
+          }
+          await deleteDoc(doc(db, "outreachPhotos", photoDoc.id));
+        }
+      }
+
+      const scheduleSnap = await getDocs(collection(db, "outreachSchedules"));
+      const scheduleIds = [];
+      for (const scheduleDoc of scheduleSnap.docs) {
+        const data = scheduleDoc.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          scheduleIds.push(scheduleDoc.id);
+          await deleteDoc(doc(db, "outreachSchedules", scheduleDoc.id));
+        }
+      }
+
+      const reactionSnap = await getDocs(collection(db, "scheduleReactions"));
+      for (const reactionDoc of reactionSnap.docs) {
+        const data = reactionDoc.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase() || scheduleIds.includes(data.scheduleId)) {
+          await deleteDoc(doc(db, "scheduleReactions", reactionDoc.id));
+        }
+      }
+
+      const memberSnap = await getDocs(collection(db, "outreachMembers"));
+      for (const memberDoc of memberSnap.docs) {
+        const data = memberDoc.data();
+        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+          if (data.photoStoragePath) {
+            try { await deleteObject(ref(storage, data.photoStoragePath)); } catch {}
+          }
+          await deleteDoc(doc(db, "outreachMembers", memberDoc.id));
+        }
+      }
+
+      const adminMembersSnap = await getDocs(collection(db, "outreachAdmins", outreachId, "members"));
+      for (const adminDoc of adminMembersSnap.docs) {
+        await deleteDoc(doc(db, "outreachAdmins", outreachId, "members", adminDoc.id));
+      }
+
+      await deleteDoc(doc(db, "outreaches", outreachId));
+
+      delete selectedPhotoIds[outreachId];
+      delete outreachAdminState[outreachId];
+      clearMemberSession(outreachId);
+
+      alert(`Outreach "${outreachName}" and its related components were deleted.`);
+      await initPage();
+    } catch (error) {
+      console.error("Delete outreach failed:", error);
+      alert("Delete outreach failed: " + error.message);
+    }
+  }
+
+  async function saveOutreachHistory(outreachId) {
+    const feedback = document.getElementById(`${outreachId}-history-feedback`);
+    const historyTitle = document.getElementById(`${outreachId}-history-title`)?.value.trim() || "";
+    const address = document.getElementById(`${outreachId}-history-address`)?.value.trim() || "";
+    const description = document.getElementById(`${outreachId}-history-description`)?.value.trim() || "";
+    const historyText = document.getElementById(`${outreachId}-history-text`)?.value.trim() || "";
+
+    if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+      if (feedback) {
+        feedback.textContent = "Only the assigned outreach admin can edit this history.";
+        feedback.className = "smallmuted error-text";
+      }
+      return;
+    }
+
+    if (!historyTitle || !historyText) {
+      if (feedback) {
+        feedback.textContent = "Please fill in at least history title and history text.";
+        feedback.className = "smallmuted error-text";
+      }
+      return;
+    }
+
+    try {
+      if (feedback) {
+        feedback.textContent = "Saving history...";
+        feedback.className = "smallmuted";
+      }
+
+      await setDoc(doc(db, "outreaches", outreachId), {
+        historyTitle,
+        historyText,
+        address,
+        description,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser?.email || currentUser?.uid || "admin"
+      }, { merge: true });
+
+      if (feedback) {
+        feedback.textContent = "Outreach history updated successfully.";
+        feedback.className = "smallmuted success-text";
+      }
+
+      await initPage();
+    } catch (error) {
+      if (feedback) {
+        feedback.textContent = "Save history failed: " + error.message;
+        feedback.className = "smallmuted error-text";
+      }
+    }
+  }
+
+async function reactToSchedule(outreachId, scheduleId, reaction) {
+  const nameInput = document.getElementById(`${outreachId}-member-name`);
+  const feedback = document.getElementById(`${outreachId}-member-feedback`);
+
+  const savedSessionName = getSavedMemberSession(outreachId);
+  let fullName = (nameInput?.value || "").trim();
+
+  if (!fullName && savedSessionName) {
+    fullName = toDisplayName(savedSessionName);
+  }
+
+  if (!fullName) {
+  feedback.textContent = "Please log in as a member first to react.";
+  feedback.className = "smallmuted error-text";
+  openMemberLoginModal();
+  return;
+}
+
+  const normalizedName = normalizeMemberName(fullName);
+
+  try {
+    feedback.textContent = "Saving your response...";
+    feedback.className = "smallmuted";
+
+    const snap = await getDocs(collection(db, "scheduleReactions"));
+    let existingReactionDoc = null;
+
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      const existingName = normalizeMemberName(data.fullName || "");
+
+      if (
+        !existingReactionDoc &&
+        data.scheduleId === scheduleId &&
+        (data.outreach || "").toLowerCase() === outreachId.toLowerCase() &&
+        existingName === normalizedName
+      ) {
+        existingReactionDoc = { id: docSnap.id, ...data };
+      }
+    });
+
+    if (existingReactionDoc) {
+      // Facebook-like behavior:
+      // click same reaction again = remove reaction
+      if (existingReactionDoc.reaction === reaction) {
+        await deleteDoc(doc(db, "scheduleReactions", existingReactionDoc.id));
+        feedback.textContent = "Your reaction was removed.";
+        feedback.className = "smallmuted success-text";
+      } else {
+        // switch reaction
+        await updateDoc(doc(db, "scheduleReactions", existingReactionDoc.id), {
+          fullName,
+          normalizedName,
+          reaction,
+          updatedAt: serverTimestamp()
+        });
+        feedback.textContent = `Your reaction was changed to "${reaction}".`;
+        feedback.className = "smallmuted success-text";
+      }
+    } else {
+      // first reaction
+      await addDoc(collection(db, "scheduleReactions"), {
+        outreach: outreachId,
+        scheduleId,
+        fullName,
+        normalizedName,
+        reaction,
+        createdAt: serverTimestamp()
+      });
+      feedback.textContent = `Your response "${reaction}" was saved.`;
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("Reaction failed:", error);
+    feedback.textContent = "Response failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+  }
+}
+
+  function bindPhotoCheckboxes() {
+    Object.keys(selectedPhotoIds).forEach(outreachId => {
+      document.querySelectorAll(`.${outreachId}-photo-check`).forEach(box => {
+        if (box.dataset.bound === "true") return;
+        box.dataset.bound = "true";
+        box.addEventListener("change", () => {
+          const id = box.dataset.id;
+          if (!id) return;
+          if (box.checked) selectedPhotoIds[outreachId].add(id);
+          else selectedPhotoIds[outreachId].delete(id);
+        });
+      });
+    });
+  }
+
+  async function loadContactMessages() {
+    const listEl = els.contactMessagesList;
+    const badgeEl = document.getElementById("contactUnreadBadge");
+    if (!listEl) return;
+
+    if (!currentUser || !isSuperAdmin) {
+      listEl.innerHTML = "";
+      if (badgeEl) badgeEl.textContent = "New: 0";
+      return;
+    }
+
+    const items = [];
+    try {
+      const snap = await getDocs(query(collection(db, "contactMessages"), orderBy("createdAt", "desc")));
+      snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+    } catch (error) {
+      listEl.innerHTML = `<div class="message-card"><strong>Error</strong><div class="smallmuted">${escapeHtml(error.message)}</div></div>`;
+      return;
+    }
+
+    const unreadCount = items.filter(item => (item.status || "new") === "new").length;
+    if (badgeEl) badgeEl.textContent = `New: ${unreadCount}`;
+
+    if (!items.length) {
+      listEl.innerHTML = `<div class="message-card"><strong>No messages</strong><div class="smallmuted">No contact form messages yet.</div></div>`;
+      return;
+    }
+
+    listEl.innerHTML = items.map(item => {
+      const status = item.replied ? "replied" : (item.status || "new");
+      return `
+        <div class="message-card">
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <strong style="color:var(--gold2)">${escapeHtml(item.name || "Unknown Sender")}</strong>
+            <span class="status-pill ${status === "replied" ? "success" : "info"}">${escapeHtml(status)}</span>
+          </div>
+          <div class="message-meta">
+            <span>📧 ${escapeHtml(item.email || "")}</span>
+            <span>🕒 ${escapeHtml(formatTimestamp(item.createdAt))}</span>
+          </div>
+          <div class="message-body">${escapeHtml(item.message || "")}</div>
+
+          ${item.replyText ? `
+            <div class="divider"></div>
+            <strong style="color:#7de3ab;">Reply Saved</strong>
+            <div class="message-body">${escapeHtml(item.replyText)}</div>
+          ` : ""}
+
+          <div class="toolbar-row" style="margin-top:12px;">
+            ${item.email ? `<button class="btn reply-message-btn" type="button" data-id="${escapeHtml(item.id)}" data-email="${escapeHtml(item.email)}" data-name="${escapeHtml(item.name || "")}" data-message="${encodeURIComponent(item.message || "")}">Reply</button>` : ""}
+            ${status === "new" ? `<button class="ghost-btn mark-read-btn" type="button" data-id="${escapeHtml(item.id)}">Mark as Read</button>` : ""}
+            <button class="danger-btn delete-message-btn" type="button" data-id="${escapeHtml(item.id)}">Delete</button>
+          </div>
+        </div>
+      `;
+    }).join("");
+
+    bindMessageButtons();
+    bindReplyButtons();
+  }
+
+  async function saveReplyRecord(messageId, replyText) {
+    await setDoc(doc(db, "contactMessages", messageId), {
+      replied: true,
+      status: "replied",
+      replyText,
+      repliedAt: serverTimestamp(),
+      repliedBy: currentUser?.email || currentUser?.uid || "super-admin"
+    }, { merge: true });
+  }
+
+  function bindReplyButtons() {
+    document.querySelectorAll(".reply-message-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", async () => {
+        const messageId = btn.dataset.id;
+        const email = btn.dataset.email;
+        const name = btn.dataset.name;
+        const originalMessage = decodeURIComponent(btn.dataset.message || "");
+        const replyText = prompt(`Write your reply to ${name || email}:`, `Hello ${name || ""},\n\nThank you for contacting Solid Rock Ministries.\n\n`);
+        if (!replyText || !replyText.trim()) return;
+
+        try {
+          await saveReplyRecord(messageId, replyText.trim());
+          const subject = encodeURIComponent("Reply from Solid Rock Ministries");
+          const body = encodeURIComponent(`${replyText}\n\n---------------------\nOriginal message:\n${originalMessage}`);
+          window.open(`mailto:${email}?subject=${subject}&body=${body}`);
+          await loadContactMessages();
+        } catch (error) {
+          alert("Reply record failed: " + error.message);
+        }
+      });
+    });
+  }
+
+  async function deleteContactMessage(messageId) {
+    if (!currentUser || !isSuperAdmin) return;
+    if (!confirm("Delete this contact message?")) return;
+    try {
+      await deleteDoc(doc(db, "contactMessages", messageId));
+      await loadContactMessages();
+    } catch (error) {
+      alert("Delete failed: " + error.message);
+    }
+  }
+
+  function bindMessageButtons() {
+    document.querySelectorAll(".delete-message-btn").forEach(btn => {
+      if (btn.dataset.boundDelete === "true") return;
+      btn.dataset.boundDelete = "true";
+      btn.addEventListener("click", () => deleteContactMessage(btn.dataset.id));
+    });
+
+    document.querySelectorAll(".mark-read-btn").forEach(btn => {
+      if (btn.dataset.boundRead === "true") return;
+      btn.dataset.boundRead = "true";
+      btn.addEventListener("click", async () => {
+        try {
+          await setDoc(doc(db, "contactMessages", btn.dataset.id), {
+            status: "read",
+            readAt: serverTimestamp(),
+            readBy: currentUser?.email || currentUser?.uid || "super-admin"
+          }, { merge: true });
+
+          await loadContactMessages();
+        } catch (error) {
+          alert("Failed to mark message as read: " + error.message);
+        }
+      });
+    });
+  }
+
+  function parseGermanyDateTime(dateTimeStr) {
+  if (!dateTimeStr) return NaN;
+
+  const [datePart, timePart = "00:00"] = String(dateTimeStr).split("T");
+  const [year, month, day] = datePart.split("-").map(Number);
+  const [hour, minute] = timePart.split(":").map(Number);
+
+  const utcGuess = new Date(Date.UTC(year, month - 1, day, hour, minute, 0));
+
+  const germanyFormatter = new Intl.DateTimeFormat("en-GB", {
+    timeZone: "Europe/Berlin",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    second: "2-digit",
+    hourCycle: "h23"
+  });
+
+  const parts = germanyFormatter.formatToParts(utcGuess);
+  const map = {};
+  parts.forEach(p => {
+    if (p.type !== "literal") map[p.type] = p.value;
+  });
+
+  const berlinAsUTC = Date.UTC(
+    Number(map.year),
+    Number(map.month) - 1,
+    Number(map.day),
+    Number(map.hour),
+    Number(map.minute),
+    Number(map.second)
+  );
+
+  const intendedAsUTC = Date.UTC(year, month - 1, day, hour, minute, 0);
+
+  const offset = berlinAsUTC - utcGuess.getTime();
+
+  return intendedAsUTC - offset;
+}
+
+  function updateSuperAdminUI() {
+  console.log("updateSuperAdminUI currentUser:", currentUser?.email || null);
+  console.log("updateSuperAdminUI isSuperAdmin:", isSuperAdmin);
+  console.log("superAdminPanel exists:", !!els.superAdminPanel);
+  console.log("generalAnnouncementAdminPanel exists:", !!els.generalAnnouncementAdminPanel);
+
+  if (!currentUser) {
+    if (els.superAdminPanel) els.superAdminPanel.classList.add("hidden");
+    if (els.contactMessagesDashboard) els.contactMessagesDashboard.classList.add("hidden");
+    if (els.generalAnnouncementAdminPanel) els.generalAnnouncementAdminPanel.classList.add("hidden");
+    return;
+  }
+
+  if (els.superAdminPanel) {
+    els.superAdminPanel.classList.remove("hidden");
+  }
+
+  if (isSuperAdmin) {
+    if (els.superAdminStatus) {
+      els.superAdminStatus.textContent = `Super admin signed in: ${currentUser.email}`;
+    }
+
+    if (els.superAdminTools) {
+      els.superAdminTools.classList.remove("hidden");
+    }
+
+    if (els.contactMessagesDashboard) {
+      els.contactMessagesDashboard.classList.remove("hidden");
+    }
+
+    if (els.generalAnnouncementAdminPanel) {
+      els.generalAnnouncementAdminPanel.classList.remove("hidden");
+    }
+
+    loadContactMessages();
+  } else {
+    if (els.superAdminStatus) {
+      els.superAdminStatus.textContent = `Signed in as ${currentUser.email}, but not a super admin.`;
+    }
+
+    if (els.superAdminTools) {
+      els.superAdminTools.classList.add("hidden");
+    }
+
+    if (els.contactMessagesDashboard) {
+      els.contactMessagesDashboard.classList.add("hidden");
+    }
+
+    if (els.generalAnnouncementAdminPanel) {
+      els.generalAnnouncementAdminPanel.classList.add("hidden");
+    }
+  }
+}
+
+  function updateMemberAccessVisibility() {
+
+    const loginBtn = document.querySelector(".member-login-btn");
+
+let memberLoggedIn = false;
+
+currentOutreaches.forEach(outreach => {
+  if (getSavedMemberSession(outreach.id)) {
+    memberLoggedIn = true;
+  }
+});
+
+if (loginBtn) {
+  if (memberLoggedIn) loginBtn.classList.add("hidden");
+  else loginBtn.classList.remove("hidden");
+}
+
+      const logoutBtn = document.querySelector(".member-logout-btn");
+
+let loggedIn = false;
+
+currentOutreaches.forEach(outreach => {
+  if (getSavedMemberSession(outreach.id)) {
+    loggedIn = true;
+  }
+});
+
+if (logoutBtn) {
+  if (loggedIn) logoutBtn.classList.remove("hidden");
+  else logoutBtn.classList.add("hidden");
+}
+
+    currentOutreaches.forEach(outreach => {
+      const outreachId = outreach.id;
+
+      const visitorBoard = document.getElementById(`${outreachId}-visitor-board`);
+      const visitorFields = document.getElementById(`${outreachId}-visitor-fields`);
+      const joinActions = document.getElementById(`${outreachId}-join-actions`);
+      const leaveBoard = document.getElementById(`${outreachId}-leave-board`);
+      const showJoinBtn = document.querySelector(`.show-join-fields-btn[data-outreach="${outreachId}"]`);
+      const guestBtn = document.querySelector(`.guest-signin-btn[data-outreach="${outreachId}"]`);
+      const nameInput = document.getElementById(`${outreachId}-member-name`);
+
+      if (visitorBoard) visitorBoard.classList.remove("hidden");
+
+      if (isSuperAdmin || outreachAdminState[outreachId]) {
+        if (guestBtn) guestBtn.classList.add("hidden");
+        if (showJoinBtn) showJoinBtn.classList.add("hidden");
+        if (visitorFields) visitorFields.classList.add("hidden");
+        if (joinActions) joinActions.classList.add("hidden");
+        if (leaveBoard) leaveBoard.classList.add("hidden");
+        return;
+      }
+
+      const savedMemberName = getSavedMemberSession(outreachId);
+      const loggedIn = !!savedMemberName;
+
+      if (loggedIn) {
+        if (nameInput) nameInput.value = toDisplayName(savedMemberName);
+
+        if (guestBtn) guestBtn.classList.add("hidden");
+        if (showJoinBtn) showJoinBtn.classList.add("hidden");
+        if (visitorFields) visitorFields.classList.add("hidden");
+        if (joinActions) joinActions.classList.add("hidden");
+        if (leaveBoard) leaveBoard.classList.remove("hidden");
+      } else {
+        if (guestBtn) guestBtn.classList.remove("hidden");
+        if (showJoinBtn) showJoinBtn.classList.remove("hidden");
+        if (visitorFields) visitorFields.classList.add("hidden");
+        if (joinActions) joinActions.classList.add("hidden");
+        if (leaveBoard) leaveBoard.classList.add("hidden");
+      }
+    });
+  }
+
+  function bindDynamicButtons() {
+    bindPhotoCheckboxes();
+
+    document.querySelectorAll(".signup-member-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => signUpOutreachMember(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".leave-member-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => leaveMembership(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".guest-signin-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => signInAsGuest(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".delete-member-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => deleteMember(btn.dataset.id));
+    });
+
+    document.querySelectorAll(".save-event-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => saveScheduleEvent(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".clear-event-form-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => clearScheduleForm(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".edit-schedule-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => editScheduleFromButton(btn));
+    });
+
+    document.querySelectorAll(".delete-schedule-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => deleteSchedule(btn.dataset.id));
+    });
+
+    document.querySelectorAll(".schedule-react-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => reactToSchedule(btn.dataset.outreach, btn.dataset.schedule, btn.dataset.reaction));
+    });
+
+    document.querySelectorAll(".save-history-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => saveOutreachHistory(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".upload-photo-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => uploadPhotos(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".delete-single-photo-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => deleteSinglePhoto(btn.dataset.outreach, btn.dataset.id, btn.dataset.path));
+    });
+
+    document.querySelectorAll(".delete-selected-photos-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => deleteSelectedPhotos(btn.dataset.outreach));
+    });
+
+    document.querySelectorAll(".logout-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", handleLogout);
+    });
+
+    document.querySelectorAll(".delete-outreach-btn").forEach(btn => {
+      if (btn.dataset.bound === "true") return;
+      btn.dataset.bound = "true";
+      btn.addEventListener("click", () => deleteOutreachCompletely(btn.dataset.outreach, btn.dataset.name));
+    });
+  }
+
+  document.getElementById("createOutreachBtn").addEventListener("click", createNewOutreach);
+  document.getElementById("refreshMessagesBtn").addEventListener("click", loadContactMessages);
+  document.getElementById("superAdminLogoutBtn").addEventListener("click", handleLogout);
+
+  document.getElementById("submitAdminLoginBtn").addEventListener("click", async () => {
+    const email = els.adminEmail.value.trim();
+    const password = els.adminPassword.value;
+
+    if (!email || !password) {
+      els.adminLoginFeedback.textContent = "Please enter email and password.";
+      els.adminLoginFeedback.className = "smallmuted error-text";
+      return;
+    }
+
+    try {
+      els.adminLoginFeedback.textContent = "Signing in...";
+      els.adminLoginFeedback.className = "smallmuted";
+      await signInWithEmailAndPassword(auth, email, password);
+      els.adminLoginFeedback.textContent = "Signed in successfully.";
+      els.adminLoginFeedback.className = "smallmuted success-text";
+      closeAdminLoginModal();
+    } catch (error) {
+      els.adminLoginFeedback.textContent = "Login failed: " + error.message;
+      els.adminLoginFeedback.className = "smallmuted error-text";
+    }
+  });
+
+  const contactForm = document.getElementById("contactForm");
+  const contactFeedback = document.getElementById("contactFeedback");
+  const contactSubmitBtn = document.getElementById("contactSubmitBtn");
+
+  contactForm.addEventListener("submit", async function(e) {
+    e.preventDefault();
+
+    const name = document.getElementById("contactName").value.trim();
+    const email = document.getElementById("contactEmail").value.trim();
+    const message = document.getElementById("contactMessage").value.trim();
+
+    if (!name || !email || !message) {
+      contactFeedback.textContent = "Please complete all fields.";
+      contactFeedback.className = "smallmuted error-text";
+      return;
+    }
+
+    try {
+      contactSubmitBtn.disabled = true;
+      contactSubmitBtn.textContent = "Sending...";
+      contactFeedback.textContent = "Sending message...";
+      contactFeedback.className = "smallmuted";
+
+      await addDoc(collection(db, "contactMessages"), {
+        name,
+        email,
+        message,
+        createdAt: serverTimestamp(),
+        status: "new",
+        replied: false
+      });
+
+      contactForm.reset();
+      contactFeedback.textContent = "Your message has been sent successfully.";
+      contactFeedback.className = "smallmuted success-text";
+    } catch (error) {
+      console.error("Contact message failed:", error);
+      contactFeedback.textContent = "Failed to send message: " + error.message;
+      contactFeedback.className = "smallmuted error-text";
+    } finally {
+      contactSubmitBtn.disabled = false;
+      contactSubmitBtn.textContent = "Send";
+    }
+  });
+
+  async function handleLogout() {
+    try {
+      await signOut(auth);
+      if (els.contactMessagesList) els.contactMessagesList.innerHTML = "";
+      const badgeEl = document.getElementById("contactUnreadBadge");
+      if (badgeEl) badgeEl.textContent = "New: 0";
+      alert("You have logged out.");
+    } catch (error) {
+      alert("Logout failed: " + error.message);
+    }
+  }
+
+ async function initPage() {
+  renderOutreaches();
+  await loadOutreaches();
+  await enrichOutreaches();
+
+  if (currentUser) {
+    isSuperAdmin = await isUserSuperAdmin(currentUser);
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
+    }
+  } else {
+    isSuperAdmin = false;
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = false;
+    }
+  }
+
+  renderOutreaches();
+  updateSuperAdminUI();
+  await loadGeneralAnnouncements();
+  updateMemberAccessVisibility();
+  hideVisitorButtonsForSuperAdmin();
+  bindLightboxSwipe();
+}
+
+  (async function initAll() {
+    await ensureDefaultOutreachesExist();
+    await initPage();
+  })();
+
+  function hideVisitorButtonsForSuperAdmin() {
+    if (!isSuperAdmin) return;
+
+    document.querySelectorAll(".guest-signin-btn").forEach(btn => {
+      btn.classList.add("hidden");
+    });
+
+    document.querySelectorAll(".show-join-fields-btn").forEach(btn => {
+      btn.classList.add("hidden");
+    });
+
+    document.querySelectorAll('[id$="-visitor-fields"]').forEach(panel => {
+      panel.classList.add("hidden");
+    });
+  }
+
+  window.removeMyMembership = async function(outreachId, memberId, photoStoragePath = "") {
+    if (!confirm("Remove your name from this outreach?")) return;
+
+    try {
+      if (photoStoragePath) {
+        try {
+          await deleteObject(ref(storage, photoStoragePath));
+        } catch (storageError) {
+          console.warn("Photo delete warning:", storageError);
+        }
+      }
+
+      await deleteDoc(doc(db, "outreachMembers", memberId));
+      clearMemberSession(outreachId);
+
+      alert("Your name has been removed from this outreach.");
+      await initPage();
+    } catch (error) {
+      console.error("Remove member failed:", error);
+      alert("Failed to remove membership: " + error.message);
+    }
+  };
+
+  window.openMemberLoginModal = function() {
+  document.getElementById("memberLoginModal").classList.add("active");
+};
+
+window.closeMemberLoginModal = function() {
+  document.getElementById("memberLoginModal").classList.remove("active");
+};
+
+async function memberLogin() {
+
+  const email = document.getElementById("memberEmail").value.trim();
+  const password = document.getElementById("memberPassword").value;
+
+  const feedback = document.getElementById("memberLoginFeedback");
+
+  try {
+
+    await signInWithEmailAndPassword(auth, email, password);
+
+    feedback.textContent = "Login successful.";
+    feedback.className = "smallmuted success-text";
+
+    closeMemberLoginModal();
+
+  } catch (error) {
+
+    feedback.textContent = "Login failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+
+  }
+
+}
+
+onAuthStateChanged(auth, async (user) => {
+  currentUser = user;
+
+  if (user) {
+    console.log("Logged in user:", user.email, user.uid);
+    const superCheck = await isUserSuperAdmin(user);
+    console.log("Is super admin?", superCheck);
+    localStorage.setItem("memberUID", user.uid);
+  } else {
+    localStorage.removeItem("memberUID");
+  }
+
+  await initPage();
+});
+
+if (auth.currentUser) {
+
+  feedback.textContent = `Logged in as ${auth.currentUser.email}`;
+
+}
+
+window.memberLogout = function() {
+
+  currentOutreaches.forEach(outreach => {
+    clearMemberSession(outreach.id);
+  });
+
+  localStorage.removeItem("guestModeActive");
+
+  const logoutBtn = document.querySelector(".member-logout-btn");
+  if (logoutBtn) logoutBtn.classList.add("hidden");
+
+  alert("You have logged out.");
+
+  initPage();
+
+};
+
+
+window.memberNameLogin = async function () {
+
+  const nameInput = document.getElementById("memberLoginName");
+  const feedback = document.getElementById("memberLoginFeedback");
+
+  const fullName = (nameInput?.value || "").trim();
+
+  if (!fullName) {
+    feedback.textContent = "Please enter your full name.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  const normalizedName = normalizeMemberName(fullName);
+
+  try {
+
+    const snap = await getDocs(collection(db, "outreachMembers"));
+
+    let foundMembership = null;
+
+    snap.forEach(docSnap => {
+
+      const data = docSnap.data();
+      const existingName = normalizeMemberName(data.fullName || "");
+
+      if (!foundMembership && existingName === normalizedName) {
+        foundMembership = data;
+      }
+
+    });
+
+    if (!foundMembership) {
+
+      feedback.textContent = "Member name not found. Please join an outreach first.";
+      feedback.className = "smallmuted error-text";
+      return;
+
+    }
+
+    const outreachId = foundMembership.outreach;
+
+    saveMemberSession(outreachId, fullName);
+
+    feedback.textContent = `Logged in as ${fullName}.`;
+    feedback.className = "smallmuted success-text";
+
+    closeMemberLoginModal();
+
+    await initPage();
+
+  } catch (error) {
+
+    feedback.textContent = "Login failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+
+  }
+
+};
+
+window.openGalleryImage = function(imgEl) {
+  const src = imgEl.getAttribute("src");
+  let gallery = [];
+
+  try {
+    gallery = JSON.parse(imgEl.getAttribute("data-gallery") || "[]");
+  } catch {
+    gallery = [src];
+  }
+
+  window.openLightbox(src, gallery);
+};
+
+let lastScroll = 0;
+
+window.addEventListener("scroll", () => {
+
+  const nav = document.querySelector(".nav");
+  const currentScroll = window.pageYOffset;
+
+  if (!nav) return;
+
+  // scrolling down
+  if (currentScroll > lastScroll && currentScroll > 80) {
+    nav.classList.add("nav-hidden");
+  } 
+  // scrolling up
+  else {
+    nav.classList.remove("nav-hidden");
+  }
+
+  lastScroll = currentScroll;
+
+});
+
+
+async function saveGeneralAnnouncement() {
+  const title = document.getElementById("generalAnnouncementTitle").value.trim();
+  const when = document.getElementById("generalAnnouncementWhen").value;
+  const body = document.getElementById("generalAnnouncementBody").value.trim();
+  const feedback = document.getElementById("generalAnnouncementFeedback");
+
+  if (!isSuperAdmin) {
+    feedback.textContent = "Only super admin can post general announcements.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  if (!title || !when || !body) {
+    feedback.textContent = "Please complete title, date/time, and message.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  try {
+    feedback.textContent = "Posting announcement...";
+    feedback.className = "smallmuted";
+
+    await addDoc(collection(db, "generalAnnouncements"), {
+      title,
+      when,
+      body,
+      createdAt: serverTimestamp(),
+      createdBy: currentUser?.email || "super-admin"
+    });
+
+    document.getElementById("generalAnnouncementTitle").value = "";
+    document.getElementById("generalAnnouncementWhen").value = "";
+    document.getElementById("generalAnnouncementBody").value = "";
+
+    feedback.textContent = "General announcement posted successfully.";
+    feedback.className = "smallmuted success-text";
+
+    await loadGeneralAnnouncements();
+  } catch (error) {
+    feedback.textContent = "Post failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+  }
+}
+
+async function loadGeneralAnnouncements() {
+  if (!els.generalAnnouncementsList) return;
+
+  try {
+    const snap = await getDocs(
+      query(collection(db, "generalAnnouncements"), orderBy("when", "asc"))
+    );
+
+    const items = [];
+    snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+
+    if (!items.length) {
+      els.generalAnnouncementsList.innerHTML = `
+        <div class="card">
+          <h3 style="margin-top:0;">No General Announcements Yet</h3>
+          <p class="smallmuted" style="margin-bottom:0;">
+            Super admin announcements will appear here.
+          </p>
+        </div>
+      `;
+      return;
+    }
+
+    els.generalAnnouncementsList.innerHTML = items.map(item => `
+      <div class="general-announcement-card">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:flex-start;">
+          <div>
+            <h3 class="general-announcement-title">${escapeHtml(item.title || "Announcement")}</h3>
+            <div class="general-announcement-meta">
+              <div>📅 ${escapeHtml(formatDateLong(item.when))}</div>
+              <div>🕒 ${escapeHtml(formatTime(item.when))}</div>
+            </div>
+          </div>
+
+          ${isSuperAdmin ? `
+            <div class="toolbar-row">
+              <button
+                class="danger-btn delete-general-announcement-btn"
+                type="button"
+                data-id="${escapeHtml(item.id)}">
+                Delete
+              </button>
+            </div>
+          ` : ""}
+        </div>
+
+        <div class="general-announcement-body">${escapeHtml(item.body || "")}</div>
+        ${countdownHtml(item.when)}
+      </div>
+    `).join("");
+
+    bindGeneralAnnouncementButtons();
+    startCountdowns();
+  } catch (error) {
+    els.generalAnnouncementsList.innerHTML = `
+      <div class="card">
+        <h3 style="margin-top:0;">Error loading announcements</h3>
+        <p class="smallmuted">${escapeHtml(error.message)}</p>
+      </div>
+    `;
+  }
+}
+
+async function deleteGeneralAnnouncement(id) {
+  if (!isSuperAdmin) return;
+  if (!confirm("Delete this general announcement?")) return;
+
+  try {
+    await deleteDoc(doc(db, "generalAnnouncements", id));
+    await loadGeneralAnnouncements();
+  } catch (error) {
+    alert("Delete failed: " + error.message);
+  }
+}
+
+function bindGeneralAnnouncementButtons() {
+  document.querySelectorAll(".delete-general-announcement-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => deleteGeneralAnnouncement(btn.dataset.id));
+  });
+}
+
+</script>
 </body>
 </html>
