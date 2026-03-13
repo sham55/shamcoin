@@ -724,10 +724,79 @@ input, textarea, select, button{
   font-size:14px;
 }
 
+.worker-list{
+  margin-top:8px;
+  padding-left:18px;
+}
+
+.worker-admin{
+  margin-top:10px;
+  display:flex;
+  gap:6px;
+}
+
+.worker-admin input{
+  flex:1;
+}
+
 .general-announcement-body{
   margin-top:12px;
   white-space:pre-wrap;
   color:var(--text);
+}
+
+
+.workers-section{
+  margin-top:18px;
+}
+
+.workers-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:10px;
+}
+
+.worker-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 12px;
+  border-radius:16px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.04);
+}
+
+.worker-photo{
+  width:44px;
+  height:44px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid rgba(214,177,94,.35);
+  background:rgba(255,255,255,.06);
+  flex:0 0 auto;
+}
+
+.worker-name{
+  color:var(--text);
+  font-weight:700;
+}
+
+.worker-admin{
+  margin-top:12px;
+  display:grid;
+  gap:10px;
+}
+
+.worker-admin-actions{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.worker-delete-btn{
+  padding:8px 10px;
+  font-size:12px;
 }
 
   </style>
@@ -1138,7 +1207,8 @@ input, textarea, select, button{
     doc,
     serverTimestamp,
     query,
-    orderBy
+    orderBy,
+    where
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
@@ -2165,9 +2235,45 @@ function getOutreachDisplayName(outreachId) {
 
         <div class="outreach-panels">
           <div class="panel">
-            <h3>${escapeHtml(outreach.historyTitle || "History")}</h3>
-            <p class="smallmuted">${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}</p>
-          </div>
+  <h3>${escapeHtml(outreach.historyTitle || "History")}</h3>
+  <p class="smallmuted">
+    ${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}
+  </p>
+
+  <div class="workers-section">
+    <h4 style="margin:14px 0 8px;">Workers:</h4>
+    <div id="workers-${escapeHtml(outreach.id)}" class="workers-grid"></div>
+
+    ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+      <div class="worker-admin">
+        <label for="worker-name-${escapeHtml(outreach.id)}">Worker Name</label>
+        <input
+          type="text"
+          id="worker-name-${escapeHtml(outreach.id)}"
+          placeholder="Enter worker name"
+        >
+
+        <label for="worker-photo-${escapeHtml(outreach.id)}">Worker Photo</label>
+        <input
+          type="file"
+          id="worker-photo-${escapeHtml(outreach.id)}"
+          accept="image/*"
+        >
+
+        <div class="worker-admin-actions">
+          <button
+            class="btn"
+            type="button"
+            onclick="addWorker('${escapeHtml(outreach.id)}')">
+            Add Worker
+          </button>
+        </div>
+
+        <p id="worker-feedback-${escapeHtml(outreach.id)}" class="smallmuted"></p>
+      </div>
+    ` : ""}
+  </div>
+</div>
 
           <div class="panel">
             <h3>📣 Announcements</h3>
@@ -2379,6 +2485,14 @@ function getOutreachDisplayName(outreachId) {
         if (showBtn) showBtn.classList.remove("hidden");
       });
     });
+
+    setTimeout(() => {
+
+  currentOutreaches.forEach(o => {
+    loadWorkers(o.id);
+  });
+
+}, 200);
 
     attachGalleryDrag();
     startCountdowns();
@@ -3714,11 +3828,6 @@ onAuthStateChanged(auth, async (user) => {
   await initPage();
 });
 
-if (auth.currentUser) {
-
-  feedback.textContent = `Logged in as ${auth.currentUser.email}`;
-
-}
 
 window.memberLogout = function() {
 
@@ -3912,16 +4021,7 @@ async function loadGeneralAnnouncements() {
             </div>
           </div>
 
-          ${outreachAdminState[outreach.id] ? `
-  <div class="toolbar-row">
-    <button
-      class="ghost-btn toggle-ministry-scope-edit-btn"
-      type="button"
-      data-outreach="${escapeHtml(outreach.id)}">
-      Edit
-    </button>
-  </div>
-` : ""}
+          
 
         <div class="general-announcement-body">${escapeHtml(item.body || "")}</div>
         ${countdownHtml(item.when)}
@@ -4034,6 +4134,137 @@ async function saveInlineMinistryScope(outreachId) {
     feedback.className = "smallmuted error-text";
   }
 }
+
+
+
+async function loadWorkers(outreachId) {
+  const list = document.getElementById(`workers-${outreachId}`);
+  if (!list) return;
+
+  list.innerHTML = "";
+
+  try {
+    const q = query(
+      collection(db, "outreachWorkers"),
+      where("outreachId", "==", outreachId)
+    );
+
+    const snap = await getDocs(q);
+
+    if (snap.empty) {
+      list.innerHTML = `<p class="smallmuted" style="margin:0;">No workers added yet.</p>`;
+      return;
+    }
+
+    const items = [];
+    snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+
+    list.innerHTML = items.map(worker => `
+      <div class="worker-card">
+        <img
+          class="worker-photo"
+          src="${escapeHtml(worker.photoUrl || "srm.png")}"
+          alt="${escapeHtml(worker.name || "Worker")}"
+          onclick="openLightbox(this.src)"
+        >
+        <div class="worker-name">${escapeHtml(worker.name || "Unnamed Worker")}</div>
+
+        ${(outreachAdminState[outreachId] || isSuperAdmin) ? `
+          <button
+            class="danger-btn worker-delete-btn"
+            type="button"
+            onclick="deleteWorker('${escapeHtml(worker.id)}','${escapeHtml(worker.photoStoragePath || "")}','${escapeHtml(outreachId)}')">
+            Delete
+          </button>
+        ` : ""}
+      </div>
+    `).join("");
+  } catch (error) {
+    list.innerHTML = `<p class="smallmuted error-text" style="margin:0;">Failed to load workers: ${escapeHtml(error.message)}</p>`;
+  }
+}
+
+window.addWorker = async function(outreachId) {
+  const nameInput = document.getElementById(`worker-name-${outreachId}`);
+  const photoInput = document.getElementById(`worker-photo-${outreachId}`);
+  const feedback = document.getElementById(`worker-feedback-${outreachId}`);
+
+  const name = (nameInput?.value || "").trim();
+  const file = photoInput?.files?.[0] || null;
+
+  if (!name) {
+    if (feedback) {
+      feedback.textContent = "Please enter worker name.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  if (!file) {
+    if (feedback) {
+      feedback.textContent = "Please choose a worker photo.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Uploading worker...";
+      feedback.className = "smallmuted";
+    }
+
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
+    const storagePath = `outreachWorkers/${outreachId}/${safeName}`;
+    const storageRef = ref(storage, storagePath);
+
+    await uploadBytes(storageRef, file);
+    const photoUrl = await getDownloadURL(storageRef);
+
+    await addDoc(collection(db, "outreachWorkers"), {
+      outreachId,
+      name,
+      photoUrl,
+      photoStoragePath: storagePath,
+      createdAt: serverTimestamp(),
+      createdBy: currentUser?.email || currentUser?.uid || "admin"
+    });
+
+    if (nameInput) nameInput.value = "";
+    if (photoInput) photoInput.value = "";
+
+    if (feedback) {
+      feedback.textContent = "Worker added successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await loadWorkers(outreachId);
+  } catch (error) {
+    if (feedback) {
+      feedback.textContent = "Failed to add worker: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+};
+
+window.deleteWorker = async function(workerId, photoStoragePath, outreachId) {
+  if (!confirm("Delete this worker?")) return;
+
+  try {
+    if (photoStoragePath) {
+      try {
+        await deleteObject(ref(storage, photoStoragePath));
+      } catch (storageError) {
+        console.warn("Worker photo delete warning:", storageError);
+      }
+    }
+
+    await deleteDoc(doc(db, "outreachWorkers", workerId));
+    await loadWorkers(outreachId);
+  } catch (error) {
+    alert("Failed to delete worker: " + error.message);
+  }
+};
 
 </script>
 </body>
