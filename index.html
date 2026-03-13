@@ -3793,8 +3793,18 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   await loadOutreaches();
   await enrichOutreaches();
 
-  for (const outreach of currentOutreaches) {
-  outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
+  if (currentUser) {
+    isSuperAdmin = await isUserSuperAdmin(currentUser);
+
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
+    }
+  } else {
+    isSuperAdmin = false;
+
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = false;
+    }
   }
 
   renderOutreaches();
@@ -3805,10 +3815,10 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   bindLightboxSwipe();
 }
 
-  (async function initAll() {
-    await ensureDefaultOutreachesExist();
-    await initPage();
-  })();
+(async function initAll() {
+  await ensureDefaultOutreachesExist();
+  await initPage();
+})();
 
   function hideVisitorButtonsForSuperAdmin() {
     if (!isSuperAdmin) return;
