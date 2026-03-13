@@ -2318,6 +2318,14 @@ function getOutreachDisplayName(outreachId) {
   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
     <h3 style="margin:0;">📌 Ministry Scope</h3>
 
+    ${outreachAdminState[outreach.id] ? `
+      <button
+        class="ghost-btn toggle-ministry-scope-edit-btn"
+        type="button"
+        data-outreach="${escapeHtml(outreach.id)}">
+        Edit
+      </button>
+    ` : ""}
   </div>
 
   <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
