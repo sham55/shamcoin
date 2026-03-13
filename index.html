@@ -1963,14 +1963,43 @@ function getOutreachDisplayName(outreachId) {
 </div>
 
           ${(reactionSummary.going.length || reactionSummary.interested.length) ? `
-            <div class="attendee-list">
-              <h4>Responses</h4>
-              <ul>
-               ${reactionSummary.going.map(item => `<li>✅ ${escapeHtml(item.fullName || "Guest")}</li>`).join("")}
-               ${reactionSummary.interested.map(item => `<li>⭐ ${escapeHtml(item.fullName || "Guest")}</li>`).join("")}
-              </ul>
-            </div>
+  <div class="attendee-list">
+    <h4>Responses</h4>
+    <ul>
+      ${reactionSummary.going.map(item => `
+        <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <span>✅ ${escapeHtml(item.fullName || "Guest")}</span>
+          ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+            <button
+              class="danger-btn delete-response-btn"
+              type="button"
+              data-id="${escapeHtml(item.id || "")}"
+              data-outreach="${escapeHtml(outreach.id)}"
+              style="padding:6px 10px;font-size:12px;">
+              Delete
+            </button>
           ` : ""}
+        </li>
+      `).join("")}
+
+      ${reactionSummary.interested.map(item => `
+        <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <span>⭐ ${escapeHtml(item.fullName || "Guest")}</span>
+          ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+            <button
+              class="danger-btn delete-response-btn"
+              type="button"
+              data-id="${escapeHtml(item.id || "")}"
+              data-outreach="${escapeHtml(outreach.id)}"
+              style="padding:6px 10px;font-size:12px;">
+              Delete
+            </button>
+          ` : ""}
+        </li>
+      `).join("")}
+    </ul>
+  </div>
+` : ""}
         </div>
       `;
     }).join("");
@@ -2672,6 +2701,24 @@ function getOutreachDisplayName(outreachId) {
     }
   }
 
+  async function deleteScheduleResponse(reactionId, outreachId) {
+  if (!reactionId) return;
+
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+    alert("Only admin can delete responses.");
+    return;
+  }
+
+  if (!confirm("Delete this response?")) return;
+
+  try {
+    await deleteDoc(doc(db, "scheduleReactions", reactionId));
+    await initPage();
+  } catch (error) {
+    alert("Delete response failed: " + error.message);
+  }
+}
+
   async function uploadPhotos(outreachId) {
     const fileInput = document.getElementById(`${outreachId}-photo-file`);
     const captionInput = document.getElementById(`${outreachId}-photo-caption`);
@@ -3351,6 +3398,14 @@ if (logoutBtn) {
       btn.dataset.bound = "true";
       btn.addEventListener("click", () => reactToSchedule(btn.dataset.outreach, btn.dataset.schedule, btn.dataset.reaction));
     });
+
+    document.querySelectorAll(".delete-response-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () =>
+    deleteScheduleResponse(btn.dataset.id, btn.dataset.outreach)
+  );
+});
 
     document.querySelectorAll(".save-history-btn").forEach(btn => {
       if (btn.dataset.bound === "true") return;
