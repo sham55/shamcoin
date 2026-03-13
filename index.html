@@ -2186,7 +2186,7 @@ function getOutreachDisplayName(outreachId) {
   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
     <h3 style="margin:0;">📌 Ministry Scope</h3>
 
-    ${isSuperAdmin ? `
+    ${outreachAdminState[outreach.id] ? `
       <div class="toolbar-row">
         <button
           class="ghost-btn toggle-ministry-scope-edit-btn"
@@ -2205,7 +2205,7 @@ function getOutreachDisplayName(outreachId) {
     </ul>
   </div>
 
-  ${isSuperAdmin ? `
+  ${outreachAdminState[outreach.id] ? `
     <div id="${escapeHtml(outreach.id)}-ministry-scope-edit-wrap" class="hidden" style="margin-top:12px;">
       <p class="smallmuted" style="margin-top:0;">Enter one item per line.</p>
 
@@ -3615,16 +3615,16 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   await enrichOutreaches();
 
   if (currentUser) {
-    isSuperAdmin = await isUserSuperAdmin(currentUser);
-    for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
-    }
-  } else {
-    isSuperAdmin = false;
-    for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = false;
-    }
+  isSuperAdmin = await isUserSuperAdmin(currentUser);
+  for (const outreach of currentOutreaches) {
+    outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
   }
+} else {
+  isSuperAdmin = false;
+  for (const outreach of currentOutreaches) {
+    outreachAdminState[outreach.id] = false;
+  }
+}
 
   renderOutreaches();
   updateSuperAdminUI();
@@ -3924,17 +3924,16 @@ async function loadGeneralAnnouncements() {
             </div>
           </div>
 
-          ${isSuperAdmin ? `
-            <div class="toolbar-row">
-              <button
-                class="danger-btn delete-general-announcement-btn"
-                type="button"
-                data-id="${escapeHtml(item.id)}">
-                Delete
-              </button>
-            </div>
-          ` : ""}
-        </div>
+          ${outreachAdminState[outreach.id] ? `
+  <div class="toolbar-row">
+    <button
+      class="ghost-btn toggle-ministry-scope-edit-btn"
+      type="button"
+      data-outreach="${escapeHtml(outreach.id)}">
+      Edit
+    </button>
+  </div>
+` : ""}
 
         <div class="general-announcement-body">${escapeHtml(item.body || "")}</div>
         ${countdownHtml(item.when)}
@@ -4003,8 +4002,8 @@ async function saveInlineMinistryScope(outreachId) {
 
   if (!textarea || !feedback) return;
 
-  if (!isSuperAdmin) {
-    feedback.textContent = "Only super admin can edit this Ministry Scope.";
+  if (!outreachAdminState[outreachId] || isSuperAdmin) {
+    feedback.textContent = "Only the assigned outreach admin can edit this Ministry Scope.";
     feedback.className = "smallmuted error-text";
     return;
   }
@@ -4026,7 +4025,7 @@ async function saveInlineMinistryScope(outreachId) {
 
     const payload = {
       updatedAt: serverTimestamp(),
-      updatedBy: currentUser?.email || currentUser?.uid || "super-admin"
+      updatedBy: currentUser?.email || currentUser?.uid || "outreach-admin"
     };
 
     if (outreachId === "namatec") {
@@ -4047,7 +4046,6 @@ async function saveInlineMinistryScope(outreachId) {
     feedback.className = "smallmuted error-text";
   }
 }
-
 
 </script>
 </body>
