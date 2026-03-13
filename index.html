@@ -3796,7 +3796,7 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   if (currentUser) {
     isSuperAdmin = await isUserSuperAdmin(currentUser);
     for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
+      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) ||
     }
   } else {
     for (const outreach of currentOutreaches) {
