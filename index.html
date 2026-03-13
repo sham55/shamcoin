@@ -815,7 +815,7 @@ input, textarea, select, button{
   <div class="container">
     <div class="section-title">
       <h2>General Announcements</h2>
-
+      <p class="hint">Posted by super admin</p>
     </div>
 
     <div id="generalAnnouncementAdminPanel" class="card hidden" style="margin-bottom:14px;">
@@ -953,7 +953,7 @@ input, textarea, select, button{
     <div class="container">
       <div class="section-title">
         <h2>Outreach Announcements</h2>
-    
+
       </div>
 
       <div id="superAdminPanel" class="card hidden" style="margin-bottom:18px;">
@@ -2130,6 +2130,8 @@ function getOutreachDisplayName(outreachId) {
             <button class="ghost-btn clear-event-form-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Clear Form</button>
           </div>
           <p id="${escapeHtml(outreach.id)}-event-feedback" class="smallmuted"></p>
+          <div class="divider"></div>
+
         </div>
       </div>
     `;
@@ -2181,12 +2183,62 @@ function getOutreachDisplayName(outreachId) {
           </div>
 
           <div class="panel">
-            <h3>${outreach.id === "namatec" ? "📌 Ministry Scope" : "📌 Ministry Scope"}</h3>
-            <ul class="list">
-              ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
-                .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
-            </ul>
-          </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+    <h3 style="margin:0;">📌 Ministry Scope</h3>
+
+    ${isSuperAdmin ? `
+      <div class="toolbar-row">
+        <button
+          class="ghost-btn toggle-ministry-scope-edit-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreach.id)}">
+          Edit
+        </button>
+      </div>
+    ` : ""}
+  </div>
+
+  <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
+    <ul class="list">
+      ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
+        .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+    </ul>
+  </div>
+
+  ${isSuperAdmin ? `
+    <div id="${escapeHtml(outreach.id)}-ministry-scope-edit-wrap" class="hidden" style="margin-top:12px;">
+      <p class="smallmuted" style="margin-top:0;">Enter one item per line.</p>
+
+      <textarea
+        id="${escapeHtml(outreach.id)}-ministry-scope-inline-editor"
+        style="min-height:160px;"
+        placeholder="Enter one item per line...">${escapeHtml(
+          (outreach.id === "namatec"
+            ? (outreach.volunteers || [])
+            : (outreach.prayerFocus || [])
+          ).join("\n")
+        )}</textarea>
+
+      <div class="toolbar-row" style="margin-top:12px;">
+        <button
+          class="btn save-inline-ministry-scope-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreach.id)}">
+          Save
+        </button>
+
+        <button
+          class="ghost-btn cancel-inline-ministry-scope-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreach.id)}">
+          Cancel
+        </button>
+      </div>
+
+      <p id="${escapeHtml(outreach.id)}-ministry-scope-inline-feedback" class="smallmuted"></p>
+    </div>
+  ` : ""}
+</div>
 
           <div class="panel" style="grid-column:1/-1;">
             <h3>Gallery</h3>
@@ -2942,6 +2994,8 @@ function getOutreachDisplayName(outreachId) {
     }
   }
 
+
+
 async function reactToSchedule(outreachId, scheduleId, reaction) {
   const nameInput = document.getElementById(`${outreachId}-member-name`);
   const feedback = document.getElementById(`${outreachId}-member-feedback`);
@@ -3413,6 +3467,7 @@ if (logoutBtn) {
       btn.addEventListener("click", () => saveOutreachHistory(btn.dataset.outreach));
     });
 
+
     document.querySelectorAll(".upload-photo-btn").forEach(btn => {
       if (btn.dataset.bound === "true") return;
       btn.dataset.bound = "true";
@@ -3442,6 +3497,32 @@ if (logoutBtn) {
       btn.dataset.bound = "true";
       btn.addEventListener("click", () => deleteOutreachCompletely(btn.dataset.outreach, btn.dataset.name));
     });
+
+    document.querySelectorAll(".toggle-ministry-scope-edit-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => {
+    toggleMinistryScopeEdit(btn.dataset.outreach, true);
+  });
+});
+
+document.querySelectorAll(".cancel-inline-ministry-scope-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => {
+    toggleMinistryScopeEdit(btn.dataset.outreach, false);
+  });
+});
+
+document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => {
+    saveInlineMinistryScope(btn.dataset.outreach);
+  });
+});
+
+
   }
 
   document.getElementById("createOutreachBtn").addEventListener("click", createNewOutreach);
@@ -3891,6 +3972,82 @@ function bindGeneralAnnouncementButtons() {
     btn.addEventListener("click", () => deleteGeneralAnnouncement(btn.dataset.id));
   });
 }
+
+function toggleMinistryScopeEdit(outreachId, forceOpen = null) {
+  const viewEl = document.getElementById(`${outreachId}-ministry-scope-view`);
+  const editWrap = document.getElementById(`${outreachId}-ministry-scope-edit-wrap`);
+  const feedback = document.getElementById(`${outreachId}-ministry-scope-inline-feedback`);
+
+  if (!viewEl || !editWrap) return;
+
+  const shouldOpen = forceOpen === null
+    ? editWrap.classList.contains("hidden")
+    : !!forceOpen;
+
+  if (shouldOpen) {
+    viewEl.classList.add("hidden");
+    editWrap.classList.remove("hidden");
+  } else {
+    viewEl.classList.remove("hidden");
+    editWrap.classList.add("hidden");
+    if (feedback) {
+      feedback.textContent = "";
+      feedback.className = "smallmuted";
+    }
+  }
+}
+
+async function saveInlineMinistryScope(outreachId) {
+  const textarea = document.getElementById(`${outreachId}-ministry-scope-inline-editor`);
+  const feedback = document.getElementById(`${outreachId}-ministry-scope-inline-feedback`);
+
+  if (!textarea || !feedback) return;
+
+  if (!isSuperAdmin) {
+    feedback.textContent = "Only super admin can edit this Ministry Scope.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  const lines = String(textarea.value || "")
+    .split("\n")
+    .map(item => item.trim())
+    .filter(Boolean);
+
+  if (!lines.length) {
+    feedback.textContent = "Please enter at least one item.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
+  try {
+    feedback.textContent = "Saving Ministry Scope...";
+    feedback.className = "smallmuted";
+
+    const payload = {
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser?.email || currentUser?.uid || "super-admin"
+    };
+
+    if (outreachId === "namatec") {
+      payload.volunteers = lines;
+    } else {
+      payload.prayerFocus = lines;
+    }
+
+    await setDoc(doc(db, "outreaches", outreachId), payload, { merge: true });
+
+    feedback.textContent = "Ministry Scope updated successfully.";
+    feedback.className = "smallmuted success-text";
+
+    await initPage();
+  } catch (error) {
+    console.error("Inline Ministry Scope save failed:", error);
+    feedback.textContent = "Save failed: " + error.message;
+    feedback.className = "smallmuted error-text";
+  }
+}
+
 
 </script>
 </body>
