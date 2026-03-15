@@ -1975,7 +1975,7 @@ function getOutreachDisplayName(outreachId) {
           <div class="gitem">
             <img
               src="${escapeHtml(photo.url || "srm.png")}"
-              alt="${escapeHtml(photo.caption || "Outreach photo")}"
+              alt="${escapeHtml(photo.caption || "")}"
               data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
               loading="lazy"
               onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
@@ -1995,9 +1995,11 @@ function getOutreachDisplayName(outreachId) {
                   </button>
                 </div>
               ` : ""}
-              <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">
-                ${escapeHtml(photo.caption || "Outreach Photo")}
-              </div>
+              ${photo.caption ? `
+  <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">
+    ${escapeHtml(photo.caption)}
+  </div>
+` : ""}
             </div>
           </div>
         `).join("")}
@@ -3046,15 +3048,15 @@ function getOutreachDisplayName(outreachId) {
       const url = await getDownloadURL(storageRef);
 
       await addDoc(collection(db, "outreachPhotos"), {
-        outreach: outreachId,
-        caption: caption || `${outreachId} Outreach`,
-        url,
-        storagePath,
-        mimeType: "image/jpeg",
-        fileName: file.name,
-        createdAt: serverTimestamp(),
-        uploadedBy: currentUser?.email || ""
-      });
+  outreach: outreachId,
+  caption,
+  url,
+  storagePath,
+  mimeType: "image/jpeg",
+  fileName: file.name,
+  createdAt: serverTimestamp(),
+  uploadedBy: currentUser?.email || ""
+});
     }
 
     fileInput.value = "";
@@ -3192,7 +3194,7 @@ window.openPhotoManagerModal = function(outreachId) {
       <div class="photo-manager-card">
         <img
           src="${escapeHtml(photo.url || "srm.png")}"
-          alt="${escapeHtml(photo.caption || "Outreach photo")}"
+          alt="${escapeHtml(photo.caption || "")}"
           data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
           loading="lazy"
           onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
@@ -3223,9 +3225,11 @@ window.openPhotoManagerModal = function(outreachId) {
             </div>
           ` : ""}
 
-          <div class="photo-manager-caption">
-            ${escapeHtml(photo.caption || "Outreach Photo")}
-          </div>
+          ${photo.caption ? `
+  <div class="photo-manager-caption">
+    ${escapeHtml(photo.caption)}
+  </div>
+` : ""}
         </div>
       </div>
     `).join("");
