@@ -1661,6 +1661,15 @@ function getOutreachDisplayName(outreachId) {
 
     paint();
     countdownTimer = setInterval(paint, 1000);
+
+    if (cd.expired) {
+  const card = wrap.closest("[data-schedule-card='true']");
+  if (card) {
+    card.remove();
+  }
+  return;
+}
+
   }
 
   function attachGalleryDrag() {
