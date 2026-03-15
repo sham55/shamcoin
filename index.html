@@ -169,6 +169,11 @@ h2{
   transform:translateY(-100%);
 }
 
+#headerAdminBadge{
+  white-space:normal;
+  text-align:center;
+}
+
     .nav-inner{display:flex;align-items:center;justify-content:space-between;padding:12px 0;gap:14px}
     .brand{display:flex;align-items:center;gap:12px;text-decoration:none;min-width:0}
     
@@ -876,6 +881,10 @@ input, textarea, select, button{
 
         <div class="nav-right">
           
+          <button id="headerLogoutBtn" class="ghost-btn hidden" type="button">
+Logout
+</button>
+
           <button class="menu-btn" id="menuBtn" aria-label="Open menu" aria-expanded="false" aria-controls="primaryNav">☰ Menu</button>
           <nav class="nav-links" id="primaryNav" aria-label="Primary">
             <a href="#history">History</a>
@@ -1392,6 +1401,7 @@ input, textarea, select, button{
   let currentUser = null;
   let currentLoginMode = "outreach";
   let isSuperAdmin = false;
+  let adminOutreachId = null;
   let currentOutreaches = [];
   let outreachAdminState = {};
   let selectedPhotoIds = {};
@@ -1644,86 +1654,60 @@ function getOutreachDisplayName(outreachId) {
   }
 
   function startCountdowns() {
-    if (countdownTimer) clearInterval(countdownTimer);
+  if (countdownTimer) clearInterval(countdownTimer);
 
-    const paint = () => {
-      document.querySelectorAll("[data-countdown]").forEach(wrap => {
-        const target = wrap.getAttribute("data-countdown");
-        const cd = computeCountdown(target);
-        wrap.innerHTML = `
-          <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
-          <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
-          <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
-          <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
-        `;
-      });
-    };
+  const paint = () => {
+    document.querySelectorAll("[data-countdown]").forEach(wrap => {
+      const target = wrap.getAttribute("data-countdown");
+      const cd = computeCountdown(target);
 
-    paint();
-    countdownTimer = setInterval(paint, 1000);
-  }
+      if (cd.expired) {
+        const scheduleCard = wrap.closest("[data-schedule-card='true']");
+        if (scheduleCard) {
+          scheduleCard.remove();
 
-  function attachGalleryDrag() {
-  document.querySelectorAll(".gallery").forEach(gallery => {
-    if (gallery.dataset.boundDrag === "true") return;
-    gallery.dataset.boundDrag = "true";
+          const list = scheduleCard.parentElement;
+          if (list && !list.querySelector("[data-schedule-card='true']")) {
+            list.innerHTML = `
+              <div class="no-announcement-placeholder">
+                <p><strong style="color:var(--gold2)">No announcement posted yet</strong></p>
+                <p class="smallmuted" style="margin-top:8px;">The outreach admin can post announcements here.</p>
+              </div>
+            `;
+          }
+          return;
+        }
 
-    let isDown = false;
-    let startX = 0;
-    let scrollLeft = 0;
+        const generalCard = wrap.closest(".general-announcement-card");
+        if (generalCard) {
+          generalCard.remove();
 
-    // mouse
-    gallery.addEventListener("mousedown", e => {
-      isDown = true;
-      gallery.classList.add("dragging");
-      startX = e.pageX - gallery.offsetLeft;
-      scrollLeft = gallery.scrollLeft;
+          const generalList = document.getElementById("generalAnnouncementsList");
+          if (generalList && !generalList.querySelector(".general-announcement-card")) {
+            generalList.innerHTML = `
+              <div class="card">
+                <h3 style="margin-top:0;">No General Announcements Yet</h3>
+                <p class="smallmuted" style="margin-bottom:0;">
+                  Super admin announcements will appear here.
+                </p>
+              </div>
+            `;
+          }
+          return;
+        }
+      }
+
+      wrap.innerHTML = `
+        <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
+        <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
+        <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
+        <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
+      `;
     });
+  };
 
-    gallery.addEventListener("mouseleave", () => {
-      isDown = false;
-      gallery.classList.remove("dragging");
-    });
-
-    gallery.addEventListener("mouseup", () => {
-      isDown = false;
-      gallery.classList.remove("dragging");
-    });
-
-    gallery.addEventListener("mousemove", e => {
-      if (!isDown) return;
-      e.preventDefault();
-      const x = e.pageX - gallery.offsetLeft;
-      const walk = (x - startX) * 1.2;
-      gallery.scrollLeft = scrollLeft - walk;
-    });
-
-    // touch
-    gallery.addEventListener("touchstart", e => {
-      if (!e.touches.length) return;
-      isDown = true;
-      gallery.classList.add("dragging");
-      startX = e.touches[0].pageX - gallery.offsetLeft;
-      scrollLeft = gallery.scrollLeft;
-    }, { passive: true });
-
-    gallery.addEventListener("touchend", () => {
-      isDown = false;
-      gallery.classList.remove("dragging");
-    });
-
-    gallery.addEventListener("touchcancel", () => {
-      isDown = false;
-      gallery.classList.remove("dragging");
-    });
-
-    gallery.addEventListener("touchmove", e => {
-      if (!isDown || !e.touches.length) return;
-      const x = e.touches[0].pageX - gallery.offsetLeft;
-      const walk = (x - startX) * 1.2;
-      gallery.scrollLeft = scrollLeft - walk;
-    }, { passive: true });
-  });
+  paint();
+  countdownTimer = setInterval(paint, 1000);
 }
 
   function openAdminAccessModal() { els.adminAccessModal.classList.add("active"); }
@@ -2276,7 +2260,9 @@ function getOutreachDisplayName(outreachId) {
           <div class="toolbar-row" style="margin-top:12px;">
             <button class="btn upload-photo-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Upload Photo(s)</button>
             <button class="danger-btn delete-selected-photos-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Delete Selected</button>
-            <button class="ghost-btn logout-btn" type="button">Logout</button>
+            ${adminOutreachId === outreach.id || isSuperAdmin ? `
+  <button class="ghost-btn logout-btn" type="button">Logout</button>
+` : ``}
           </div>
           <p id="${escapeHtml(outreach.id)}-upload-feedback" class="smallmuted"></p>
 
@@ -3590,17 +3576,30 @@ async function reactToSchedule(outreachId, scheduleId, reaction) {
   return intendedAsUTC - offset;
 }
 
-  function updateSuperAdminUI() {
+ function updateSuperAdminUI() {
   console.log("updateSuperAdminUI currentUser:", currentUser?.email || null);
   console.log("updateSuperAdminUI isSuperAdmin:", isSuperAdmin);
   console.log("superAdminPanel exists:", !!els.superAdminPanel);
   console.log("generalAnnouncementAdminPanel exists:", !!els.generalAnnouncementAdminPanel);
 
+  const headerLogoutBtn = document.getElementById("headerLogoutBtn");
+  const headerAdminBadge = document.getElementById("headerAdminBadge");
+
   if (!currentUser) {
     if (els.superAdminPanel) els.superAdminPanel.classList.add("hidden");
     if (els.contactMessagesDashboard) els.contactMessagesDashboard.classList.add("hidden");
     if (els.generalAnnouncementAdminPanel) els.generalAnnouncementAdminPanel.classList.add("hidden");
+
+    if (headerLogoutBtn) headerLogoutBtn.classList.add("hidden");
+    if (headerAdminBadge) {
+      headerAdminBadge.textContent = "";
+      headerAdminBadge.classList.add("hidden");
+    }
     return;
+  }
+
+  if (headerLogoutBtn) {
+    headerLogoutBtn.classList.remove("hidden");
   }
 
   if (els.superAdminPanel) {
@@ -3624,6 +3623,11 @@ async function reactToSchedule(outreachId, scheduleId, reaction) {
       els.generalAnnouncementAdminPanel.classList.remove("hidden");
     }
 
+    if (headerAdminBadge) {
+      headerAdminBadge.textContent = "Super Admin";
+      headerAdminBadge.className = "status-pill success";
+    }
+
     loadContactMessages();
   } else {
     if (els.superAdminStatus) {
@@ -3640,6 +3644,14 @@ async function reactToSchedule(outreachId, scheduleId, reaction) {
 
     if (els.generalAnnouncementAdminPanel) {
       els.generalAnnouncementAdminPanel.classList.add("hidden");
+    }
+
+    if (headerAdminBadge) {
+      const outreachName = getOutreachDisplayName(adminOutreachId);
+      headerAdminBadge.textContent = adminOutreachId
+        ? `Outreach Admin • ${outreachName}`
+        : "Logged In";
+      headerAdminBadge.className = "status-pill info";
     }
   }
 }
@@ -3854,7 +3866,7 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
 
 
   }
-
+  document.getElementById("headerLogoutBtn").addEventListener("click", handleLogout);
   document.getElementById("createOutreachBtn").addEventListener("click", createNewOutreach);
   document.getElementById("refreshMessagesBtn").addEventListener("click", loadContactMessages);
   document.getElementById("superAdminLogoutBtn").addEventListener("click", handleLogout);
@@ -3945,11 +3957,21 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   await enrichOutreaches();
 
   if (currentUser) {
-    isSuperAdmin = await isUserSuperAdmin(currentUser);
-    for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
+  isSuperAdmin = await isUserSuperAdmin(currentUser);
+
+  adminOutreachId = null;
+
+  for (const outreach of currentOutreaches) {
+
+    const isAdmin = await isOutreachAdmin(currentUser, outreach.id);
+
+    outreachAdminState[outreach.id] = isAdmin || isSuperAdmin;
+
+    if (isAdmin && !isSuperAdmin) {
+      adminOutreachId = outreach.id;
     }
-  } else {
+  }
+} else {
     for (const outreach of currentOutreaches) {
   outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
 }
@@ -4231,7 +4253,12 @@ async function loadGeneralAnnouncements() {
     );
 
     const items = [];
-    snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
+    snap.forEach(docSnap => {
+      const data = docSnap.data();
+      if (!computeCountdown(data.when).expired) {
+        items.push({ id: docSnap.id, ...data });
+      }
+    });
 
     if (!items.length) {
       els.generalAnnouncementsList.innerHTML = `
@@ -4256,7 +4283,15 @@ async function loadGeneralAnnouncements() {
             </div>
           </div>
 
-          
+          ${isSuperAdmin ? `
+            <button
+              class="danger-btn delete-general-announcement-btn"
+              type="button"
+              data-id="${escapeHtml(item.id)}">
+              Delete
+            </button>
+          ` : ""}
+        </div>
 
         <div class="general-announcement-body">${escapeHtml(item.body || "")}</div>
         ${countdownHtml(item.when)}
@@ -4731,7 +4766,6 @@ function canUploadPhotos(outreachId) {
   Delete Selected
 </button>
 
-        </button>
         <button class="ghost-btn" type="button" onclick="closePhotoManagerModal()">
           Close
         </button>
