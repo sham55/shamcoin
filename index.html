@@ -369,13 +369,30 @@ h2{
     }
     .modal-overlay.active{opacity:1;pointer-events:auto}
     .modal-card{
-      width:min(92vw,540px);background:#101a30;border:1px solid rgba(255,255,255,.12);
-      border-radius:18px;box-shadow:0 20px 50px rgba(0,0,0,.45);padding:20px;
-    }
-    .modal-close{
-      position:absolute;top:12px;right:12px;width:38px;height:38px;border-radius:999px;border:none;
-      background:rgba(255,255,255,.06);color:#fff;cursor:pointer;font-size:22px;
-    }
+  position:relative;
+  width:min(92vw,540px);
+  background:#101a30;
+  border:1px solid rgba(255,255,255,.12);
+  border-radius:18px;
+  box-shadow:0 20px 50px rgba(0,0,0,.45);
+  padding:20px;
+}
+
+.modal-close{
+  position:absolute;
+  top:12px;
+  right:12px;
+  width:38px;
+  height:38px;
+  border-radius:999px;
+  border:none;
+  background:rgba(255,255,255,.06);
+  color:#fff;
+  cursor:pointer;
+  font-size:22px;
+  z-index:5;
+}
+
     
 
     .outreach-stack{display:grid;gap:18px}
@@ -798,6 +815,48 @@ input, textarea, select, button{
   padding:8px 10px;
   font-size:12px;
 }
+
+.photo-manager-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit,minmax(220px,1fr));
+  gap:14px;
+}
+
+.photo-manager-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(255,255,255,.03);
+  box-shadow:var(--shadow);
+}
+
+.photo-manager-card img{
+  width:100%;
+  height:180px;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+}
+
+.photo-manager-body{
+  padding:10px 12px;
+}
+
+.photo-manager-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:8px;
+}
+
+.photo-manager-caption{
+  color:var(--muted);
+  font-size:13px;
+  word-break:break-word;
+}
+
 
   </style>
 </head>
@@ -1681,6 +1740,12 @@ function getOutreachDisplayName(outreachId) {
     els.adminLoginFeedback.className = "smallmuted";
     els.adminLoginModal.classList.add("active");
   }
+  document.addEventListener("click", (e) => {
+  if (e.target && e.target.id === "photoManagerCloseBtn") {
+    closePhotoManagerModal();
+  }
+});
+
   document.getElementById("saveGeneralAnnouncementBtn").addEventListener("click", saveGeneralAnnouncement);
   document.getElementById("closeAdminAccessModal").addEventListener("click", closeAdminAccessModal);
   document.getElementById("closeAdminLoginModal").addEventListener("click", closeAdminLoginModal);
@@ -1909,32 +1974,33 @@ function getOutreachDisplayName(outreachId) {
         ${photos.map(photo => `
           <div class="gitem">
             <img
-              src="${escapeHtml(photo.url || "srm.png")}"
-              alt="${escapeHtml(photo.caption || "Outreach photo")}"
-              data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
-              loading="lazy"
-              onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-              onclick="openGalleryImage(this)">
-            <div class="gcap">
-              ${outreachAdminState[outreach.id] || isSuperAdmin ? `
-                <div class="photo-toolbar">
-                  <label class="select-chip">
-                    <input class="admin-photo-select ${escapeHtml(outreach.id)}-photo-check" type="checkbox" data-id="${escapeHtml(photo.id)}">
-                    Select
-                  </label>
-                  <button class="danger-btn delete-single-photo-btn" type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-id="${escapeHtml(photo.id)}"
-                    data-path="${escapeHtml(photo.storagePath || "")}">
-                    Delete
-                  </button>
-                </div>
-              ` : ""}
-              <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">
-                ${escapeHtml(photo.caption || "Outreach Photo")}
-              </div>
-            </div>
-          </div>
+  src="${escapeHtml(photo.url || "srm.png")}"
+  alt="${escapeHtml(photo.caption || "")}"
+  data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+  loading="lazy"
+  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+  onclick="openGalleryImage(this)">
+<div class="gcap">
+  ${outreachAdminState[outreach.id] || isSuperAdmin ? `
+    <div class="photo-toolbar">
+      <label class="select-chip">
+        <input class="admin-photo-select ${escapeHtml(outreach.id)}-photo-check" type="checkbox" data-id="${escapeHtml(photo.id)}">
+        Select
+      </label>
+      <button class="danger-btn delete-single-photo-btn" type="button"
+        data-outreach="${escapeHtml(outreach.id)}"
+        data-id="${escapeHtml(photo.id)}"
+        data-path="${escapeHtml(photo.storagePath || "")}">
+        Delete
+      </button>
+    </div>
+  ` : ""}
+  ${photo.caption ? `
+    <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">
+      ${escapeHtml(photo.caption)}
+    </div>
+  ` : ""}
+</div>
         `).join("")}
       </div>
     </div>
@@ -1971,113 +2037,140 @@ function getOutreachDisplayName(outreachId) {
 }
 
   function buildAnnouncementHtml(outreach) {
-    const schedules = (outreach.schedules || []).slice().sort((a, b) => new Date(a.when) - new Date(b.when));
+  const schedules = (outreach.schedules || [])
+    .slice()
+    .filter(schedule => !computeCountdown(schedule.when).expired)
+    .sort((a, b) => {
+      const aTime = typeof a.when === "string" && a.when.includes("T") && !a.when.endsWith("Z")
+        ? parseGermanyDateTime(a.when)
+        : new Date(a.when).getTime();
 
-    if (!schedules.length) {
-      return `
+      const bTime = typeof b.when === "string" && b.when.includes("T") && !b.when.endsWith("Z")
+        ? parseGermanyDateTime(b.when)
+        : new Date(b.when).getTime();
+
+      return aTime - bTime;
+    });
+
+  if (!schedules.length) {
+    return `
+      <div class="no-announcement-placeholder">
         <p><strong style="color:var(--gold2)">No announcement posted yet</strong></p>
         <p class="smallmuted" style="margin-top:8px;">The outreach admin can post announcements here.</p>
-      `;
-    }
+      </div>
+    `;
+  }
 
-    return schedules.map(schedule => {
-      const reactionSummary = getReactionSummary(outreach.reactions, schedule.id, outreach.id);
-      return `
-        <div class="announcement-card">
-          <div class="announcement-top">
-            <div>
-              <p class="announcement-title">${escapeHtml(schedule.title || "Upcoming Fellowship")}</p>
-              <div class="announcement-meta">
-                <div>📅 ${escapeHtml(formatDateLong(schedule.when))}</div>
-                <div>🕒 ${escapeHtml(formatTime(schedule.when))}</div>
-                <div>📍 ${escapeHtml(schedule.location || outreach.address || "Meeting Place")}</div>
-                ${schedule.note ? `<div>📝 ${escapeHtml(schedule.note)}</div>` : ""}
+  return `
+    <div class="outreach-announcement-list" data-outreach-announcement-list="${escapeHtml(outreach.id)}">
+      ${schedules.map(schedule => {
+        const reactionSummary = getReactionSummary(outreach.reactions, schedule.id, outreach.id);
+
+        return `
+          <div
+            class="announcement-card"
+            data-schedule-card="true"
+            data-outreach-id="${escapeHtml(outreach.id)}"
+            data-schedule-id="${escapeHtml(schedule.id || "")}"
+            data-when="${escapeHtml(schedule.when || "")}"
+          >
+            <div class="announcement-top">
+              <div>
+                <p class="announcement-title">${escapeHtml(schedule.title || "Upcoming Fellowship")}</p>
+                <div class="announcement-meta">
+                  <div>📅 ${escapeHtml(formatDateLong(schedule.when))}</div>
+                  <div>🕒 ${escapeHtml(formatTime(schedule.when))}</div>
+                  <div>📍 ${escapeHtml(schedule.location || outreach.address || "Meeting Place")}</div>
+                  ${schedule.note ? `<div>📝 ${escapeHtml(schedule.note)}</div>` : ""}
+                </div>
               </div>
+
+              ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+                <div class="schedule-actions">
+                  <button class="ghost-btn edit-schedule-btn" type="button"
+                    data-outreach="${escapeHtml(outreach.id)}"
+                    data-id="${escapeHtml(schedule.id || "")}"
+                    data-title="${encodeURIComponent(schedule.title || "")}"
+                    data-when="${escapeHtml(schedule.when || "")}"
+                    data-location="${encodeURIComponent(schedule.location || "")}"
+                    data-note="${encodeURIComponent(schedule.note || "")}">
+                    Edit
+                  </button>
+                  <button class="danger-btn delete-schedule-btn" type="button"
+                    data-id="${escapeHtml(schedule.id || "")}">
+                    Delete
+                  </button>
+                </div>
+              ` : ""}
             </div>
 
-            ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
-              <div class="schedule-actions">
-                <button class="ghost-btn edit-schedule-btn" type="button"
-                  data-outreach="${escapeHtml(outreach.id)}"
-                  data-id="${escapeHtml(schedule.id || "")}"
-                  data-title="${encodeURIComponent(schedule.title || "")}"
-                  data-when="${escapeHtml(schedule.when || "")}"
-                  data-location="${encodeURIComponent(schedule.location || "")}"
-                  data-note="${encodeURIComponent(schedule.note || "")}">
-                  Edit
-                </button>
-                <button class="danger-btn delete-schedule-btn" type="button"
-                  data-id="${escapeHtml(schedule.id || "")}">
-                  Delete
-                </button>
+            ${countdownHtml(schedule.when)}
+
+            <div class="schedule-reactions">
+              <button
+                class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "going" ? "active-reaction" : ""}"
+                type="button"
+                data-outreach="${escapeHtml(outreach.id)}"
+                data-schedule="${escapeHtml(schedule.id || "")}"
+                data-reaction="going">
+                ✅ Going
+              </button>
+
+              <button
+                class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "interested" ? "active-reaction" : ""}"
+                type="button"
+                data-outreach="${escapeHtml(outreach.id)}"
+                data-schedule="${escapeHtml(schedule.id || "")}"
+                data-reaction="interested">
+                ⭐ Interested
+              </button>
+            </div>
+
+            ${(reactionSummary.going.length || reactionSummary.interested.length) ? `
+              <div class="attendee-list">
+                <h4>Responses</h4>
+                <ul>
+                  ${reactionSummary.going.map(item => `
+                    <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                      <span>✅ ${escapeHtml(item.fullName || "Guest")}</span>
+                      ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+                        <button
+                          class="danger-btn delete-response-btn"
+                          type="button"
+                          data-id="${escapeHtml(item.id || "")}"
+                          data-outreach="${escapeHtml(outreach.id)}"
+                          style="padding:6px 10px;font-size:12px;">
+                          Delete
+                        </button>
+                      ` : ""}
+                    </li>
+                  `).join("")}
+
+                  ${reactionSummary.interested.map(item => `
+                    <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+                      <span>⭐ ${escapeHtml(item.fullName || "Guest")}</span>
+                      ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+                        <button
+                          class="danger-btn delete-response-btn"
+                          type="button"
+                          data-id="${escapeHtml(item.id || "")}"
+                          data-outreach="${escapeHtml(outreach.id)}"
+                          style="padding:6px 10px;font-size:12px;">
+                          Delete
+                        </button>
+                      ` : ""}
+                    </li>
+                  `).join("")}
+                </ul>
               </div>
             ` : ""}
           </div>
+        `;
+      }).join("")}
+    </div>
+  `;
+}
 
-          ${countdownHtml(schedule.when)}
-
-          <div class="schedule-reactions">
-  <button
-    class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "going" ? "active-reaction" : ""}"
-    type="button"
-    data-outreach="${escapeHtml(outreach.id)}"
-    data-schedule="${escapeHtml(schedule.id || "")}"
-    data-reaction="going">
-    ✅ Going
-  </button>
-
-  <button
-    class="ghost-btn schedule-react-btn schedule-reaction-btn ${reactionSummary.myReaction === "interested" ? "active-reaction" : ""}"
-    type="button"
-    data-outreach="${escapeHtml(outreach.id)}"
-    data-schedule="${escapeHtml(schedule.id || "")}"
-    data-reaction="interested">
-    ⭐ Interested
-  </button>
-</div>
-
-          ${(reactionSummary.going.length || reactionSummary.interested.length) ? `
-  <div class="attendee-list">
-    <h4>Responses</h4>
-    <ul>
-      ${reactionSummary.going.map(item => `
-        <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <span>✅ ${escapeHtml(item.fullName || "Guest")}</span>
-          ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
-            <button
-              class="danger-btn delete-response-btn"
-              type="button"
-              data-id="${escapeHtml(item.id || "")}"
-              data-outreach="${escapeHtml(outreach.id)}"
-              style="padding:6px 10px;font-size:12px;">
-              Delete
-            </button>
-          ` : ""}
-        </li>
-      `).join("")}
-
-      ${reactionSummary.interested.map(item => `
-        <li style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <span>⭐ ${escapeHtml(item.fullName || "Guest")}</span>
-          ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
-            <button
-              class="danger-btn delete-response-btn"
-              type="button"
-              data-id="${escapeHtml(item.id || "")}"
-              data-outreach="${escapeHtml(outreach.id)}"
-              style="padding:6px 10px;font-size:12px;">
-              Delete
-            </button>
-          ` : ""}
-        </li>
-      `).join("")}
-    </ul>
-  </div>
-` : ""}
-        </div>
-      `;
-    }).join("");
-  }
 
   function buildMemberList(outreach) {
     if (!outreach.members?.length) {
@@ -2362,9 +2455,20 @@ function getOutreachDisplayName(outreachId) {
 </div>
 
           <div class="panel" style="grid-column:1/-1;">
-            <h3>Gallery</h3>
-            ${buildGalleryHtml(outreach)}
-          </div>
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+    <h3 style="margin:0;">Gallery</h3>
+
+    <button
+      class="ghost-btn open-photo-manager-btn"
+      type="button"
+      data-outreach="${escapeHtml(outreach.id)}">
+      View All Photos
+    </button>
+  </div>
+
+  ${buildGalleryHtml(outreach)}
+</div>
+
 
           <div class="panel" id="${escapeHtml(outreach.id)}-memberAccessPanel">
             <h3>Visitor / Member Access</h3>
@@ -2437,11 +2541,12 @@ function getOutreachDisplayName(outreachId) {
                 <h3>⚠️ Super Admin Outreach Controls</h3>
                 <p class="smallmuted">Delete this outreach and all related components.</p>
                 <div class="toolbar-row">
-                  <button class="danger-btn delete-outreach-btn" type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-name="${escapeHtml(outreach.name)}">
-                    Delete This Outreach
-                  </button>
+                  <button
+      class="ghost-btn open-photo-manager-btn"
+      type="button"
+      data-outreach="${escapeHtml(outreach.id)}">
+      Open Photo Gallery Panel
+    </button>
                 </div>
               </div>
             </div>
@@ -2681,6 +2786,7 @@ function getOutreachDisplayName(outreachId) {
     feedback.className = "smallmuted error-text";
   }
 }
+
 
   async function leaveMembership(outreachId) {
     const feedback = document.getElementById(`${outreachId}-member-feedback`);
@@ -2941,15 +3047,15 @@ function getOutreachDisplayName(outreachId) {
       const url = await getDownloadURL(storageRef);
 
       await addDoc(collection(db, "outreachPhotos"), {
-        outreach: outreachId,
-        caption: caption || `${outreachId} Outreach`,
-        url,
-        storagePath,
-        mimeType: "image/jpeg",
-        fileName: file.name,
-        createdAt: serverTimestamp(),
-        uploadedBy: currentUser?.email || ""
-      });
+  outreach: outreachId,
+  caption,
+  url,
+  storagePath,
+  mimeType: "image/jpeg",
+  fileName: file.name,
+  createdAt: serverTimestamp(),
+  uploadedBy: currentUser?.email || ""
+});
     }
 
     fileInput.value = "";
@@ -3043,6 +3149,121 @@ function getOutreachDisplayName(outreachId) {
       alert("Delete outreach failed: " + error.message);
     }
   }
+
+  let currentPhotoManagerOutreachId = "";
+
+function getOutreachById(outreachId) {
+  return currentOutreaches.find(o => String(o.id || "").toLowerCase() === String(outreachId || "").toLowerCase());
+}
+
+window.openPhotoManagerModal = function(outreachId) {
+  const outreach = getOutreachById(outreachId);
+  const modal = document.getElementById("photoManagerModal");
+  const title = document.getElementById("photoManagerTitle");
+  const subtext = document.getElementById("photoManagerSubtext");
+  const grid = document.getElementById("photoManagerGrid");
+  const feedback = document.getElementById("photoManagerFeedback");
+  const deleteBtn = document.getElementById("photoManagerDeleteSelectedBtn");
+
+  if (!outreach || !modal || !grid) return;
+
+  currentPhotoManagerOutreachId = outreachId;
+
+  if (!selectedPhotoIds[outreachId]) {
+    selectedPhotoIds[outreachId] = new Set();
+  }
+
+  const allowDelete = !!(outreachAdminState[outreachId] || isSuperAdmin);
+
+  title.textContent = `${outreach.name} Photo Gallery`;
+  subtext.textContent = `${(outreach.photos || []).length} uploaded photo(s)`;
+  feedback.textContent = "";
+
+  if (deleteBtn) {
+    if (allowDelete) deleteBtn.classList.remove("hidden");
+    else deleteBtn.classList.add("hidden");
+  }
+
+  const galleryUrls = (outreach.photos || []).map(photo => photo.url).filter(Boolean);
+
+  if (!outreach.photos || !outreach.photos.length) {
+    grid.innerHTML = `<p class="smallmuted" style="margin:0;">No uploaded photos yet.</p>`;
+  } else {
+    grid.innerHTML = outreach.photos.map(photo => `
+      <div class="photo-manager-card">
+        <img
+          src="${escapeHtml(photo.url || "srm.png")}"
+          alt="${escapeHtml(photo.caption || "")}"
+          data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+          loading="lazy"
+          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
+          onclick="openGalleryImage(this)"
+        >
+
+        <div class="photo-manager-body">
+          ${allowDelete ? `
+            <div class="photo-manager-top">
+              <label class="select-chip">
+                <input
+                  class="photo-manager-check"
+                  type="checkbox"
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-id="${escapeHtml(photo.id)}"
+                  ${selectedPhotoIds[outreachId].has(photo.id) ? "checked" : ""}
+                >
+                Select
+              </label>
+
+              <button
+                class="danger-btn"
+                type="button"
+                style="padding:8px 10px;font-size:12px;"
+                onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
+                Delete
+              </button>
+            </div>
+          ` : ""}
+
+          ${photo.caption ? `
+  <div class="photo-manager-caption">
+    ${escapeHtml(photo.caption)}
+  </div>
+` : ""}
+    `).join("");
+  }
+
+  if (deleteBtn) {
+    deleteBtn.onclick = () => deleteSelectedPhotos(outreachId, true);
+  }
+
+  bindPhotoManagerCheckboxes();
+  modal.classList.add("active");
+};
+
+
+function bindPhotoManagerCheckboxes() {
+  document.querySelectorAll(".photo-manager-check").forEach(box => {
+    if (box.dataset.bound === "true") return;
+    box.dataset.bound = "true";
+
+    box.addEventListener("change", () => {
+      const outreachId = box.dataset.outreach;
+      const photoId = box.dataset.id;
+      if (!outreachId || !photoId) return;
+
+      if (!selectedPhotoIds[outreachId]) {
+        selectedPhotoIds[outreachId] = new Set();
+      }
+
+      if (box.checked) {
+        selectedPhotoIds[outreachId].add(photoId);
+      } else {
+        selectedPhotoIds[outreachId].delete(photoId);
+      }
+    });
+  });
+}
+
 
   async function saveOutreachHistory(outreachId) {
     const feedback = document.getElementById(`${outreachId}-history-feedback`);
@@ -3513,6 +3734,13 @@ if (logoutBtn) {
       btn.addEventListener("click", () => leaveMembership(btn.dataset.outreach));
     });
 
+    document.querySelectorAll(".open-photo-manager-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => openPhotoManagerModal(btn.dataset.outreach));
+});
+
+
     document.querySelectorAll(".guest-signin-btn").forEach(btn => {
       if (btn.dataset.bound === "true") return;
       btn.dataset.bound = "true";
@@ -3785,6 +4013,14 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
 
 window.closeMemberLoginModal = function() {
   document.getElementById("memberLoginModal").classList.remove("active");
+};
+
+window.closePhotoManagerModal = function() {
+  const modal = document.getElementById("photoManagerModal");
+  if (modal) {
+    modal.classList.remove("active");
+  }
+  currentPhotoManagerOutreachId = "";
 };
 
 async function memberLogin() {
@@ -4338,6 +4574,176 @@ async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
     URL.revokeObjectURL(objectUrl);
   }
 }
+
+async function deleteSinglePhoto(outreachId, photoId, storagePath = "") {
+  if (!photoId) return;
+
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+    alert("Only admin can delete photos.");
+    return;
+  }
+
+  if (!confirm("Delete this photo?")) return;
+
+  try {
+    const feedback = document.getElementById(`${outreachId}-upload-feedback`);
+    const modalFeedback = document.getElementById("photoManagerFeedback");
+
+    if (feedback) {
+      feedback.textContent = "Deleting photo...";
+      feedback.className = "smallmuted";
+    }
+
+    if (modalFeedback && currentPhotoManagerOutreachId === outreachId) {
+      modalFeedback.textContent = "Deleting photo...";
+      modalFeedback.className = "smallmuted";
+    }
+
+    if (storagePath) {
+      try {
+        await deleteObject(ref(storage, storagePath));
+      } catch (storageError) {
+        console.warn("Storage delete warning:", storageError);
+      }
+    }
+
+    await deleteDoc(doc(db, "outreachPhotos", photoId));
+
+    if (selectedPhotoIds[outreachId]) {
+      selectedPhotoIds[outreachId].delete(photoId);
+    }
+
+    if (feedback) {
+      feedback.textContent = "Photo deleted successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    if (modalFeedback && currentPhotoManagerOutreachId === outreachId) {
+      modalFeedback.textContent = "Photo deleted successfully.";
+      modalFeedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+
+    if (currentPhotoManagerOutreachId === outreachId) {
+      openPhotoManagerModal(outreachId);
+    }
+  } catch (error) {
+    console.error("Delete single photo failed:", error);
+    alert("Delete photo failed: " + error.message);
+  }
+}
+
+
+async function deleteSelectedPhotos(outreachId, keepModalOpen = false) {
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+    alert("Only admin can delete selected photos.");
+    return;
+  }
+
+  const ids = Array.from(selectedPhotoIds[outreachId] || []);
+  if (!ids.length) {
+    alert("Please select at least one photo.");
+    return;
+  }
+
+  if (!confirm(`Delete ${ids.length} selected photo(s)?`)) return;
+
+  try {
+    const feedback = document.getElementById(`${outreachId}-upload-feedback`);
+    const modalFeedback = document.getElementById("photoManagerFeedback");
+
+    if (feedback) {
+      feedback.textContent = "Deleting selected photos...";
+      feedback.className = "smallmuted";
+    }
+
+    if (keepModalOpen && modalFeedback) {
+      modalFeedback.textContent = "Deleting selected photos...";
+      modalFeedback.className = "smallmuted";
+    }
+
+    const snap = await getDocs(collection(db, "outreachPhotos"));
+
+    for (const photoDoc of snap.docs) {
+      const data = photoDoc.data();
+
+      if (
+        (data.outreach || "").toLowerCase() === outreachId.toLowerCase() &&
+        ids.includes(photoDoc.id)
+      ) {
+        if (data.storagePath) {
+          try {
+            await deleteObject(ref(storage, data.storagePath));
+          } catch (storageError) {
+            console.warn("Storage delete warning:", storageError);
+          }
+        }
+
+        await deleteDoc(doc(db, "outreachPhotos", photoDoc.id));
+      }
+    }
+
+    selectedPhotoIds[outreachId] = new Set();
+
+    if (feedback) {
+      feedback.textContent = "Selected photos deleted successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    if (keepModalOpen && modalFeedback) {
+      modalFeedback.textContent = "Selected photos deleted successfully.";
+      modalFeedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+
+    if (keepModalOpen) {
+      openPhotoManagerModal(outreachId);
+    }
+  } catch (error) {
+    console.error("Delete selected photos failed:", error);
+    alert("Delete selected photos failed: " + error.message);
+  }
+}
+
+function canUploadPhotos(outreachId) {
+  return !!(outreachAdminState[outreachId] || isSuperAdmin);
+}
+
+
 </script>
+
+<div id="photoManagerModal" class="modal-overlay" onclick="if(event.target===this) closePhotoManagerModal()">
+
+  <div class="modal-card" style="width:min(96vw,1100px);max-height:90vh;overflow:auto;">
+    <button class="modal-close" id="photoManagerCloseBtn" type="button">&times;</button>
+
+
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
+      <div>
+        <h3 id="photoManagerTitle" style="margin:0;">Outreach Photo Gallery</h3>
+        <p id="photoManagerSubtext" class="smallmuted" style="margin:6px 0 0;">All uploaded photos</p>
+      </div>
+
+      <div class="toolbar-row">
+       <button id="photoManagerDeleteSelectedBtn" class="danger-btn hidden" type="button">
+  Delete Selected
+</button>
+
+        </button>
+        <button class="ghost-btn" type="button" onclick="closePhotoManagerModal()">
+          Close
+        </button>
+      </div>
+    </div>
+
+    <div class="divider"></div>
+
+    <div id="photoManagerGrid" class="photo-manager-grid"></div>
+    <p id="photoManagerFeedback" class="smallmuted" style="margin-top:12px;"></p>
+  </div>
+</div>
+
 </body>
 </html>
