@@ -856,6 +856,131 @@ input, textarea, select, button{
 }
 
 
+/* ===== PHOTO MODAL GRID ===== */
+.photo-modal-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr); /* 3 columns */
+  gap: 12px;
+  padding: 10px;
+}
+
+/* Responsive (mobile friendly) */
+@media (max-width: 900px) {
+  .photo-modal-grid {
+    grid-template-columns: repeat(2, 1fr);
+  }
+}
+
+@media (max-width: 500px) {
+  .photo-modal-grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* Each photo card */
+.photo-card {
+  position: relative;
+  border-radius: 14px;
+  overflow: hidden;
+  background: #111;
+  box-shadow: 0 4px 14px rgba(0,0,0,0.3);
+}
+
+/* Image */
+.photo-card img {
+  width: 100%;
+  height: 180px;
+  object-fit: cover;
+  display: block;
+}
+
+/* Caption */
+.photo-card .gcap {
+  padding: 8px;
+  font-size: 13px;
+  color: #ddd;
+}
+
+/* Checkbox overlay */
+.photo-card input[type="checkbox"] {
+  position: absolute;
+  top: 8px;
+  left: 8px;
+  transform: scale(1.2);
+  z-index: 2;
+}
+
+.photo-card:hover {
+  transform: translateY(-4px);
+  transition: 0.2s ease;
+}
+
+.photo-modal-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:14px;
+}
+
+.photo-manager-card{
+  border:1px solid var(--line);
+  border-radius:16px;
+  overflow:hidden;
+  background:rgba(255,255,255,.03);
+  box-shadow:var(--shadow);
+  height:100%;
+}
+
+.photo-manager-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+}
+
+.photo-manager-body{
+  padding:10px 12px;
+}
+
+.photo-manager-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:8px;
+}
+
+.photo-manager-caption{
+  color:var(--muted);
+  font-size:13px;
+  word-break:break-word;
+}
+
+.photo-manager-loadmore-card{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:220px;
+}
+
+@media (max-width: 900px){
+  .photo-modal-grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width: 600px){
+  .photo-modal-grid{
+    grid-template-columns:1fr;
+  }
+
+  .photo-manager-card img{
+    height:200px;
+  }
+}
+
+
   </style>
 </head>
 <body>
@@ -1267,11 +1392,11 @@ input, textarea, select, button{
   orderBy,
   where,
   limit,
-  startAfter
+  startAfter,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
-
   import { firebaseConfig } from "./firebase-config.js";
+  import heic2any from "https://esm.sh/heic2any@0.0.4";
 
   const app = initializeApp(firebaseConfig);
   const auth = getAuth(app);
@@ -2026,7 +2151,7 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
               onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
               onclick="openGalleryImage(this)">
             <div class="gcap">
-              ${outreachAdminState[outreach.id] || isSuperAdmin ? `
+              ${outreachAdminState[outreach.id] ? `
                 <div class="photo-toolbar">
                   <label class="select-chip">
                     <input class="admin-photo-select ${escapeHtml(outreach.id)}-photo-check" type="checkbox" data-id="${escapeHtml(photo.id)}">
@@ -2287,7 +2412,16 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
 
           <div class="divider"></div>
 
+
           <h3>Edit Outreach History</h3>
+
+          <label for="${escapeHtml(outreach.id)}-short-name">Gold Subtitle / Short Name</label>
+<input
+  id="${escapeHtml(outreach.id)}-short-name"
+  type="text"
+  value="${escapeHtml(outreach.shortName || "")}"
+  placeholder="e.g. Prayer Fellowship Center">
+
           <label for="${escapeHtml(outreach.id)}-history-title">History Title</label>
           <input id="${escapeHtml(outreach.id)}-history-title" type="text" value="${escapeHtml(outreach.historyTitle || "")}" placeholder="History Title">
 
@@ -2307,26 +2441,35 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
 
           <div class="divider"></div>
 
-          <h3>Upload Photo(s)</h3>
-          <label for="${escapeHtml(outreach.id)}-photo-file">Photos</label>
-          <input
-  id="${escapeHtml(outreach.id)}-photo-file"
-  type="file"
-  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
-  multiple
->
+          ${!isSuperAdmin ? `
+  <h3>Upload Photo(s)</h3>
+  <label for="${escapeHtml(outreach.id)}-photo-file">Photos</label>
+  <input
+    id="${escapeHtml(outreach.id)}-photo-file"
+    type="file"
+    accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+    multiple
+  >
 
-          <label for="${escapeHtml(outreach.id)}-photo-caption">Caption</label>
-          <input id="${escapeHtml(outreach.id)}-photo-caption" type="text" placeholder="Photo caption">
+  <label for="${escapeHtml(outreach.id)}-photo-caption">Caption</label>
+  <input id="${escapeHtml(outreach.id)}-photo-caption" type="text" placeholder="Photo caption">
 
-          <div class="toolbar-row" style="margin-top:12px;">
-            <button class="btn upload-photo-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Upload Photo(s)</button>
-            <button class="danger-btn delete-selected-photos-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Delete Selected</button>
-            <button class="ghost-btn logout-btn" type="button">Logout</button>
-          </div>
-          <p id="${escapeHtml(outreach.id)}-upload-feedback" class="smallmuted"></p>
+  <div class="toolbar-row" style="margin-top:12px;">
+    <button class="btn upload-photo-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Upload Photo(s)</button>
+    <button class="danger-btn delete-selected-photos-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Delete Selected</button>
+    <button class="ghost-btn logout-btn" type="button">Logout</button>
+  </div>
+  <p id="${escapeHtml(outreach.id)}-upload-feedback" class="smallmuted"></p>
 
-          <div class="divider"></div>
+  <div class="divider"></div>
+` : `
+  <div class="toolbar-row" style="margin-top:12px;">
+    <button class="ghost-btn logout-btn" type="button">Logout</button>
+  </div>
+  <div class="divider"></div>
+`}
+
+
 
           <h3>Post / Edit Announcement</h3>
           <input id="${escapeHtml(outreach.id)}-editing-schedule-id" type="hidden">
@@ -2405,7 +2548,7 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
         <input
   type="file"
   id="worker-photo-${escapeHtml(outreach.id)}"
-  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
+  accept="image/*,.heic,.heif"
 >
 
         <div class="worker-admin-actions">
@@ -2530,7 +2673,7 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
                 <input id="${escapeHtml(outreach.id)}-member-name" type="text" placeholder="Full Name" value="${escapeHtml(toDisplayName(savedMemberName))}">
 
                 <label for="${escapeHtml(outreach.id)}-member-photo">Photo</label>
-                <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*">
+                <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*,.heic,.heif"*">
 
                 <label for="${escapeHtml(outreach.id)}-member-message">Optional Message / Prayer Request</label>
                 <textarea id="${escapeHtml(outreach.id)}-member-message" placeholder="Optional message or prayer request"></textarea>
@@ -2586,22 +2729,23 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
             </div>
           </div>
 
-          ${(isSuperAdmin) ? `
-            <div class="panel" style="grid-column:1/-1;">
-              <div class="admin-card" style="padding:16px;">
-                <h3>⚠️ Super Admin Outreach Controls</h3>
-                <p class="smallmuted">Delete this outreach and all related components.</p>
-                <div class="toolbar-row">
-                  <button
-      class="ghost-btn open-photo-manager-btn"
-      type="button"
-      data-outreach="${escapeHtml(outreach.id)}">
-      Open Photo Gallery Panel
-    </button>
-                </div>
-              </div>
-            </div>
-          ` : ""}
+         ${(isSuperAdmin) ? `
+  <div class="panel" style="grid-column:1/-1;">
+    <div class="admin-card" style="padding:16px;">
+      <h3>⚠️ Super Admin Outreach Controls</h3>
+      <p class="smallmuted">Delete this outreach and all related components.</p>
+      <div class="toolbar-row">
+        <button
+          class="danger-btn delete-outreach-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreach.id)}"
+          data-name="${escapeHtml(outreach.name || outreach.id)}">
+          Delete Outreach
+        </button>
+      </div>
+    </div>
+  </div>
+` : ""}
 
           ${buildAdminSection(outreach)}
         </div>
@@ -3129,85 +3273,134 @@ async function uploadPhotos(outreachId) {
   }
 }
 
-  async function deleteOutreachCompletely(outreachId, outreachName) {
-    if (!currentUser || !isSuperAdmin) {
-      alert("Only super admin can delete an outreach.");
-      return;
-    }
-
-    const confirmed = confirm(
-      `Delete outreach "${outreachName}" and all its related components?\n\n` +
-      `This will remove:\n` +
-      `- outreach info\n` +
-      `- outreach photos\n` +
-      `- outreach schedules\n` +
-      `- outreach members\n` +
-      `- schedule reactions\n` +
-      `- outreach admin entries\n\n` +
-      `This action cannot be undone.`
-    );
-
-    if (!confirmed) return;
-
-    try {
-      const photoSnap = await getDocs(collection(db, "outreachPhotos"));
-      for (const photoDoc of photoSnap.docs) {
-        const data = photoDoc.data();
-        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
-          if (data.storagePath) {
-            try { await deleteObject(ref(storage, data.storagePath)); } catch {}
-          }
-          await deleteDoc(doc(db, "outreachPhotos", photoDoc.id));
-        }
-      }
-
-      const scheduleSnap = await getDocs(collection(db, "outreachSchedules"));
-      const scheduleIds = [];
-      for (const scheduleDoc of scheduleSnap.docs) {
-        const data = scheduleDoc.data();
-        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
-          scheduleIds.push(scheduleDoc.id);
-          await deleteDoc(doc(db, "outreachSchedules", scheduleDoc.id));
-        }
-      }
-
-      const reactionSnap = await getDocs(collection(db, "scheduleReactions"));
-      for (const reactionDoc of reactionSnap.docs) {
-        const data = reactionDoc.data();
-        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase() || scheduleIds.includes(data.scheduleId)) {
-          await deleteDoc(doc(db, "scheduleReactions", reactionDoc.id));
-        }
-      }
-
-      const memberSnap = await getDocs(collection(db, "outreachMembers"));
-      for (const memberDoc of memberSnap.docs) {
-        const data = memberDoc.data();
-        if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
-          if (data.photoStoragePath) {
-            try { await deleteObject(ref(storage, data.photoStoragePath)); } catch {}
-          }
-          await deleteDoc(doc(db, "outreachMembers", memberDoc.id));
-        }
-      }
-
-      const adminMembersSnap = await getDocs(collection(db, "outreachAdmins", outreachId, "members"));
-      for (const adminDoc of adminMembersSnap.docs) {
-        await deleteDoc(doc(db, "outreachAdmins", outreachId, "members", adminDoc.id));
-      }
-
-      await deleteDoc(doc(db, "outreaches", outreachId));
-
-      delete selectedPhotoIds[outreachId];
-      delete outreachAdminState[outreachId];
-      clearMemberSession(outreachId);
-
-      alert(`Outreach "${outreachName}" and its related components were deleted.`);
-      await initPage();
-    } catch (error) {
-      console.error("Delete outreach failed:", error);
-      alert("Delete outreach failed: " + error.message);
-    }
+ async function deleteOutreachCompletely(outreachId, outreachName = "") {
+  if (!currentUser || !isSuperAdmin) {
+    alert("Only super admin can delete an outreach.");
+    return;
   }
+
+  if (!outreachId) {
+    alert("Missing outreach ID.");
+    return;
+  }
+
+  const confirmed = confirm(
+    `Delete outreach "${outreachName || outreachId}" and all related data?\n\n` +
+    `This will delete:\n` +
+    `• outreach document\n` +
+    `• outreach photos\n` +
+    `• outreach schedules\n` +
+    `• schedule responses\n` +
+    `• outreach members\n` +
+    `• outreach workers\n` +
+    `• outreach admin records\n\n` +
+    `This cannot be undone.`
+  );
+
+  if (!confirmed) return;
+
+  try {
+    // 1) delete photos + storage files
+    const photoSnap = await getDocs(collection(db, "outreachPhotos"));
+    for (const photoDoc of photoSnap.docs) {
+      const data = photoDoc.data();
+
+      if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+        if (data.storagePath) {
+          try {
+            await deleteObject(ref(storage, data.storagePath));
+          } catch (storageError) {
+            console.warn("Photo storage delete warning:", storageError);
+          }
+        }
+
+        await deleteDoc(doc(db, "outreachPhotos", photoDoc.id));
+      }
+    }
+
+    // 2) delete schedules and collect schedule ids
+    const scheduleIds = [];
+    const scheduleSnap = await getDocs(collection(db, "outreachSchedules"));
+
+    for (const scheduleDoc of scheduleSnap.docs) {
+      const data = scheduleDoc.data();
+
+      if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+        scheduleIds.push(scheduleDoc.id);
+        await deleteDoc(doc(db, "outreachSchedules", scheduleDoc.id));
+      }
+    }
+
+    // 3) delete reactions connected to this outreach or its schedules
+    const reactionSnap = await getDocs(collection(db, "scheduleReactions"));
+    for (const reactionDoc of reactionSnap.docs) {
+      const data = reactionDoc.data();
+
+      if (
+        (data.outreach || "").toLowerCase() === outreachId.toLowerCase() ||
+        scheduleIds.includes(data.scheduleId)
+      ) {
+        await deleteDoc(doc(db, "scheduleReactions", reactionDoc.id));
+      }
+    }
+
+    // 4) delete members + member photos
+    const memberSnap = await getDocs(collection(db, "outreachMembers"));
+    for (const memberDoc of memberSnap.docs) {
+      const data = memberDoc.data();
+
+      if ((data.outreach || "").toLowerCase() === outreachId.toLowerCase()) {
+        if (data.photoStoragePath) {
+          try {
+            await deleteObject(ref(storage, data.photoStoragePath));
+          } catch (storageError) {
+            console.warn("Member photo delete warning:", storageError);
+          }
+        }
+
+        await deleteDoc(doc(db, "outreachMembers", memberDoc.id));
+      }
+    }
+
+    // 5) delete workers + worker photos
+    const workerSnap = await getDocs(collection(db, "outreachWorkers"));
+    for (const workerDoc of workerSnap.docs) {
+      const data = workerDoc.data();
+
+      if ((data.outreachId || "").toLowerCase() === outreachId.toLowerCase()) {
+        if (data.photoStoragePath) {
+          try {
+            await deleteObject(ref(storage, data.photoStoragePath));
+          } catch (storageError) {
+            console.warn("Worker photo delete warning:", storageError);
+          }
+        }
+
+        await deleteDoc(doc(db, "outreachWorkers", workerDoc.id));
+      }
+    }
+
+    // 6) delete outreach admin member records
+    const adminMembersSnap = await getDocs(collection(db, "outreachAdmins", outreachId, "members"));
+    for (const adminDoc of adminMembersSnap.docs) {
+      await deleteDoc(doc(db, "outreachAdmins", outreachId, "members", adminDoc.id));
+    }
+
+    // 7) delete main outreach document
+    await deleteDoc(doc(db, "outreaches", outreachId));
+
+    // 8) cleanup local state
+    delete selectedPhotoIds[outreachId];
+    delete outreachAdminState[outreachId];
+    clearMemberSession(outreachId);
+
+    alert(`Outreach "${outreachName || outreachId}" was deleted successfully.`);
+    await initPage();
+  } catch (error) {
+    console.error("Delete outreach failed:", error);
+    alert("Delete outreach failed: " + error.message);
+  }
+}
 
   let currentPhotoManagerOutreachId = "";
 
@@ -3225,12 +3418,12 @@ function updatePhotoManagerSelectAllState(outreachId) {
   const photos = outreach.photos || [];
   const selectablePhotos = photos.filter(photo => photo.id);
 
-  if (!(outreachAdminState[outreachId] || isSuperAdmin) || !selectablePhotos.length) {
-    selectAllWrap.classList.add("hidden");
-    selectAllBox.checked = false;
-    selectAllBox.indeterminate = false;
-    return;
-  }
+  if (!outreachAdminState[outreachId] || !selectablePhotos.length) {
+  selectAllWrap.classList.add("hidden");
+  selectAllBox.checked = false;
+  selectAllBox.indeterminate = false;
+  return;
+}
 
   selectAllWrap.classList.remove("hidden");
 
@@ -3254,6 +3447,7 @@ function bindPhotoManagerSelectAll(outreachId) {
   const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
   const outreach = getOutreachById(outreachId);
 
+  if (!outreachAdminState[outreachId]) return;
   if (!selectAllBox || !outreach) return;
   if (selectAllBox.dataset.bound === "true") return;
 
@@ -3301,7 +3495,7 @@ const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
     selectedPhotoIds[outreachId] = new Set();
   }
 
-  const allowDelete = !!(outreachAdminState[outreachId] || isSuperAdmin);
+  const allowDelete = !!outreachAdminState[outreachId];
 
   title.textContent = `${outreach.name} Photo Gallery`;
   subtext.textContent = `Loading photos...`;
@@ -3357,7 +3551,7 @@ function renderPhotoManagerGrid(outreachId) {
   const outreach = getOutreachById(outreachId);
   const grid = document.getElementById("photoManagerGrid");
   const subtext = document.getElementById("photoManagerSubtext");
-  const allowDelete = !!(outreachAdminState[outreachId] || isSuperAdmin);
+  const allowDelete = !!outreachAdminState[outreachId];
 
   if (!outreach || !grid) return;
 
@@ -3371,57 +3565,59 @@ function renderPhotoManagerGrid(outreachId) {
   }
 
   grid.innerHTML = `
-    ${photos.map(photo => `
-      <div class="photo-manager-card">
-        <img
-          src="${escapeHtml(photo.url || "srm.png")}"
-          alt="${escapeHtml(photo.caption || "")}"
-          data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
-          loading="lazy"
-          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
-          onclick="openGalleryImage(this)"
-        >
+    <div class="photo-modal-grid">
+      ${photos.map(photo => `
+        <div class="photo-manager-card">
+          <img
+            src="${escapeHtml(photo.url || "srm.png")}"
+            alt="${escapeHtml(photo.caption || "")}"
+            data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+            loading="lazy"
+            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
+            onclick="openGalleryImage(this)"
+          >
 
-        <div class="photo-manager-body">
-          ${allowDelete ? `
-            <div class="photo-manager-top">
-              <label class="select-chip">
-                <input
-                  class="photo-manager-check"
-                  type="checkbox"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-id="${escapeHtml(photo.id)}"
-                  ${selectedPhotoIds[outreachId]?.has(photo.id) ? "checked" : ""}
-                >
-                Select
-              </label>
+          <div class="photo-manager-body">
+            ${allowDelete ? `
+              <div class="photo-manager-top">
+                <label class="select-chip">
+                  <input
+                    class="photo-manager-check"
+                    type="checkbox"
+                    data-outreach="${escapeHtml(outreachId)}"
+                    data-id="${escapeHtml(photo.id)}"
+                    ${selectedPhotoIds[outreachId]?.has(photo.id) ? "checked" : ""}
+                  >
+                  Select
+                </label>
 
-              <button
-                class="danger-btn"
-                type="button"
-                style="padding:8px 10px;font-size:12px;"
-                onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
-                Delete
-              </button>
-            </div>
-          ` : ""}
+                <button
+                  class="danger-btn"
+                  type="button"
+                  style="padding:8px 10px;font-size:12px;"
+                  onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
+                  Delete
+                </button>
+              </div>
+            ` : ""}
 
-          ${photo.caption ? `
-            <div class="photo-manager-caption">${escapeHtml(photo.caption)}</div>
-          ` : ""}
+            ${photo.caption ? `
+              <div class="photo-manager-caption">${escapeHtml(photo.caption)}</div>
+            ` : ""}
+          </div>
         </div>
-      </div>
-    `).join("")}
+      `).join("")}
 
-    ${photoPagingState[outreachId] && !photoPagingState[outreachId].done ? `
-      <div class="photo-manager-card" style="display:flex;align-items:center;justify-content:center;min-height:180px;">
-        <div class="photo-manager-body" style="text-align:center;">
-          <button class="btn" type="button" onclick="loadMorePhotoManagerPhotos('${escapeHtml(outreachId)}')">
-            Load More Photos
-          </button>
+      ${photoPagingState[outreachId] && !photoPagingState[outreachId].done ? `
+        <div class="photo-manager-card photo-manager-loadmore-card">
+          <div class="photo-manager-body" style="text-align:center;">
+            <button class="btn" type="button" onclick="loadMorePhotoManagerPhotos('${escapeHtml(outreachId)}')">
+              Load More Photos
+            </button>
+          </div>
         </div>
-      </div>
-    ` : ""}
+      ` : ""}
+    </div>
   `;
 
   if (subtext) {
@@ -3432,7 +3628,7 @@ function renderPhotoManagerGrid(outreachId) {
   }
 
   bindPhotoManagerCheckboxes();
-updatePhotoManagerSelectAllState(outreachId);
+  updatePhotoManagerSelectAllState(outreachId);
 }
 
 window.loadMorePhotoManagerPhotos = async function(outreachId) {
@@ -3503,10 +3699,11 @@ function bindPhotoManagerCheckboxes() {
 
   async function saveOutreachHistory(outreachId) {
     const feedback = document.getElementById(`${outreachId}-history-feedback`);
-    const historyTitle = document.getElementById(`${outreachId}-history-title`)?.value.trim() || "";
-    const address = document.getElementById(`${outreachId}-history-address`)?.value.trim() || "";
-    const description = document.getElementById(`${outreachId}-history-description`)?.value.trim() || "";
-    const historyText = document.getElementById(`${outreachId}-history-text`)?.value.trim() || "";
+    const shortName = document.getElementById(`${outreachId}-short-name`)?.value.trim() || "";
+const historyTitle = document.getElementById(`${outreachId}-history-title`)?.value.trim() || "";
+const address = document.getElementById(`${outreachId}-history-address`)?.value.trim() || "";
+const description = document.getElementById(`${outreachId}-history-description`)?.value.trim() || "";
+const historyText = document.getElementById(`${outreachId}-history-text`)?.value.trim() || "";
 
     if (!outreachAdminState[outreachId] && !isSuperAdmin) {
       if (feedback) {
@@ -3531,13 +3728,14 @@ function bindPhotoManagerCheckboxes() {
       }
 
       await setDoc(doc(db, "outreaches", outreachId), {
-        historyTitle,
-        historyText,
-        address,
-        description,
-        updatedAt: serverTimestamp(),
-        updatedBy: currentUser?.email || currentUser?.uid || "admin"
-      }, { merge: true });
+  shortName,
+  historyTitle,
+  historyText,
+  address,
+  description,
+  updatedAt: serverTimestamp(),
+  updatedBy: currentUser?.email || currentUser?.uid || "admin"
+}, { merge: true });
 
       if (feedback) {
         feedback.textContent = "Outreach history updated successfully.";
@@ -4194,7 +4392,7 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
  if (currentUser) {
   isSuperAdmin = await isUserSuperAdmin(currentUser);
   for (const outreach of currentOutreaches) {
-    outreachAdminState[outreach.id] = isSuperAdmin || await isOutreachAdmin(currentUser, outreach.id);
+    outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
   }
 } else {
   isSuperAdmin = false;
@@ -4787,24 +4985,59 @@ window.deleteWorker = async function(workerId, photoStoragePath, outreachId) {
 async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
   if (!file) throw new Error("No file provided.");
 
-  const fileName = String(file.name || "").toLowerCase();
+  const originalName = String(file.name || "photo");
+  const fileName = originalName.toLowerCase();
   const fileType = String(file.type || "").toLowerCase();
 
-  const isSupportedInput =
-    fileType.startsWith("image/") ||
-    fileName.endsWith(".jpg") ||
-    fileName.endsWith(".jpeg") ||
-    fileName.endsWith(".png") ||
-    fileName.endsWith(".webp");
+  const isHeicLike =
+    fileType === "image/heic" ||
+    fileType === "image/heif" ||
+    fileName.endsWith(".heic") ||
+    fileName.endsWith(".heif");
 
-  if (!isSupportedInput) {
-    if (fileName.endsWith(".heic") || fileName.endsWith(".heif")) {
-      throw new Error("HEIC/HEIF photos are not supported by this browser. Please change phone camera format to JPG or upload a JPG/PNG/WebP image.");
+  let workingFile = file;
+
+  if (isHeicLike) {
+    try {
+      const convertedBlob = await heic2any({
+        blob: file,
+        toType: "image/jpeg",
+        quality
+      });
+
+      const jpegBlob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+
+      const safeBaseName = originalName
+        .replace(/\.[^.]+$/, "")
+        .replace(/[^a-zA-Z0-9_-]+/g, "-")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
+
+      workingFile = new File([jpegBlob], `${safeBaseName || "photo"}.jpg`, {
+        type: "image/jpeg",
+        lastModified: Date.now()
+      });
+    } catch (err) {
+      console.error("HEIC conversion failed:", err);
+      throw new Error("This HEIC/HEIF photo could not be converted on this device. Try another photo or turn off HEIF in camera settings.");
     }
-    throw new Error("Unsupported image format. Please use JPG, PNG, or WebP.");
   }
 
-  const objectUrl = URL.createObjectURL(file);
+  const workingName = String(workingFile.name || "").toLowerCase();
+  const workingType = String(workingFile.type || "").toLowerCase();
+
+  const isSupportedInput =
+    workingType.startsWith("image/") ||
+    workingName.endsWith(".jpg") ||
+    workingName.endsWith(".jpeg") ||
+    workingName.endsWith(".png") ||
+    workingName.endsWith(".webp");
+
+  if (!isSupportedInput) {
+    throw new Error("Unsupported image format. Please use JPG, PNG, WebP, or HEIC.");
+  }
+
+  const objectUrl = URL.createObjectURL(workingFile);
 
   try {
     const img = await new Promise((resolve, reject) => {
@@ -4842,7 +5075,7 @@ async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
       throw new Error("Failed to convert image.");
     }
 
-    const safeBaseName = (file.name || "photo")
+    const safeBaseName = (workingFile.name || "photo")
       .replace(/\.[^.]+$/, "")
       .replace(/[^a-zA-Z0-9_-]+/g, "-")
       .replace(/-+/g, "-")
@@ -4853,24 +5086,22 @@ async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
       lastModified: Date.now()
     });
   } catch (err) {
+    console.error("normalizeImageFile failed:", err);
+
     const fallbackType =
-      fileType === "image/jpeg" || fileType === "image/jpg"
+      workingType === "image/jpeg" || workingType === "image/jpg"
         ? "image/jpeg"
-        : fileType === "image/png"
+        : workingType === "image/png"
         ? "image/png"
-        : fileType === "image/webp"
+        : workingType === "image/webp"
         ? "image/webp"
         : "";
 
     if (fallbackType) {
-      return new File([file], file.name || `photo.${fallbackType.split("/")[1]}`, {
+      return new File([workingFile], workingFile.name || `photo.${fallbackType.split("/")[1]}`, {
         type: fallbackType,
         lastModified: Date.now()
       });
-    }
-
-    if (fileName.endsWith(".heic") || fileName.endsWith(".heif")) {
-      throw new Error("This photo is HEIC/HEIF and could not be processed here. Please convert it to JPG first or set your phone camera to Most Compatible/JPG.");
     }
 
     throw err;
@@ -4882,10 +5113,10 @@ async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
 async function deleteSinglePhoto(outreachId, photoId, storagePath = "") {
   if (!photoId) return;
 
-  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
-    alert("Only admin can delete photos.");
-    return;
-  }
+  if (!outreachAdminState[outreachId]) {
+  alert("Only the assigned outreach admin can delete photos.");
+  return;
+}
 
   if (!confirm("Delete this photo?")) return;
 
@@ -4940,10 +5171,10 @@ async function deleteSinglePhoto(outreachId, photoId, storagePath = "") {
 
 
 async function deleteSelectedPhotos(outreachId, keepModalOpen = false) {
-  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
-    alert("Only admin can delete selected photos.");
-    return;
-  }
+  if (!outreachAdminState[outreachId]) {
+  alert("Only the assigned outreach admin can delete photos.");
+  return;
+}
 
   const ids = Array.from(selectedPhotoIds[outreachId] || []);
   if (!ids.length) {
