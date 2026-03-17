@@ -5,14 +5,12 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Solid Rock Ministries</title>
   <meta name="description" content="Solid Rock Ministries — established in Baguio City, Philippines (1992)." />
-  <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
-<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
-<link rel="icon" type="image/png" sizes="96x96" href="/favicon-96x96.png">
-<link rel="icon" type="image/svg+xml" href="/favicon.svg">
-<link rel="shortcut icon" href="/favicon.ico">
-<link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
-<link rel="manifest" href="/site.webmanifest">
-<meta name="theme-color" content="#0b1220">
+
+  <link rel="icon" type="image/svg+xml" href="/favicon.svg">
+  <link rel="shortcut icon" href="/favicon.ico">
+  <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
+  <meta name="theme-color" content="#0b1220">
+
   <style>
     :root{
       --bg:#0b1220;
@@ -1269,7 +1267,7 @@ input, textarea, select, button{
     orderBy,
     where
   } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
-  import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
+  import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
 
   import { firebaseConfig } from "./firebase-config.js";
 
@@ -1337,19 +1335,10 @@ input, textarea, select, button{
       category: "Worship • Prayer • Bible Sharing",
       badgeText: "",
       fallbackLogo: "srm.png",
-      prayerFocus: [
-        "Salvation & spiritual growth",
-        "Healing & provision for families",
-        "Unity and stronger faith",
-        "Open doors for outreach in Germany"
-      ],
-      volunteers: [
-        "Song leading / musicians",
-        "Setup & cleanup",
-        "Snacks / fellowship food",
-        "Welcoming newcomers"
-      ],
+      ministryScope: [],
       fallbackPhotos: [],
+      prayerFocus: [],
+volunteers: [],
       fallbackSchedules: [
         {
           title: "Sunday Fellowship",
@@ -1359,6 +1348,8 @@ input, textarea, select, button{
         }
       ]
     },
+
+
     {
       id: "namatec",
       name: "Namatec Outreach",
@@ -1372,18 +1363,8 @@ input, textarea, select, button{
       category: "Prayer • Discipleship • Evangelism",
       badgeText: "",
       fallbackLogo: "srm.png",
-      prayerFocus: [
-        "Salvation & spiritual growth",
-        "Healing & provision for families",
-        "Unity and stronger faith",
-        "Open doors for outreach in the community"
-      ],
-      volunteers: [
-        "Song leading / musicians",
-        "Setup & cleanup",
-        "Snacks / fellowship food",
-        "Welcoming newcomers"
-      ],
+      prayerFocus: [],
+volunteers: [],
       fallbackPhotos: [],
       fallbackSchedules: []
     }
@@ -1643,34 +1624,41 @@ function getOutreachDisplayName(outreachId) {
     `;
   }
 
-  function startCountdowns() {
-    if (countdownTimer) clearInterval(countdownTimer);
+ function startCountdowns() {
+  if (countdownTimer) clearInterval(countdownTimer);
 
-    const paint = () => {
-      document.querySelectorAll("[data-countdown]").forEach(wrap => {
-        const target = wrap.getAttribute("data-countdown");
-        const cd = computeCountdown(target);
-        wrap.innerHTML = `
-          <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
-          <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
-          <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
-          <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
-        `;
-      });
-    };
+  const paint = () => {
+    document.querySelectorAll("[data-countdown]").forEach(wrap => {
+      const target = wrap.getAttribute("data-countdown");
+      const cd = computeCountdown(target);
 
-    paint();
-    countdownTimer = setInterval(paint, 1000);
+      if (cd.expired) {
+        const card = wrap.closest("[data-schedule-card='true']");
+        if (card) {
+          card.remove();
+        } else {
+          wrap.innerHTML = `
+            <div class="timebox"><div class="num">0</div><div class="lab">Days</div></div>
+            <div class="timebox"><div class="num">00</div><div class="lab">Hours</div></div>
+            <div class="timebox"><div class="num">00</div><div class="lab">Minutes</div></div>
+            <div class="timebox"><div class="num">00</div><div class="lab">Seconds</div></div>
+          `;
+        }
+        return;
+      }
 
-    if (cd.expired) {
-  const card = wrap.closest("[data-schedule-card='true']");
-  if (card) {
-    card.remove();
-  }
-  return;
+      wrap.innerHTML = `
+        <div class="timebox"><div class="num">${cd.days}</div><div class="lab">Days</div></div>
+        <div class="timebox"><div class="num">${cd.hours}</div><div class="lab">Hours</div></div>
+        <div class="timebox"><div class="num">${cd.mins}</div><div class="lab">Minutes</div></div>
+        <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
+      `;
+    });
+  };
+
+  paint();
+  countdownTimer = setInterval(paint, 1000);
 }
-
-  }
 
   function attachGalleryDrag() {
   document.querySelectorAll(".gallery").forEach(gallery => {
@@ -1805,29 +1793,27 @@ function getOutreachDisplayName(outreachId) {
   }
 
   async function ensureDefaultOutreachesExist() {
-    for (const outreach of DEFAULT_OUTREACHES) {
-      try {
-        await setDoc(doc(db, "outreaches", outreach.id), {
-          name: outreach.name,
-          shortName: outreach.shortName,
-          location: outreach.location,
-          address: outreach.address,
-          description: outreach.description,
-          historyTitle: outreach.historyTitle,
-          historyText: outreach.historyText,
-          ministryType: outreach.ministryType,
-          category: outreach.category,
-          badgeText: outreach.badgeText,
-          fallbackLogo: outreach.fallbackLogo,
-          prayerFocus: outreach.prayerFocus,
-          volunteers: outreach.volunteers,
-          updatedAt: serverTimestamp()
-        }, { merge: true });
-      } catch (error) {
-        console.error("ensureDefaultOutreachesExist failed:", error);
-      }
+  for (const outreach of DEFAULT_OUTREACHES) {
+    try {
+      await setDoc(doc(db, "outreaches", outreach.id), {
+        name: outreach.name,
+        shortName: outreach.shortName,
+        location: outreach.location,
+        address: outreach.address,
+        description: outreach.description,
+        historyTitle: outreach.historyTitle,
+        historyText: outreach.historyText,
+        ministryType: outreach.ministryType,
+        category: outreach.category,
+        badgeText: outreach.badgeText,
+        fallbackLogo: outreach.fallbackLogo,
+        updatedAt: serverTimestamp()
+      }, { merge: true });
+    } catch (error) {
+      console.error("ensureDefaultOutreachesExist failed:", error);
     }
   }
+}
 
   async function loadOutreaches() {
     try {
@@ -2276,7 +2262,7 @@ function getOutreachDisplayName(outreachId) {
           <input
   id="${escapeHtml(outreach.id)}-photo-file"
   type="file"
-  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
   multiple
 >
 
@@ -2369,7 +2355,7 @@ function getOutreachDisplayName(outreachId) {
         <input
   type="file"
   id="worker-photo-${escapeHtml(outreach.id)}"
-  accept=".jpg,.jpeg,.png,.webp,image/jpeg,image/png,image/webp"
+  accept="image/jpeg,image/png,image/webp,.jpg,.jpeg,.png,.webp"
 >
 
         <div class="worker-admin-actions">
@@ -2418,14 +2404,19 @@ function getOutreachDisplayName(outreachId) {
 
   <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
   ${
-    ((outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || [])).length)
+    (outreach.id === "namatec"
+      ? (outreach.volunteers || [])
+      : (outreach.prayerFocus || [])
+    ).length
       ? `
         <ul class="list">
-          ${(outreach.id === "namatec" ? (outreach.volunteers || []) : (outreach.prayerFocus || []))
-            .map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+          ${(outreach.id === "namatec"
+            ? (outreach.volunteers || [])
+            : (outreach.prayerFocus || [])
+          ).map(item => `<li>${escapeHtml(item)}</li>`).join("")}
         </ul>
       `
-      : `<div style="height:8px;"></div>`
+      : ``
   }
 </div>
 
@@ -3013,7 +3004,7 @@ function getOutreachDisplayName(outreachId) {
   }
 }
 
- async function uploadPhotos(outreachId) {
+async function uploadPhotos(outreachId) {
   const fileInput = document.getElementById(`${outreachId}-photo-file`);
   const captionInput = document.getElementById(`${outreachId}-photo-caption`);
   const feedback = document.getElementById(`${outreachId}-upload-feedback`);
@@ -3031,47 +3022,55 @@ function getOutreachDisplayName(outreachId) {
     feedback.textContent = "Preparing photo(s)...";
     feedback.className = "smallmuted";
 
+    let uploadedCount = 0;
+    let failedNames = [];
+
     for (const originalFile of files) {
-      console.log("Original outreach photo:", {
-        name: originalFile.name,
-        type: originalFile.type,
-        size: originalFile.size
-      });
+      try {
+        const file = await normalizeImageFile(originalFile);
 
-      const file = await normalizeImageFile(originalFile);
+        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/\s+/g, "-")}`;
+        const storagePath = `outreach/${outreachId}/${safeName}`;
+        const storageRef = ref(storage, storagePath);
 
-      console.log("Normalized outreach photo:", {
-        name: file.name,
-        type: file.type,
-        size: file.size
-      });
+        await uploadBytes(storageRef, file, {
+          contentType: file.type || "image/jpeg"
+        });
 
-      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/\s+/g, "-")}`;
-      const storagePath = `outreach/${outreachId}/${safeName}`;
-      const storageRef = ref(storage, storagePath);
+        const url = await getDownloadURL(storageRef);
 
-      await uploadBytes(storageRef, file, {
-        contentType: "image/jpeg"
-      });
+        await addDoc(collection(db, "outreachPhotos"), {
+          outreach: outreachId,
+          caption,
+          url,
+          storagePath,
+          mimeType: file.type || "image/jpeg",
+          fileName: file.name,
+          createdAt: serverTimestamp(),
+          uploadedBy: currentUser?.email || ""
+        });
 
-      const url = await getDownloadURL(storageRef);
-
-      await addDoc(collection(db, "outreachPhotos"), {
-  outreach: outreachId,
-  caption,
-  url,
-  storagePath,
-  mimeType: "image/jpeg",
-  fileName: file.name,
-  createdAt: serverTimestamp(),
-  uploadedBy: currentUser?.email || ""
-});
+        uploadedCount++;
+      } catch (fileError) {
+        console.error("Single file upload failed:", originalFile?.name, fileError);
+        failedNames.push(originalFile?.name || "Unnamed file");
+      }
     }
 
     fileInput.value = "";
     captionInput.value = "";
-    feedback.textContent = "Photo(s) uploaded successfully.";
-    feedback.className = "smallmuted success-text";
+
+    if (uploadedCount && !failedNames.length) {
+      feedback.textContent = "Photo(s) uploaded successfully.";
+      feedback.className = "smallmuted success-text";
+    } else if (uploadedCount && failedNames.length) {
+      feedback.textContent = `Uploaded ${uploadedCount} photo(s), but these failed: ${failedNames.join(", ")}`;
+      feedback.className = "smallmuted error-text";
+    } else {
+      feedback.textContent = `No photos uploaded. Failed files: ${failedNames.join(", ")}`;
+      feedback.className = "smallmuted error-text";
+    }
+
     await initPage();
   } catch (error) {
     console.error("Upload failed:", error);
@@ -3940,32 +3939,45 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   });
 
   async function handleLogout() {
-    try {
-      await signOut(auth);
-      if (els.contactMessagesList) els.contactMessagesList.innerHTML = "";
-      const badgeEl = document.getElementById("contactUnreadBadge");
-      if (badgeEl) badgeEl.textContent = "New: 0";
-      alert("You have logged out.");
-    } catch (error) {
-      alert("Logout failed: " + error.message);
-    }
+  try {
+    closeAdminAccessModal();
+    closeAdminLoginModal();
+    closePhotoManagerModal();
+
+    await signOut(auth);
+
+    currentUser = null;
+    isSuperAdmin = false;
+    outreachAdminState = {};
+
+    if (els.contactMessagesList) els.contactMessagesList.innerHTML = "";
+    const badgeEl = document.getElementById("contactUnreadBadge");
+    if (badgeEl) badgeEl.textContent = "New: 0";
+
+    await initPage();
+    alert("You have logged out and returned to visitor view.");
+  } catch (error) {
+    alert("Logout failed: " + error.message);
   }
+}
 
  async function initPage() {
   renderOutreaches();
   await loadOutreaches();
   await enrichOutreaches();
 
-  if (currentUser) {
-    isSuperAdmin = await isUserSuperAdmin(currentUser);
-    for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id) || isSuperAdmin;
-    }
-  } else {
-    for (const outreach of currentOutreaches) {
-  outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
-}
+ if (currentUser) {
+  isSuperAdmin = await isUserSuperAdmin(currentUser);
+  for (const outreach of currentOutreaches) {
+    outreachAdminState[outreach.id] = isSuperAdmin || await isOutreachAdmin(currentUser, outreach.id);
   }
+} else {
+  isSuperAdmin = false;
+  outreachAdminState = {};
+  for (const outreach of currentOutreaches) {
+    outreachAdminState[outreach.id] = false;
+  }
+}
 
   renderOutreaches();
   updateSuperAdminUI();
@@ -4061,15 +4073,25 @@ async function memberLogin() {
 }
 
 onAuthStateChanged(auth, async (user) => {
-  currentUser = user;
+  currentUser = user || null;
 
   if (user) {
     console.log("Logged in user:", user.email, user.uid);
-    const superCheck = await isUserSuperAdmin(user);
-    console.log("Is super admin?", superCheck);
+    isSuperAdmin = await isUserSuperAdmin(user);
+    console.log("Is super admin?", isSuperAdmin);
     localStorage.setItem("memberUID", user.uid);
   } else {
     localStorage.removeItem("memberUID");
+    isSuperAdmin = false;
+    outreachAdminState = {};
+
+    if (els.contactMessagesList) els.contactMessagesList.innerHTML = "";
+    const badgeEl = document.getElementById("contactUnreadBadge");
+    if (badgeEl) badgeEl.textContent = "New: 0";
+
+    closeAdminAccessModal();
+    closeAdminLoginModal();
+    closePhotoManagerModal();
   }
 
   await initPage();
@@ -4532,13 +4554,30 @@ window.deleteWorker = async function(workerId, photoStoragePath, outreachId) {
 async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
   if (!file) throw new Error("No file provided.");
 
+  const fileName = String(file.name || "").toLowerCase();
+  const fileType = String(file.type || "").toLowerCase();
+
+  const isSupportedInput =
+    fileType.startsWith("image/") ||
+    fileName.endsWith(".jpg") ||
+    fileName.endsWith(".jpeg") ||
+    fileName.endsWith(".png") ||
+    fileName.endsWith(".webp");
+
+  if (!isSupportedInput) {
+    if (fileName.endsWith(".heic") || fileName.endsWith(".heif")) {
+      throw new Error("HEIC/HEIF photos are not supported by this browser. Please change phone camera format to JPG or upload a JPG/PNG/WebP image.");
+    }
+    throw new Error("Unsupported image format. Please use JPG, PNG, or WebP.");
+  }
+
   const objectUrl = URL.createObjectURL(file);
 
   try {
     const img = await new Promise((resolve, reject) => {
       const image = new Image();
       image.onload = () => resolve(image);
-      image.onerror = () => reject(new Error("Selected file could not be read as an image."));
+      image.onerror = () => reject(new Error("Image decoding failed on this device."));
       image.src = objectUrl;
     });
 
@@ -4576,12 +4615,32 @@ async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
       .replace(/-+/g, "-")
       .replace(/^-|-$/g, "");
 
-    const jpegFileName = `${safeBaseName || "photo"}.jpg`;
-
-    return new File([blob], jpegFileName, {
+    return new File([blob], `${safeBaseName || "photo"}.jpg`, {
       type: "image/jpeg",
       lastModified: Date.now()
     });
+  } catch (err) {
+    const fallbackType =
+      fileType === "image/jpeg" || fileType === "image/jpg"
+        ? "image/jpeg"
+        : fileType === "image/png"
+        ? "image/png"
+        : fileType === "image/webp"
+        ? "image/webp"
+        : "";
+
+    if (fallbackType) {
+      return new File([file], file.name || `photo.${fallbackType.split("/")[1]}`, {
+        type: fallbackType,
+        lastModified: Date.now()
+      });
+    }
+
+    if (fileName.endsWith(".heic") || fileName.endsWith(".heif")) {
+      throw new Error("This photo is HEIC/HEIF and could not be processed here. Please convert it to JPG first or set your phone camera to Most Compatible/JPG.");
+    }
+
+    throw err;
   } finally {
     URL.revokeObjectURL(objectUrl);
   }
