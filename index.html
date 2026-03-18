@@ -2413,33 +2413,35 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
           <div class="divider"></div>
 
 
-          <h3>Edit Outreach History</h3>
+         ${outreachAdminState[outreach.id] ? `
+  <h3>Edit Outreach History</h3>
 
-          <label for="${escapeHtml(outreach.id)}-short-name">Gold Subtitle / Short Name</label>
-<input
-  id="${escapeHtml(outreach.id)}-short-name"
-  type="text"
-  value="${escapeHtml(outreach.shortName || "")}"
-  placeholder="e.g. Prayer Fellowship Center">
+  <label for="${escapeHtml(outreach.id)}-short-name">Gold Subtitle / Short Name</label>
+  <input
+    id="${escapeHtml(outreach.id)}-short-name"
+    type="text"
+    value="${escapeHtml(outreach.shortName || "")}"
+    placeholder="e.g. Prayer Fellowship Center">
 
-          <label for="${escapeHtml(outreach.id)}-history-title">History Title</label>
-          <input id="${escapeHtml(outreach.id)}-history-title" type="text" value="${escapeHtml(outreach.historyTitle || "")}" placeholder="History Title">
+  <label for="${escapeHtml(outreach.id)}-history-title">History Title</label>
+  <input id="${escapeHtml(outreach.id)}-history-title" type="text" value="${escapeHtml(outreach.historyTitle || "")}" placeholder="History Title">
 
-          <label for="${escapeHtml(outreach.id)}-history-address">Outreach Address</label>
-          <input id="${escapeHtml(outreach.id)}-history-address" type="text" value="${escapeHtml(outreach.address || "")}" placeholder="Outreach Address">
+  <label for="${escapeHtml(outreach.id)}-history-address">Outreach Address</label>
+  <input id="${escapeHtml(outreach.id)}-history-address" type="text" value="${escapeHtml(outreach.address || "")}" placeholder="Outreach Address">
 
-          <label for="${escapeHtml(outreach.id)}-history-description">Short Description</label>
-          <input id="${escapeHtml(outreach.id)}-history-description" type="text" value="${escapeHtml(outreach.description || "")}" placeholder="Short Description">
+  <label for="${escapeHtml(outreach.id)}-history-description">Short Description</label>
+  <input id="${escapeHtml(outreach.id)}-history-description" type="text" value="${escapeHtml(outreach.description || "")}" placeholder="Short Description">
 
-          <label for="${escapeHtml(outreach.id)}-history-text">History Text</label>
-          <textarea id="${escapeHtml(outreach.id)}-history-text" placeholder="Write outreach history here...">${escapeHtml(outreach.historyText || "")}</textarea>
+  <label for="${escapeHtml(outreach.id)}-history-text">History Text</label>
+  <textarea id="${escapeHtml(outreach.id)}-history-text" placeholder="Write outreach history here...">${escapeHtml(outreach.historyText || "")}</textarea>
 
-          <div class="toolbar-row" style="margin-top:12px;">
-            <button class="btn save-history-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Save History</button>
-          </div>
-          <p id="${escapeHtml(outreach.id)}-history-feedback" class="smallmuted"></p>
+  <div class="toolbar-row" style="margin-top:12px;">
+    <button class="btn save-history-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Save History</button>
+  </div>
+  <p id="${escapeHtml(outreach.id)}-history-feedback" class="smallmuted"></p>
 
-          <div class="divider"></div>
+  <div class="divider"></div>
+` : ""}
 
           ${!isSuperAdmin ? `
   <h3>Upload Photo(s)</h3>
@@ -3705,21 +3707,21 @@ const address = document.getElementById(`${outreachId}-history-address`)?.value.
 const description = document.getElementById(`${outreachId}-history-description`)?.value.trim() || "";
 const historyText = document.getElementById(`${outreachId}-history-text`)?.value.trim() || "";
 
-    if (!outreachAdminState[outreachId] && !isSuperAdmin) {
-      if (feedback) {
-        feedback.textContent = "Only the assigned outreach admin can edit this history.";
-        feedback.className = "smallmuted error-text";
-      }
-      return;
-    }
+    if (!outreachAdminState[outreachId]) {
+  if (feedback) {
+    feedback.textContent = "Only the assigned outreach admin can edit this history.";
+    feedback.className = "smallmuted error-text";
+  }
+  return;
+}
 
-    if (!historyTitle || !historyText) {
-      if (feedback) {
-        feedback.textContent = "Please fill in at least history title and history text.";
-        feedback.className = "smallmuted error-text";
-      }
-      return;
-    }
+   if (!historyTitle && !historyText && !shortName && !address && !description) {
+  if (feedback) {
+    feedback.textContent = "Nothing to save.";
+    feedback.className = "smallmuted error-text";
+  }
+  return;
+}
 
     try {
       if (feedback) {
