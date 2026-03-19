@@ -2276,7 +2276,13 @@ function buildGalleryHtml(outreach) {
                   </button>
                 </div>
 
-                <div class="photo-reaction-summary">
+                <div
+  class="photo-reaction-summary open-photo-reaction-users-btn"
+  data-outreach="${escapeHtml(outreach.id)}"
+  data-photo="${escapeHtml(photo.id)}"
+  style="cursor:pointer;"
+  title="Click to see who reacted"
+>
                   ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
                   ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
                   ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
@@ -4576,11 +4582,17 @@ if (logoutBtn) {
     });
 
     document.querySelectorAll(".open-photo-reaction-users-btn").forEach(btn => {
-  if (btn.dataset.bound === "true") return;
-  btn.dataset.bound = "true";
+  if (btn.dataset.boundReactionUsers === "true") return;
+  btn.dataset.boundReactionUsers = "true";
 
   btn.addEventListener("click", () => {
-    showReactionUsers(btn.dataset.outreach, btn.dataset.photo);
+    const outreach = currentOutreaches.find(
+      o => String(o.id || "").toLowerCase() === String(btn.dataset.outreach || "").toLowerCase()
+    );
+
+    if (!outreach) return;
+
+    showReactionUsers(btn.dataset.photo, outreach.photoReactions || []);
   });
 });
 
@@ -5618,35 +5630,16 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
-function showReactionUsers(photoId, reactions) {
-  const grouped = getPhotoReactionUsers(reactions, photoId);
-
-  let html = "<h3>Reactions</h3>";
-
-  Object.entries(grouped).forEach(([type, users]) => {
-    if (users.length === 0) return;
-
-    html += `<p><strong>${type.toUpperCase()}</strong></p>`;
-    html += `<ul>`;
-    users.forEach(name => {
-      html += `<li>${name}</li>`;
-    });
-    html += `</ul>`;
-  });
-
-  const modal = document.getElementById("reactionUsersModal");
-  const content = document.getElementById("reactionUsersContent");
-
-  content.innerHTML = html;
-  modal.classList.add("active");
-}
-
-function closeReactionUsersModal() {
-  document.getElementById("reactionUsersModal").classList.remove("active");
-}
-
 
 </script>
+
+
+<div id="reactionUsersModal" class="modal-overlay" onclick="if(event.target===this) closeReactionUsersModal()">
+  <div class="modal-card" style="width:min(92vw,520px);max-height:80vh;overflow:auto;">
+    <button class="modal-close" type="button" onclick="closeReactionUsersModal()">&times;</button>
+    <div id="reactionUsersContent"></div>
+  </div>
+</div>
 
 <div id="photoManagerModal" class="modal-overlay" onclick="if(event.target===this) closePhotoManagerModal()">
 
@@ -5682,12 +5675,6 @@ function closeReactionUsersModal() {
   </div>
 </div>
 
-  <div id="reactionUsersModal" class="modal">
-  <div class="modal-content">
-    <button onclick="closeReactionUsersModal()" class="ghost-btn">Close</button>
-    <div id="reactionUsersContent"></div>
-  </div>
-</div>
 
 
 </body>
