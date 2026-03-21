@@ -1468,48 +1468,62 @@ section{
 
 .photo-reactions{
   display:flex;
-  gap:6px;
-  flex-wrap:wrap;
   align-items:center;
+  gap:4px;
+  flex-wrap:wrap;
   margin-top:8px;
 }
 
-.photo-reaction-pill{
+.photo-reaction-btn{
   border:none !important;
   background:transparent !important;
-  padding:0;
-  font-size:13px;
-  display:flex;
-  align-items:center;
-  gap:4px;
+  box-shadow:none !important;
+  outline:none !important;
+  min-width:auto !important;
+  padding:2px !important;
+  margin:0 !important;
+  border-radius:0 !important;
+  color:inherit !important;
+  cursor:pointer;
+  font-size:20px;
+  line-height:1;
+  transition:transform .14s ease, filter .14s ease, opacity .14s ease;
 }
 
-.photo-reaction-btn{
-  min-width:auto;
-  padding:8px 10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  color:var(--text);
-  cursor:pointer;
-  font-size:14px;
-  font-weight:700;
+.photo-reaction-btn:hover{
+  transform:scale(1.22);
+  filter:none;
+}
+
+.photo-reaction-btn:active{
+  transform:scale(1.08);
+}
+
+.photo-reaction-btn.active-reaction{
+  transform:scale(1.28);
+  filter:drop-shadow(0 0 6px rgba(214,177,94,.55));
 }
 
 .photo-reaction-summary{
   display:flex;
-  gap:10px;
+  align-items:center;
+  gap:8px;
   flex-wrap:wrap;
-  margin-top:10px;
+  margin-top:6px;
   font-size:13px;
   color:var(--muted);
 }
 
 .photo-reaction-pill{
-  padding:6px 10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:#faf8f4;
+  border:none !important;
+  background:transparent !important;
+  padding:0 !important;
+  display:inline-flex;
+  align-items:center;
+  gap:3px;
+  font-size:13px;
 }
+
 
 /* ===== PHOTO MANAGER ===== */
 .photo-modal-grid{
