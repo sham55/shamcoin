@@ -352,9 +352,17 @@ h2{
     }
     .lightbox.active{opacity:1;pointer-events:auto}
     .lightbox img{
-      max-width:90%;max-height:85%;border-radius:12px;border:2px solid var(--gold);
-      box-shadow:0 20px 50px rgba(0,0,0,.6)
-    }
+  max-width:96vw;
+  max-height:92vh;
+  width:auto;
+  height:auto;
+  border-radius:14px;
+  border:2px solid var(--gold);
+  box-shadow:0 20px 50px rgba(0,0,0,.6);
+  object-fit:contain;
+  user-select:none;
+  -webkit-user-drag:none;
+}
     .lightbox-close{
       position:absolute;top:20px;right:28px;font-size:30px;color:white;cursor:pointer;font-weight:bold;
       line-height:1;user-select:none;background:none;border:none
@@ -988,15 +996,25 @@ input, textarea, select, button{
 }
 
 .photo-reaction-btn{
-  min-width:auto;
-  padding:8px 10px;
-  border-radius:999px;
-  border:1px solid var(--line);
-  background:rgba(255,255,255,.04);
-  color:var(--text);
+  border:none !important;
+  background:transparent !important;
+  padding:4px !important;
+  margin:0 !important;
+  font-size:20px;
+  line-height:1;
   cursor:pointer;
-  font-size:14px;
-  font-weight:700;
+  transition:transform .15s ease, filter .15s ease;
+}
+
+/* hover effect like Facebook */
+.photo-reaction-btn:hover{
+  transform:scale(1.25);
+}
+
+/* active (selected reaction) */
+.photo-reaction-btn.active-reaction{
+  transform:scale(1.35);
+  filter:drop-shadow(0 0 6px rgba(214,177,94,.7));
 }
 
 .photo-reaction-btn:hover{
@@ -1142,7 +1160,6 @@ input, textarea, select, button{
   height:220px;
   max-width:100%;
   border-radius:16px;
-  background:#fff;
   padding:12px;
   box-shadow:0 14px 34px rgba(0,0,0,.28);
 }
@@ -1152,6 +1169,760 @@ input, textarea, select, button{
     right:14px;
     bottom:14px;
     gap:8px;
+  }
+}
+
+
+/* ===== CLEAN WEBSITE SECTION LOOK ===== */
+section{
+  padding:42px 0;
+}
+
+.section-title{
+  display:flex;
+  align-items:flex-end;
+  justify-content:space-between;
+  gap:12px;
+  margin-bottom:22px;
+  flex-wrap:wrap;
+}
+
+.section-title .hint{
+  color:var(--muted);
+  font-size:14px;
+}
+
+/* ===== OUTREACH CARD CLEANER LOOK ===== */
+.outreach-shell{
+  padding:26px;
+  border:1px solid var(--line);
+  border-radius:28px;
+  box-shadow:0 10px 26px rgba(32,24,18,.06);
+}
+
+.outreach-header{
+  display:grid;
+  grid-template-columns:120px 1fr;
+  gap:20px;
+  align-items:center;
+  margin-bottom:18px;
+}
+
+.outreach-logo{
+  width:110px;
+  height:110px;
+  object-fit:contain;
+  border-radius:0 !important;
+  background:transparent !important;
+  border:none !important;
+  box-shadow:none !important;
+  padding:0 !important;
+  cursor:pointer;
+  display:block;
+  margin:auto;
+}
+
+.outreach-title{
+  margin:0;
+  font-size:clamp(30px, 5vw, 52px);
+  line-height:1;
+  font-family:'Cormorant Garamond', Georgia, "Times New Roman", serif;
+  font-weight:600;
+  color:var(--text);
+  letter-spacing:-.02em;
+}
+
+.outreach-subtitle{
+  margin:10px 0 14px;
+  color:var(--gold);
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  font-size:13px;
+}
+
+.meta-row{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.tagpill{
+
+  border:1px solid var(--line);
+  color:var(--muted);
+  border-radius:999px;
+  padding:8px 12px;
+  font-size:13px;
+}
+
+/* ===== PANELS ===== */
+.outreach-panels{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(0,1fr));
+  gap:18px;
+  margin-top:18px;
+}
+
+.panel{
+  padding:22px;
+  border:1px solid var(--line);
+  border-radius:24px;
+  box-shadow:0 8px 20px rgba(32,24,18,.04);
+}
+
+.panel h3{
+  margin:0 0 12px;
+  color:var(--text);
+}
+
+/* ===== ANNOUNCEMENT CARD ===== */
+.announcement-card{
+  border:1px solid #eadfcd;
+  background:#fcfaf6;
+  border-radius:22px;
+  padding:18px;
+  margin-top:12px;
+}
+
+.announcement-title{
+  margin:0;
+  color:var(--text);
+  font-weight:800;
+  font-size:20px;
+}
+
+.announcement-meta{
+  display:grid;
+  gap:6px;
+  margin-top:10px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.no-announcement-placeholder{
+  border:1px dashed var(--line);
+  border-radius:20px;
+  padding:18px;
+  background:rgba(255,255,255,.04) !important;
+}
+
+/* ===== COUNTDOWN ===== */
+.mini-cd{
+  margin-top:14px;
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+}
+
+.timebox{
+  min-width:72px;
+  padding:10px 12px;
+  border-radius:18px;
+  border:1px solid var(--line);
+
+  text-align:center;
+  flex:1 1 auto;
+}
+
+.timebox .num{
+  font-weight:800;
+  font-size:18px;
+  line-height:1.1;
+  color:var(--text);
+}
+
+.timebox .lab{
+  font-size:11px;
+  color:var(--muted);
+  text-transform:uppercase;
+  letter-spacing:1px;
+}
+
+/* ===== MEMBERS ===== */
+.member-count-badge{
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid #eadfcd;
+  background:#fcfaf6;
+  color:var(--gold);
+  font-weight:800;
+}
+
+.member-list{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:12px;
+}
+
+.member-tag{
+  display:inline-flex;
+  align-items:center;
+  gap:10px;
+  padding:8px 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+
+  color:var(--text);
+}
+
+.member-avatar,.mini-avatar,.worker-photo{
+  width:36px;
+  height:36px;
+  border-radius:50%;
+  object-fit:cover;
+  border:1px solid #eadfcd;
+
+  flex:0 0 auto;
+}
+
+/* ===== WORKERS ===== */
+.workers-grid{
+  display:flex;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-top:12px;
+}
+
+.worker-card{
+  display:flex;
+  align-items:center;
+  gap:10px;
+  padding:10px 14px;
+  border-radius:18px;
+  border:1px solid var(--line);
+
+}
+
+.worker-name{
+  color:var(--text);
+  font-weight:700;
+}
+
+/* ===== GALLERY ===== */
+.gallery{
+  overflow-x:auto;
+  overflow-y:hidden;
+  width:100%;
+  position:relative;
+  border-radius:20px;
+  margin-top:16px;
+  cursor:grab;
+  -webkit-tap-highlight-color:transparent;
+  scroll-behavior:smooth;
+  scrollbar-width:none;
+  touch-action:pan-x;
+  scroll-snap-type:x mandatory;
+}
+
+.gallery::-webkit-scrollbar{
+  display:none;
+}
+
+.gallery-track{
+  display:flex;
+  gap:18px;
+  width:max-content;
+}
+
+.gitem{
+  width:320px;
+  min-width:320px;
+  max-width:320px;
+  border-radius:24px;
+  overflow:hidden;
+  border:1px solid var(--line);
+
+  box-shadow:0 10px 24px rgba(32,24,18,.06);
+  flex:0 0 auto;
+  scroll-snap-align:start;
+}
+
+.gitem img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+}
+
+.gcap{
+  padding:14px 14px 16px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.photo-toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin:0 0 10px;
+  padding:10px 12px;
+  border:1px solid var(--line);
+  border-radius:16px;
+  background:#faf8f4;
+}
+
+.photo-reactions{
+  display:flex;
+  gap:6px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:8px;
+}
+
+.photo-reaction-pill{
+  border:none !important;
+  background:transparent !important;
+  padding:0;
+  font-size:13px;
+  display:flex;
+  align-items:center;
+  gap:4px;
+}
+
+.photo-reaction-btn{
+  min-width:auto;
+  padding:8px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  color:var(--text);
+  cursor:pointer;
+  font-size:14px;
+  font-weight:700;
+}
+
+.photo-reaction-summary{
+  display:flex;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-top:10px;
+  font-size:13px;
+  color:var(--muted);
+}
+
+.photo-reaction-pill{
+  padding:6px 10px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:#faf8f4;
+}
+
+/* ===== PHOTO MANAGER ===== */
+.photo-modal-grid{
+  display:grid;
+  grid-template-columns:repeat(3, minmax(0, 1fr));
+  gap:16px;
+}
+
+.photo-manager-card{
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:0 8px 20px rgba(32,24,18,.05);
+  height:100%;
+}
+
+.photo-manager-card img{
+  width:100%;
+  height:220px;
+  object-fit:cover;
+  display:block;
+  cursor:pointer;
+}
+
+.photo-manager-body{
+  padding:12px 14px 16px;
+}
+
+.photo-manager-top{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:10px;
+}
+
+.photo-manager-caption{
+  color:var(--muted);
+  font-size:14px;
+  word-break:break-word;
+}
+
+.photo-manager-loadmore-card{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  min-height:220px;
+}
+
+/* ===== GENERAL ANNOUNCEMENT ===== */
+.general-announcement-card{
+  border:1px solid #eadfcd;
+  border-radius:24px;
+  padding:18px;
+}
+
+.general-announcement-title{
+  margin:0;
+  color:var(--text);
+  font-weight:800;
+}
+
+.general-announcement-meta{
+  margin-top:8px;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.general-announcement-body{
+  margin-top:12px;
+  white-space:pre-wrap;
+  color:var(--text);
+}
+
+/* ===== MOBILE ===== */
+@media (max-width:900px){
+  .outreach-header{
+    grid-template-columns:1fr;
+    text-align:center;
+  }
+
+  .outreach-panels{
+    grid-template-columns:1fr;
+  }
+
+  .gitem{
+    width:85vw;
+    min-width:85vw;
+    max-width:85vw;
+  }
+
+  .photo-modal-grid{
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (max-width:600px){
+  .photo-modal-grid{
+    grid-template-columns:1fr;
+  }
+
+  .outreach-shell{
+    padding:18px;
+    border-radius:22px;
+  }
+
+  .panel{
+    padding:18px;
+    border-radius:20px;
+  }
+
+  .gitem img{
+    height:200px;
+  }
+}
+
+/* ===== NEWS + UPDATES ===== */
+.news-grid{
+  display:grid;
+  grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));
+  gap:18px;
+}
+
+.news-card{
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  border-radius:22px;
+  overflow:hidden;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  display:flex;
+  flex-direction:column;
+}
+
+.news-card-date{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.news-card:hover{
+  transform:translateY(-4px);
+  box-shadow:0 18px 36px rgba(0,0,0,.28);
+  border-color:rgba(214,177,94,.25);
+}
+
+.news-thumb{
+  width:100%;
+  height:420px;
+  object-fit:contain;
+  display:block;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--line);
+}
+
+.news-body{
+  padding:16px;
+}
+
+.news-author{
+  color:var(--gold2);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.4px;
+  margin-bottom:8px;
+}
+
+.news-title{
+  margin:0 0 10px;
+  font-size:28px;
+  line-height:1.05;
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--text);
+}
+
+.news-excerpt{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+}
+
+.news-readmore{
+  margin-top:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gold2);
+  font-weight:800;
+  font-size:14px;
+}
+
+.news-modal-image{
+  width:100%;
+  height:auto;
+  max-height:none;
+  object-fit:contain;
+  display:block;
+  border-radius:20px;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+  background:rgba(255,255,255,.03);
+}
+
+.news-modal-author{
+  color:var(--gold2);
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:8px;
+  letter-spacing:.4px;
+}
+
+.news-modal-title{
+  margin:0 0 14px;
+  font-size:36px;
+  line-height:1.05;
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--text);
+}
+
+.news-modal-text{
+  color:var(--muted);
+  line-height:1.8;
+  font-size:15px;
+}
+
+.news-modal-text p{
+  margin:0 0 14px;
+}
+
+@media (max-width:640px){
+  .news-thumb{
+    height:260px;
+  }
+
+  .news-title{
+    font-size:24px;
+  }
+
+  .news-modal-title{
+    font-size:28px;
+  }
+}
+
+.news-modal-image{
+  width:100%;
+  max-height:360px;
+  object-fit:cover;
+  border-radius:18px;
+  margin-bottom:16px;
+  border:1px solid var(--line);
+}
+
+.news-modal-author{
+  color:var(--gold2);
+  font-weight:800;
+  font-size:13px;
+  margin-bottom:8px;
+  letter-spacing:.4px;
+}
+
+.news-modal-title{
+  margin:0 0 14px;
+  font-size:36px;
+  line-height:1.05;
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--text);
+}
+
+.news-modal-text{
+  color:var(--muted);
+  line-height:1.8;
+  font-size:15px;
+}
+
+.news-modal-text p{
+  margin:0 0 14px;
+}
+
+.clickable-news-image{
+  cursor:zoom-in;
+}
+
+.clickable-news-image:hover{
+  filter:brightness(1.05);
+}
+
+.news-article-image-wrap{
+  width:100%;
+  margin:0 0 24px;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+}
+
+.news-article-image-wrap{
+  width:100%;
+  margin:0 0 24px;
+}
+
+.news-modal-image{
+  width:100%;
+  height:auto;
+object-fit:contain;
+  display:block;
+  border-radius:22px;
+  border:1px solid var(--line);
+  box-shadow:var(--shadow);
+}
+
+.news-article-content{
+  max-width:780px;
+  margin:0 auto;
+  text-align:center;
+  padding:0 8px 10px;
+}
+
+.news-article-meta-top{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:10px;
+  flex-wrap:wrap;
+  margin-bottom:14px;
+}
+
+.news-article-pill{
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  padding:8px 14px;
+  border-radius:999px;
+  border:1px solid rgba(214,177,94,.24);
+  background:rgba(214,177,94,.10);
+  color:var(--gold2);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.3px;
+}
+
+.news-modal-author{
+  color:var(--gold2);
+  font-weight:800;
+  font-size:14px;
+  margin-bottom:10px;
+  letter-spacing:.5px;
+  text-transform:uppercase;
+}
+
+.news-modal-title{
+  margin:0 0 18px;
+  font-size:clamp(34px, 5vw, 58px);
+  line-height:1.02;
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--text);
+}
+
+.news-article-divider{
+  width:84px;
+  height:2px;
+  margin:0 auto 22px;
+  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  border-radius:999px;
+}
+
+.news-modal-text{
+  color:var(--muted);
+  line-height:1.9;
+  font-size:17px;
+  text-align:center;
+}
+
+.news-modal-text p{
+  margin:0 0 16px;
+}
+
+.news-article-modal-card{
+  padding:18px;
+}
+
+.clickable-news-image{
+  cursor:zoom-in;
+  transition:transform .2s ease, filter .2s ease;
+}
+
+.clickable-news-image:hover{
+  filter:brightness(1.04);
+  transform:scale(1.01);
+}
+
+@media (max-width:900px){
+  .news-modal-image{
+    height:min(52vh, 360px);
+  }
+
+  .news-article-content{
+    max-width:100%;
+    padding:0 2px 8px;
+  }
+
+  .news-modal-title{
+    font-size:clamp(28px, 8vw, 40px);
+  }
+
+  .news-modal-text{
+    font-size:15px;
+    line-height:1.8;
+  }
+
+  .news-article-pill{
+    font-size:12px;
+    padding:7px 12px;
   }
 }
 
@@ -1244,6 +2015,17 @@ input, textarea, select, button{
       <h2>General Announcements</h2>
       <p class="hint">Posted by super admin</p>
     </div>
+
+    <section id="newsUpdates">
+  <div class="container">
+    <div class="section-title">
+      <h2>News + Updates</h2>
+      <p class="hint">Click a story to read more</p>
+    </div>
+
+    <div id="newsUpdatesGrid" class="news-grid"></div>
+  </div>
+</section>
 
     <div id="generalAnnouncementAdminPanel" class="card hidden" style="margin-bottom:14px;">
       <h3>📢 Super Admin Announcement Panel</h3>
@@ -1343,7 +2125,7 @@ input, textarea, select, button{
         </div>
       </div>
     </div>
-  </section>
+
 
   <section id="ministries">
     <div class="container">
@@ -2356,10 +3138,10 @@ function buildGalleryHtml(outreach) {
                 ` : ""}
 
                 ${photo.caption ? `
-                  <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"};">
-                    ${escapeHtml(photo.caption)}
-                  </div>
-                ` : ""}
+  <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"}; color:var(--text); line-height:1.5;">
+    ${escapeHtml(photo.caption)}
+  </div>
+` : ""}
 
                 <div class="photo-reactions">
                   <button class="photo-reaction-btn ${reactionSummary.myReaction === "like" ? "active-reaction" : ""}"
@@ -2586,11 +3368,11 @@ window.closeReactionUsersModal = function() {
 
   if (!schedules.length) {
     return `
-      <div class="no-announcement-placeholder">
-        <p><strong style="color:var(--gold2)">No announcement posted yet</strong></p>
-        <p class="smallmuted" style="margin-top:8px;">The outreach admin can post announcements here.</p>
-      </div>
-    `;
+  <div class="no-announcement-placeholder">
+    <p style="margin:0;"><strong style="color:var(--text)">No announcement posted yet</strong></p>
+    <p class="smallmuted" style="margin:8px 0 0;">The outreach admin can post announcements here.</p>
+  </div>
+`;
   }
 
   return `
@@ -2826,6 +3608,34 @@ window.closeReactionUsersModal = function() {
         ` : `
           <div class="divider"></div>
         `}
+
+        <h3>Post News + Update</h3>
+
+<input id="${escapeHtml(outreach.id)}-editing-news-id" type="hidden">
+
+<label for="${escapeHtml(outreach.id)}-news-title">Title</label>
+<input id="${escapeHtml(outreach.id)}-news-title" type="text" placeholder="News title">
+
+<label for="${escapeHtml(outreach.id)}-news-author">Author</label>
+<input id="${escapeHtml(outreach.id)}-news-author" type="text" value="Solid Rock Ministries" placeholder="Author name">
+
+<label for="${escapeHtml(outreach.id)}-news-excerpt">Short Excerpt</label>
+<textarea id="${escapeHtml(outreach.id)}-news-excerpt" placeholder="Short preview text"></textarea>
+
+<label for="${escapeHtml(outreach.id)}-news-body">Full Article</label>
+<textarea id="${escapeHtml(outreach.id)}-news-body" placeholder="Write the full article here..." style="min-height:180px;"></textarea>
+
+<label for="${escapeHtml(outreach.id)}-news-image">News Image</label>
+<input id="${escapeHtml(outreach.id)}-news-image" type="file" accept="image/*,.heic,.heif">
+
+<div class="toolbar-row" style="margin-top:12px;">
+  <button class="btn save-news-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Post News</button>
+  <button class="ghost-btn clear-news-form-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Clear Form</button>
+</div>
+
+<p id="${escapeHtml(outreach.id)}-news-feedback" class="smallmuted"></p>
+
+<div class="divider"></div>
 
         <h3>Post / Edit Announcement</h3>
         <input id="${escapeHtml(outreach.id)}-editing-schedule-id" type="hidden">
@@ -4745,6 +5555,9 @@ if (logoutBtn) {
     });
 
 
+    bindNewsAdminButtons();
+
+
     document.querySelectorAll(".upload-photo-btn").forEach(btn => {
       if (btn.dataset.bound === "true") return;
       btn.dataset.bound = "true";
@@ -4892,10 +5705,418 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   }
 }
 
+let NEWS_UPDATES = [];
+
+
+async function loadNewsUpdates() {
+  try {
+    const snap = await getDocs(
+      query(collection(db, "newsUpdates"), orderBy("createdAt", "desc"))
+    );
+
+    const items = [];
+    snap.forEach(docSnap => {
+      items.push({ id: docSnap.id, ...docSnap.data() });
+    });
+
+    NEWS_UPDATES = items;
+  } catch (error) {
+    console.error("loadNewsUpdates failed:", error);
+    NEWS_UPDATES = [];
+  }
+}
+
+function renderNewsUpdates() {
+  const grid = document.getElementById("newsUpdatesGrid");
+  if (!grid) return;
+
+  if (!NEWS_UPDATES.length) {
+    grid.innerHTML = `
+      <div class="card">
+        <h3 style="margin-top:0;">No News Yet</h3>
+        <p class="smallmuted" style="margin-bottom:0;">News and updates will appear here soon.</p>
+      </div>
+    `;
+    return;
+  }
+
+  grid.innerHTML = NEWS_UPDATES.map(item => {
+    const canEdit = !!outreachAdminState[item.outreachId];
+
+    let publishedText = "Latest update";
+    try {
+      if (item.createdAt?.toDate) {
+        publishedText = item.createdAt.toDate().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      } else if (item.createdAt) {
+        const d = new Date(item.createdAt);
+        if (!isNaN(d.getTime())) {
+          publishedText = d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        }
+      }
+    } catch {}
+
+    return `
+      <article class="news-card" data-news-id="${escapeHtml(item.id)}" tabindex="0" role="button" aria-label="Read ${escapeHtml(item.title)}">
+       <img
+  class="news-thumb"
+  src="${escapeHtml(item.imageUrl || "srm.png")}"
+  alt="${escapeHtml(item.title || "News update")}"
+  onclick="event.stopPropagation(); openLightbox('${escapeHtml(item.imageUrl || "srm.png")}')"
+  style="cursor:zoom-in;"
+  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+>
+
+        <div class="news-body">
+          <div class="news-author">${escapeHtml(item.author || "Solid Rock Ministries")}</div>
+          <div class="news-card-date">${escapeHtml(publishedText)}</div>
+
+          <h3 class="news-title">${escapeHtml(item.title || "News Update")}</h3>
+          <p class="news-excerpt">${escapeHtml(item.excerpt || "")}</p>
+          <div class="news-readmore">Read more →</div>
+
+          ${canEdit ? `
+            <div class="toolbar-row" style="margin-top:12px;">
+              <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
+              <button class="danger-btn delete-news-btn" type="button" data-id="${escapeHtml(item.id)}" data-path="${escapeHtml(item.imageStoragePath || "")}">Delete</button>
+            </div>
+          ` : ""}
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  bindNewsCards();
+  bindNewsAdminButtons();
+}
+
+window.openNewsArticleById = function(newsId) {
+  const item = NEWS_UPDATES.find(n => String(n.id) === String(newsId));
+  if (!item) return;
+  openNewsArticle(item);
+};
+
+async function saveNewsUpdate(outreachId) {
+  const feedback = document.getElementById(`${outreachId}-news-feedback`);
+  const editingId = document.getElementById(`${outreachId}-editing-news-id`)?.value.trim() || "";
+  const title = document.getElementById(`${outreachId}-news-title`)?.value.trim() || "";
+  const author = document.getElementById(`${outreachId}-news-author`)?.value.trim() || "Solid Rock Ministries";
+  const excerpt = document.getElementById(`${outreachId}-news-excerpt`)?.value.trim() || "";
+  const bodyRaw = document.getElementById(`${outreachId}-news-body`)?.value.trim() || "";
+  const imageInput = document.getElementById(`${outreachId}-news-image`);
+  const originalFile = imageInput?.files?.[0] || null;
+
+  if (!outreachAdminState[outreachId]) {
+    if (feedback) {
+      feedback.textContent = "Only the assigned outreach admin can post news updates.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  if (!title || !excerpt || !bodyRaw) {
+    if (feedback) {
+      feedback.textContent = "Please complete title, excerpt, and full article.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = editingId ? "Updating news..." : "Posting news...";
+      feedback.className = "smallmuted";
+    }
+
+    let imageUrl = "";
+    let imageStoragePath = "";
+
+    if (editingId) {
+      const existingSnap = await getDoc(doc(db, "newsUpdates", editingId));
+      if (existingSnap.exists()) {
+        const existing = existingSnap.data();
+        imageUrl = existing.imageUrl || "";
+        imageStoragePath = existing.imageStoragePath || "";
+      }
+    }
+
+    if (originalFile) {
+      const file = await normalizeImageFile(originalFile);
+      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
+      const storagePath = `newsUpdates/${outreachId}/${safeName}`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file, {
+        contentType: file.type || "image/jpeg"
+      });
+
+      const uploadedUrl = await getDownloadURL(storageRef);
+
+      if (imageStoragePath) {
+        try {
+          await deleteObject(ref(storage, imageStoragePath));
+        } catch (storageError) {
+          console.warn("Old news image delete warning:", storageError);
+        }
+      }
+
+      imageUrl = uploadedUrl;
+      imageStoragePath = storagePath;
+    }
+
+    const body = bodyRaw
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => `<p>${escapeHtml(line)}</p>`)
+      .join("");
+
+    if (editingId) {
+      await updateDoc(doc(db, "newsUpdates", editingId), {
+        title,
+        author,
+        excerpt,
+        body,
+        imageUrl,
+        imageStoragePath,
+        updatedAt: serverTimestamp(),
+        updatedBy: currentUser?.email || ""
+      });
+    } else {
+      await addDoc(collection(db, "newsUpdates"), {
+  outreachId: outreachId, // ✅ VERY IMPORTANT (for Firestore rules)
+  title,
+  author,
+  excerpt,
+  body,
+  imageUrl,
+  imageStoragePath,
+  createdAt: serverTimestamp(),
+  createdBy: currentUser?.email || ""
+});
+    }
+
+    clearNewsForm(outreachId);
+
+    if (feedback) {
+      feedback.textContent = editingId ? "News updated successfully." : "News posted successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("saveNewsUpdate failed:", error);
+    if (feedback) {
+      feedback.textContent = "Save news failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+function clearNewsForm(outreachId) {
+  const idField = document.getElementById(`${outreachId}-editing-news-id`);
+  const titleField = document.getElementById(`${outreachId}-news-title`);
+  const authorField = document.getElementById(`${outreachId}-news-author`);
+  const excerptField = document.getElementById(`${outreachId}-news-excerpt`);
+  const bodyField = document.getElementById(`${outreachId}-news-body`);
+  const imageField = document.getElementById(`${outreachId}-news-image`);
+
+  if (idField) idField.value = "";
+  if (titleField) titleField.value = "";
+  if (authorField) authorField.value = "Solid Rock Ministries";
+  if (excerptField) excerptField.value = "";
+  if (bodyField) bodyField.value = "";
+  if (imageField) imageField.value = "";
+}
+
+async function editNewsUpdate(newsId) {
+  const item = NEWS_UPDATES.find(n => n.id === newsId);
+  if (!item) return;
+
+  const outreachId = item.outreachId;
+  if (!outreachAdminState[outreachId]) {
+    alert("Only the assigned outreach admin can edit this news item.");
+    return;
+  }
+
+  document.getElementById(`${outreachId}-editing-news-id`).value = item.id || "";
+  document.getElementById(`${outreachId}-news-title`).value = item.title || "";
+  document.getElementById(`${outreachId}-news-author`).value = item.author || "Solid Rock Ministries";
+  document.getElementById(`${outreachId}-news-excerpt`).value = item.excerpt || "";
+
+  const plainBody = String(item.body || "")
+    .replace(/<\/p>\s*<p>/g, "\n\n")
+    .replace(/<[^>]+>/g, "");
+  document.getElementById(`${outreachId}-news-body`).value = plainBody;
+
+  const feedback = document.getElementById(`${outreachId}-news-feedback`);
+  if (feedback) {
+    feedback.textContent = "Editing existing news. Update the fields and click Post News.";
+    feedback.className = "smallmuted success-text";
+  }
+
+  document.getElementById(`${outreachId}-news-title`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+}
+
+async function deleteNewsUpdate(newsId, imageStoragePath = "") {
+  const item = NEWS_UPDATES.find(n => n.id === newsId);
+  if (!item) return;
+
+  const outreachId = item.outreachId;
+  if (!outreachAdminState[outreachId]) {
+    alert("Only the assigned outreach admin can delete this news item.");
+    return;
+  }
+
+  if (!confirm("Delete this news update?")) return;
+
+  try {
+    if (imageStoragePath) {
+      try {
+        await deleteObject(ref(storage, imageStoragePath));
+      } catch (storageError) {
+        console.warn("News image delete warning:", storageError);
+      }
+    }
+
+    await deleteDoc(doc(db, "newsUpdates", newsId));
+    await initPage();
+  } catch (error) {
+    console.error("deleteNewsUpdate failed:", error);
+    alert("Delete news failed: " + error.message);
+  }
+}
+
+function bindNewsAdminButtons() {
+  document.querySelectorAll(".save-news-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => saveNewsUpdate(btn.dataset.outreach));
+  });
+
+  document.querySelectorAll(".clear-news-form-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => clearNewsForm(btn.dataset.outreach));
+  });
+
+  document.querySelectorAll(".edit-news-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      editNewsUpdate(btn.dataset.id);
+    });
+  });
+
+  document.querySelectorAll(".delete-news-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      deleteNewsUpdate(btn.dataset.id, btn.dataset.path || "");
+    });
+  });
+}
+
+function bindNewsCards() {
+  document.querySelectorAll(".news-card").forEach(card => {
+    if (card.dataset.boundRead === "true") return;
+    card.dataset.boundRead = "true";
+
+    const open = (e) => {
+      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      if (e.target.closest(".news-thumb")) return;
+
+      const id = card.dataset.newsId;
+      const item = NEWS_UPDATES.find(n => n.id === id);
+      if (item) openNewsArticle(item);
+    };
+
+    card.addEventListener("click", open);
+    card.addEventListener("keydown", (e) => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        const id = card.dataset.newsId;
+        const item = NEWS_UPDATES.find(n => n.id === id);
+        if (item) openNewsArticle(item);
+      }
+    });
+  });
+}
+
+window.openNewsArticle = function(article) {
+  const modal = document.getElementById("newsModal");
+  const content = document.getElementById("newsModalContent");
+  if (!modal || !content) return;
+
+  const outreachName = article.outreachId ? getOutreachDisplayName(article.outreachId) : "Solid Rock Ministries";
+
+  let publishedText = "Latest update";
+  try {
+    if (article.createdAt?.toDate) {
+      publishedText = article.createdAt.toDate().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    } else if (article.createdAt) {
+      const d = new Date(article.createdAt);
+      if (!isNaN(d.getTime())) {
+        publishedText = d.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
+    }
+  } catch {}
+
+  content.innerHTML = `
+    <div class="news-article-wrap">
+      <div class="news-article-image-wrap">
+        <img
+  class="news-modal-image clickable-news-image"
+  src="${escapeHtml(article.imageUrl || "srm.png")}"
+  alt="${escapeHtml(article.title || "News image")}"
+  onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
+  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+>
+      </div>
+
+      <div class="news-article-content">
+        <div class="news-article-meta-top">
+          <span class="news-article-pill">${escapeHtml(outreachName)}</span>
+          <span class="news-article-pill">${escapeHtml(publishedText)}</span>
+        </div>
+
+        <div class="news-modal-author">${escapeHtml(article.author || "Solid Rock Ministries")}</div>
+        <h2 class="news-modal-title">${escapeHtml(article.title || "News Update")}</h2>
+
+        <div class="news-article-divider"></div>
+
+        <div class="news-modal-text">${article.body || "<p>No content available.</p>"}</div>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+};
+
+window.closeNewsModal = function() {
+  document.getElementById("newsModal")?.classList.remove("active");
+};
  async function initPage() {
-  renderOutreaches();
   await loadOutreaches();
   await enrichOutreaches();
+  await loadNewsUpdates();
 
   if (currentUser) {
     isSuperAdmin = await isUserSuperAdmin(currentUser);
@@ -4911,6 +6132,7 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   }
 
   renderOutreaches();
+  renderNewsUpdates();
   updateSuperAdminUI();
   await loadGeneralAnnouncements();
   updateMemberAccessVisibility();
@@ -4919,7 +6141,6 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   updateAdminLogoutLinkVisibility();
   initFloatingShareButton();
 }
-
 
 const adminLogoutLink = document.getElementById("adminLogoutLink");
 
@@ -6024,6 +7245,29 @@ function updateAdminLogoutLinkVisibility() {
     </div>
   </div>
 </div>
+
+<div id="newsModal" class="modal-overlay" onclick="if(event.target===this) closeNewsModal()">
+  <div class="modal-card news-article-modal-card" style="width:min(96vw,1100px);max-height:92vh;overflow:auto;">
+    <button class="modal-close" type="button" onclick="closeNewsModal()">&times;</button>
+    <div id="newsModalContent"></div>
+  </div>
+</div>
+
+<div id="newsModal" class="news-modal">
+  <div class="news-modal-content">
+    <span class="close-modal" onclick="closeNewsModal()">&times;</span>
+
+    <img id="modalImage" class="modal-img">
+    <h2 id="modalTitle"></h2>
+    <p id="modalBody"></p>
+  </div>
+</div>
+
+<div id="newsImageLightbox" class="lightbox" onclick="closeNewsImageLightbox(event)">
+  <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
+  <img id="newsImageLightboxImg" alt="Full news image">
+</div>
+
 
 </body>
 </html>
