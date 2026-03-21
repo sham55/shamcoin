@@ -35,7 +35,15 @@
 }
 
 body{
-  min-width:320px;
+  font-family:system-ui,-apple-system,Segoe UI,Roboto,Ubuntu,"Helvetica Neue",Arial,sans-serif;
+  color:var(--text);
+  line-height:1.6;
+  overflow-x:hidden;
+  background:
+    radial-gradient(1200px 600px at 35% 0%, rgba(214,177,94,.08), transparent 60%),
+    radial-gradient(900px 700px at 85% 10%, rgba(134,208,255,.06), transparent 55%),
+    radial-gradient(700px 500px at 20% 90%, rgba(242,208,138,.05), transparent 55%),
+    var(--bg);
 }
 
 .container{
@@ -144,13 +152,18 @@ h2{
     .container{max-width:var(--max);width:100%;margin:0 auto;padding:0 16px}
 
     .texture{
-      position:fixed;inset:0;pointer-events:none;z-index:-1;
-      background:
-        repeating-linear-gradient(135deg, rgba(255,255,255,.03) 0 6px, transparent 6px 18px),
-        radial-gradient(600px 420px at 15% 20%, rgba(214,177,94,.08), transparent 60%),
-        radial-gradient(520px 360px at 85% 25%, rgba(134,208,255,.06), transparent 60%);
-      mix-blend-mode:soft-light;opacity:.55;filter:blur(.2px);
-    }
+  position:fixed;
+  inset:0;
+  pointer-events:none;
+  z-index:-1;
+  background:
+    linear-gradient(180deg, rgba(255,255,255,.015), rgba(255,255,255,0)),
+    radial-gradient(600px 420px at 15% 20%, rgba(214,177,94,.05), transparent 60%),
+    radial-gradient(520px 360px at 85% 25%, rgba(134,208,255,.04), transparent 60%);
+  opacity:.35;
+  filter:none;
+  mix-blend-mode:normal;
+}
 
     .nav{
   position:sticky;
@@ -1278,8 +1291,6 @@ section{
 
 /* ===== ANNOUNCEMENT CARD ===== */
 .announcement-card{
-  border:1px solid #eadfcd;
-  background:#fcfaf6;
   border-radius:22px;
   padding:18px;
   margin-top:12px;
@@ -1463,7 +1474,8 @@ section{
   padding:10px 12px;
   border:1px solid var(--line);
   border-radius:16px;
-  background:#faf8f4;
+    background: rgba(16, 26, 48, 0.88) !important;
+  border: 1px solid rgba(255,255,255,.12) !important;
 }
 
 .photo-reactions{
@@ -2033,8 +2045,7 @@ object-fit:contain;
     <section id="newsUpdates">
   <div class="container">
     <div class="section-title">
-      <h2>News + Updates</h2>
-      <p class="hint">Click a story to read more</p>
+      <h2>Christian News Letter</h2>
     </div>
 
     <div id="newsUpdatesGrid" class="news-grid"></div>
@@ -2050,6 +2061,9 @@ object-fit:contain;
 
       <label for="generalAnnouncementWhen">Date & Time</label>
       <input id="generalAnnouncementWhen" type="datetime-local">
+
+      <label for="generalAnnouncementAddress">Address</label>
+<input id="generalAnnouncementAddress" type="text" placeholder="Location..">
 
       <label for="generalAnnouncementBody">Message</label>
       <textarea id="generalAnnouncementBody" placeholder="Write announcement here..."></textarea>
@@ -5747,8 +5761,8 @@ function renderNewsUpdates() {
   if (!NEWS_UPDATES.length) {
     grid.innerHTML = `
       <div class="card">
-        <h3 style="margin-top:0;">No News Yet</h3>
-        <p class="smallmuted" style="margin-bottom:0;">News and updates will appear here soon.</p>
+        
+        <p class="smallmuted" style="margin-bottom:0;">News Letters will appear here.</p>
       </div>
     `;
     return;
@@ -6377,6 +6391,7 @@ window.addEventListener("scroll", () => {
 async function saveGeneralAnnouncement() {
   const title = document.getElementById("generalAnnouncementTitle").value.trim();
   const when = document.getElementById("generalAnnouncementWhen").value;
+   const address = document.getElementById("generalAnnouncementAddress").value.trim();
   const body = document.getElementById("generalAnnouncementBody").value.trim();
   const feedback = document.getElementById("generalAnnouncementFeedback");
 
@@ -6399,6 +6414,7 @@ async function saveGeneralAnnouncement() {
     await addDoc(collection(db, "generalAnnouncements"), {
       title,
       when,
+      address,
       body,
       createdAt: serverTimestamp(),
       createdBy: currentUser?.email || "super-admin"
@@ -6406,6 +6422,7 @@ async function saveGeneralAnnouncement() {
 
     document.getElementById("generalAnnouncementTitle").value = "";
     document.getElementById("generalAnnouncementWhen").value = "";
+    document.getElementById("generalAnnouncementAddress").value = "";
     document.getElementById("generalAnnouncementBody").value = "";
 
     feedback.textContent = "General announcement posted successfully.";
@@ -6432,7 +6449,6 @@ async function loadGeneralAnnouncements() {
     if (!items.length) {
       els.generalAnnouncementsList.innerHTML = `
         <div class="card">
-          <h3 style="margin-top:0;">No General Announcements Yet</h3>
           <p class="smallmuted" style="margin-bottom:0;">
             Super admin announcements will appear here.
           </p>
@@ -6449,6 +6465,7 @@ async function loadGeneralAnnouncements() {
             <div class="general-announcement-meta">
               <div>📅 ${escapeHtml(formatDateLong(item.when))}</div>
               <div>🕒 ${escapeHtml(formatTime(item.when))}</div>
+              ${item.address ? `<div>📍 ${escapeHtml(item.address)}</div>` : ""}
             </div>
           </div>
 
