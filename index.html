@@ -97,6 +97,7 @@ h2{
     min-width:85vw;
     max-width:85vw;
   }
+}
 
 .outreach-panels{
   display:grid;
@@ -123,8 +124,6 @@ h2{
   .toolbar-row > *{
     width:100%;
   }
-}
-
 }
 *{box-sizing:border-box;}
 .panel, .card, .outreach-shell, .container{min-width:0; max-width:100%;}
@@ -1020,6 +1019,142 @@ input, textarea, select, button{
   background:rgba(255,255,255,.03);
 }
 
+
+#floatingShareBtn{
+  position:fixed !important;
+  right:18px !important;
+  bottom:92px !important;
+  left:auto !important;
+  top:auto !important;
+  width:58px !important;
+  height:58px !important;
+  margin:0 !important;
+  padding:0 !important;
+  border:none !important;
+  border-radius:999px !important;
+  display:flex !important;
+  align-items:center !important;
+  justify-content:center !important;
+  cursor:pointer !important;
+  z-index:999999 !important;
+  color:var(--text) !important;
+  background:linear-gradient(135deg, rgba(214,177,94,.95), rgba(242,208,138,.82)) !important;
+  box-shadow:0 14px 34px rgba(0,0,0,.35) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  transform:translateY(12px) scale(.95) !important;
+  transition:opacity .35s ease, transform .35s ease, filter .2s ease, box-shadow .2s ease !important;
+}
+
+#floatingShareBtn.visible{
+  opacity:1 !important;
+  pointer-events:auto !important;
+  transform:translateY(0) scale(1) !important;
+}
+
+#floatingShareBtn:hover{
+  transform:translateY(-2px) scale(1.04) !important;
+  filter:brightness(1.05) !important;
+  box-shadow:0 18px 38px rgba(0,0,0,.42) !important;
+}
+
+#floatingShareBtn:active{
+  transform:scale(.97) !important;
+}
+
+#floatingShareBtn svg{
+  width:24px !important;
+  height:24px !important;
+  fill:none !important;
+  stroke:#0b1220 !important;
+  stroke-width:2.2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+#shareToast{
+  position:fixed !important;
+  right:18px !important;
+  bottom:88px !important;
+  z-index:999999 !important;
+  padding:10px 14px !important;
+  border-radius:14px !important;
+  border:1px solid var(--line) !important;
+  background:rgba(16,26,48,.96) !important;
+  color:var(--text) !important;
+  box-shadow:var(--shadow) !important;
+  opacity:0 !important;
+  pointer-events:none !important;
+  transform:translateY(10px) !important;
+  transition:opacity .22s ease, transform .22s ease !important;
+  font-size:13px !important;
+}
+
+#shareToast.show{
+  opacity:1 !important;
+  transform:translateY(0) !important;
+}
+
+@media (max-width:640px){
+  #floatingShareBtn{
+    width:54px !important;
+    height:54px !important;
+    right:14px !important;
+    bottom:86px !important;
+  }
+
+  #shareToast{
+    right:14px !important;
+    bottom:148px !important;
+    max-width:calc(100vw - 28px) !important;
+  }
+}
+
+.floating-share-wrap{
+  position:fixed;
+  right:18px;
+  bottom:18px;
+  z-index:999999;
+  display:flex;
+  flex-direction:column;
+  gap:10px;
+  align-items:flex-end;
+}
+
+.floating-qr-btn{
+  background:linear-gradient(135deg, rgba(134,208,255,.95), rgba(214,177,94,.82)) !important;
+}
+
+#floatingQrBtn svg,
+#floatingShareBtn svg{
+  width:24px !important;
+  height:24px !important;
+  fill:none !important;
+  stroke:#0b1220 !important;
+  stroke-width:2.2 !important;
+  stroke-linecap:round !important;
+  stroke-linejoin:round !important;
+}
+
+#qrCodeBox canvas,
+#qrCodeBox img{
+  width:220px;
+  height:220px;
+  max-width:100%;
+  border-radius:16px;
+  background:#fff;
+  padding:12px;
+  box-shadow:0 14px 34px rgba(0,0,0,.28);
+}
+
+@media (max-width:640px){
+  .floating-share-wrap{
+    right:14px;
+    bottom:14px;
+    gap:8px;
+  }
+}
+
   </style>
 </head>
 <body>
@@ -1410,7 +1545,7 @@ input, textarea, select, button{
       <p id="adminLoginFeedback" class="smallmuted"></p>
     </div>
   </div>
-
+  <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -3344,20 +3479,13 @@ window.closeReactionUsersModal = function() {
     }
   }
 
-  function clearScheduleForm(outreachId) {
-    document.getElementById(`${outreachId}-editing-schedule-id`).value = "";
-    document.getElementById(`${outreachId}-event-title`).value = "";
-    document.getElementById(`${outreachId}-event-when`).value = "";
-    document.getElementById(`${outreachId}-event-location`).value = "";
-    document.getElementById(`${outreachId}-event-note`).value = "";
-    function clearOtherMemberSessions(activeOutreachId) {
-  currentOutreaches.forEach(outreach => {
-    if (outreach.id !== activeOutreachId) {
-      clearMemberSession(outreach.id);
-    }
-  });
+ function clearScheduleForm(outreachId) {
+  document.getElementById(`${outreachId}-editing-schedule-id`).value = "";
+  document.getElementById(`${outreachId}-event-title`).value = "";
+  document.getElementById(`${outreachId}-event-when`).value = "";
+  document.getElementById(`${outreachId}-event-location`).value = "";
+  document.getElementById(`${outreachId}-event-note`).value = "";
 }
-  }
 
   function editScheduleFromButton(btn) {
     const outreachId = btn.dataset.outreach;
@@ -4769,18 +4897,18 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   await loadOutreaches();
   await enrichOutreaches();
 
- if (currentUser) {
-  isSuperAdmin = await isUserSuperAdmin(currentUser);
-  for (const outreach of currentOutreaches) {
-    outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
+  if (currentUser) {
+    isSuperAdmin = await isUserSuperAdmin(currentUser);
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
+    }
+  } else {
+    isSuperAdmin = false;
+    outreachAdminState = {};
+    for (const outreach of currentOutreaches) {
+      outreachAdminState[outreach.id] = false;
+    }
   }
-} else {
-  isSuperAdmin = false;
-  outreachAdminState = {};
-  for (const outreach of currentOutreaches) {
-    outreachAdminState[outreach.id] = false;
-  }
-}
 
   renderOutreaches();
   updateSuperAdminUI();
@@ -4789,6 +4917,7 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   hideVisitorButtonsForSuperAdmin();
   bindLightboxSwipe();
   updateAdminLogoutLinkVisibility();
+  initFloatingShareButton();
 }
 
 
@@ -5614,6 +5743,170 @@ function canUploadPhotos(outreachId) {
 }
 
 
+function initFloatingShareButton() {
+  const shareBtn = document.getElementById("floatingShareBtn");
+  const qrBtn = document.getElementById("floatingQrBtn");
+  const toast = document.getElementById("shareToast");
+
+  if (!shareBtn || !qrBtn) return;
+  if (shareBtn.dataset.bound === "true") return;
+
+  shareBtn.dataset.bound = "true";
+  qrBtn.dataset.bound = "true";
+
+  let hideTimer = null;
+  let toastTimer = null;
+
+  function showToast(message) {
+    if (!toast) return;
+    toast.textContent = message;
+    toast.classList.add("show");
+
+    clearTimeout(toastTimer);
+    toastTimer = setTimeout(() => {
+      toast.classList.remove("show");
+    }, 2200);
+  }
+
+  function showButtons() {
+    shareBtn.classList.add("visible");
+    qrBtn.classList.add("visible");
+    resetHideTimer();
+  }
+
+  function hideButtons() {
+    shareBtn.classList.remove("visible");
+    qrBtn.classList.remove("visible");
+  }
+
+  function resetHideTimer() {
+    clearTimeout(hideTimer);
+    hideTimer = setTimeout(() => {
+      hideButtons();
+    }, 5000);
+  }
+
+  async function handleShare() {
+    const shareData = {
+      title: document.title || "Solid Rock Ministries",
+      text: "Visit Solid Rock Ministries",
+      url: "https://solidrockministries.de"
+    };
+
+    try {
+      if (navigator.share) {
+        await navigator.share(shareData);
+        showButtons();
+        return;
+      }
+
+      if (navigator.clipboard && window.isSecureContext) {
+        await navigator.clipboard.writeText(window.location.href);
+        showToast("Link copied to clipboard.");
+        showButtons();
+        return;
+      }
+
+      const tempInput = document.createElement("input");
+      tempInput.value = "https://solidrockministries.de";
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+
+      showToast("Link copied to clipboard.");
+      showButtons();
+    } catch (error) {
+      console.error("Share failed:", error);
+      showToast("Sharing failed on this device.");
+      showButtons();
+    }
+  }
+
+  shareBtn.addEventListener("click", handleShare);
+  qrBtn.addEventListener("click", openQrShareModal);
+
+  ["click", "touchstart", "scroll", "mousemove", "keydown"].forEach(eventName => {
+    window.addEventListener(eventName, showButtons, { passive: true });
+  });
+
+  showButtons();
+}
+
+window.openQrShareModal = async function() {
+  const modal = document.getElementById("qrShareModal");
+  const box = document.getElementById("qrCodeBox");
+  const text = document.getElementById("qrShareLinkText");
+
+  if (!modal || !box || typeof QRCode === "undefined") return;
+
+  const shareUrl = "https://solidrockministries.de";
+
+  box.innerHTML = "";
+  text.textContent = shareUrl;
+
+  try {
+    const canvas = document.createElement("canvas");
+    await QRCode.toCanvas(canvas, shareUrl, {
+      width: 220,
+      margin: 2,
+      color: {
+        dark: "#0b1220",
+        light: "#ffffff"
+      }
+    });
+
+    canvas.id = "generatedQrCanvas";
+    box.appendChild(canvas);
+    modal.classList.add("active");
+  } catch (error) {
+    console.error("QR generation failed:", error);
+    box.innerHTML = `<p class="smallmuted error-text">Failed to generate QR code.</p>`;
+    modal.classList.add("active");
+  }
+};
+
+window.closeQrShareModal = function() {
+  const modal = document.getElementById("qrShareModal");
+  if (modal) modal.classList.remove("active");
+};
+
+window.copyQrShareLink = async function() {
+  const url = "https://solidrockministries.de";
+  const toast = document.getElementById("shareToast");
+
+  try {
+    if (navigator.clipboard && window.isSecureContext) {
+      await navigator.clipboard.writeText(url);
+    } else {
+      const tempInput = document.createElement("input");
+      tempInput.value = url;
+      document.body.appendChild(tempInput);
+      tempInput.select();
+      document.execCommand("copy");
+      document.body.removeChild(tempInput);
+    }
+
+    if (toast) {
+      toast.textContent = "Link copied to clipboard.";
+      toast.classList.add("show");
+      setTimeout(() => toast.classList.remove("show"), 2200);
+    }
+  } catch (error) {
+    console.error("Copy failed:", error);
+  }
+};
+
+window.downloadQrCode = function() {
+  const canvas = document.getElementById("generatedQrCanvas");
+  if (!canvas) return;
+
+  const link = document.createElement("a");
+  link.href = canvas.toDataURL("image/png");
+  link.download = "solid-rock-ministries-qr.png";
+  link.click();
+};
+
 function updateAdminLogoutLinkVisibility() {
   const link = document.getElementById("adminLogoutLink");
   if (!link) return;
@@ -5631,6 +5924,8 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
+
+
 </script>
 
 
@@ -5642,10 +5937,8 @@ function updateAdminLogoutLinkVisibility() {
 </div>
 
 <div id="photoManagerModal" class="modal-overlay" onclick="if(event.target===this) closePhotoManagerModal()">
-
   <div class="modal-card" style="width:min(96vw,1100px);max-height:90vh;overflow:auto;">
     <button class="modal-close" id="photoManagerCloseBtn" type="button">&times;</button>
-
 
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;">
       <div>
@@ -5654,19 +5947,20 @@ function updateAdminLogoutLinkVisibility() {
       </div>
 
       <div class="toolbar-row">
-  <label id="photoManagerSelectAllWrap" class="select-chip hidden" style="cursor:pointer;">
-    <input id="photoManagerSelectAllCheckbox" type="checkbox">
-    Select All
-  </label>
+        <label id="photoManagerSelectAllWrap" class="select-chip hidden" style="cursor:pointer;">
+          <input id="photoManagerSelectAllCheckbox" type="checkbox">
+          Select All
+        </label>
 
-  <button id="photoManagerDeleteSelectedBtn" class="danger-btn hidden" type="button">
-    Delete Selected
-  </button>
+        <button id="photoManagerDeleteSelectedBtn" class="danger-btn hidden" type="button">
+          Delete Selected
+        </button>
 
-  <button class="ghost-btn" type="button" onclick="closePhotoManagerModal()">
-    Close
-  </button>
-</div>
+        <button class="ghost-btn" type="button" onclick="closePhotoManagerModal()">
+          Close
+        </button>
+      </div>
+    </div>
 
     <div class="divider"></div>
 
@@ -5675,7 +5969,61 @@ function updateAdminLogoutLinkVisibility() {
   </div>
 </div>
 
+<div class="floating-share-wrap">
+  <button
+    id="floatingQrBtn"
+    class="floating-share-btn floating-qr-btn"
+    type="button"
+    aria-label="Show QR code"
+    title="Show QR code"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M4 4h6v6H4z"></path>
+      <path d="M14 4h6v6h-6z"></path>
+      <path d="M4 14h6v6H4z"></path>
+      <path d="M14 14h2v2h-2z"></path>
+      <path d="M18 14h2v2h-2z"></path>
+      <path d="M14 18h2v2h-2z"></path>
+      <path d="M18 18h2v2h-2z"></path>
+    </svg>
+  </button>
 
+  <button
+    id="floatingShareBtn"
+    class="floating-share-btn"
+    type="button"
+    aria-label="Share this website"
+    title="Share this website"
+  >
+    <svg viewBox="0 0 24 24" aria-hidden="true">
+      <path d="M12 16V4"></path>
+      <path d="M7 9l5-5 5 5"></path>
+      <path d="M5 20h14"></path>
+    </svg>
+  </button>
+</div>
+
+<div id="shareToast" class="share-toast">Link copied to clipboard.</div>
+
+<div id="qrShareModal" class="modal-overlay" onclick="if(event.target===this) closeQrShareModal()">
+  <div class="modal-card" style="width:min(92vw,420px);text-align:center;">
+    <button class="modal-close" type="button" onclick="closeQrShareModal()">&times;</button>
+
+    <h3 style="margin-top:0;">Share via QR Code</h3>
+    <p class="smallmuted" style="margin-top:6px;">
+      Scan this code to open the website.
+    </p>
+
+    <div id="qrCodeBox" style="margin:18px auto 14px;display:flex;justify-content:center;"></div>
+
+    <p id="qrShareLinkText" class="smallmuted" style="word-break:break-word;"></p>
+
+    <div class="toolbar-row" style="justify-content:center;margin-top:14px;">
+      <button class="btn" type="button" onclick="downloadQrCode()">Download QR</button>
+      <button class="ghost-btn" type="button" onclick="copyQrShareLink()">Copy Link</button>
+    </div>
+  </div>
+</div>
 
 </body>
 </html>
