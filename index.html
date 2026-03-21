@@ -6469,7 +6469,15 @@ async function loadGeneralAnnouncements() {
             </div>
           </div>
 
-          
+          ${isSuperAdmin ? `
+            <button
+              class="danger-btn delete-general-announcement-btn"
+              type="button"
+              data-id="${escapeHtml(item.id)}">
+              Delete
+            </button>
+          ` : ""}
+        </div>
 
         <div class="general-announcement-body">${escapeHtml(item.body || "")}</div>
         ${countdownHtml(item.when)}
@@ -6499,6 +6507,7 @@ async function deleteGeneralAnnouncement(id) {
     alert("Delete failed: " + error.message);
   }
 }
+
 
 function bindGeneralAnnouncementButtons() {
   document.querySelectorAll(".delete-general-announcement-btn").forEach(btn => {
