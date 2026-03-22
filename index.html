@@ -7242,35 +7242,6 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
-function renderNewsHeroSlider() {
-  const track = document.getElementById("newsHeroTrack");
-  if (!track) return;
-
-  const posters = NEWS_UPDATES.filter(item => item.imageUrl);
-
-  if (!posters.length) {
-    track.innerHTML = `
-      <div class="news-poster"><img src="srm.png" alt="Default"></div>
-      <div class="news-poster"><img src="srm.png" alt="Default"></div>
-      <div class="news-poster"><img src="srm.png" alt="Default"></div>
-    `;
-    return;
-  }
-
-  const doubled = [...posters, ...posters];
-
-  track.innerHTML = doubled.map(item => `
-    <div class="news-poster" onclick="openNewsArticleById('${escapeHtml(item.id)}')" style="cursor:pointer;">
-      <img
-        src="${escapeHtml(item.imageUrl || 'srm.png')}"
-        alt="${escapeHtml(item.title || 'News poster')}"
-        onerror="this.onerror=null; this.src='srm.png';"
-      >
-    </div>
-  `).join("");
-}
-
-
 </script>
 
 
@@ -7372,25 +7343,6 @@ function renderNewsHeroSlider() {
 
 <div class="news-hero-slider">
   <div class="news-hero-track" id="newsHeroTrack"></div>
-</div>
-
-<div class="news-hero-slider">
-  <div class="news-hero-track" id="newsHeroTrack">
-    <div class="news-poster"><img src="news1.jpg" alt="News 1"></div>
-    <div class="news-poster"><img src="news2.jpg" alt="News 2"></div>
-    <div class="news-poster"><img src="news3.jpg" alt="News 3"></div>
-    <div class="news-poster"><img src="news4.jpg" alt="News 4"></div>
-    <div class="news-poster"><img src="news5.jpg" alt="News 5"></div>
-    <div class="news-poster"><img src="news6.jpg" alt="News 6"></div>
-
-    <!-- duplicate for smooth infinite effect -->
-    <div class="news-poster"><img src="news1.jpg" alt="News 1"></div>
-    <div class="news-poster"><img src="news2.jpg" alt="News 2"></div>
-    <div class="news-poster"><img src="news3.jpg" alt="News 3"></div>
-    <div class="news-poster"><img src="news4.jpg" alt="News 4"></div>
-    <div class="news-poster"><img src="news5.jpg" alt="News 5"></div>
-    <div class="news-poster"><img src="news6.jpg" alt="News 6"></div>
-  </div>
 </div>
 
 
