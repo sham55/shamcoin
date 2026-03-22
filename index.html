@@ -1830,7 +1830,7 @@ section{
   transform:scale(1.01);
 }
 
-/* ===== NEWS HERO POSTER STRIP ===== */
+/* ===== NEWS HERO SLIDER WITH FULL NEWS CARDS ===== */
 .news-hero-slider{
   position:relative;
   overflow:hidden;
@@ -1863,53 +1863,100 @@ section{
 
 .news-hero-track{
   display:flex;
-  align-items:flex-start;
+  align-items:stretch;
   gap:18px;
   width:max-content;
-  animation:newsPosterScroll 26s linear infinite;
+  animation:newsPosterScroll 30s linear infinite;
 }
 
 .news-hero-slider:hover .news-hero-track{
   animation-play-state:paused;
 }
 
-.news-poster{
-  flex:0 0 auto;
-  width:140px;
-  height:240px;
-  border-radius:26px;
+/* merged newsletter card */
+.news-hero-card{
+  flex:0 0 320px;
+  width:320px;
+  min-height:430px;
+  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+  border:1px solid var(--line);
+  border-radius:22px;
   overflow:hidden;
-  position:relative;
-  background:rgba(255,255,255,.04);
-  box-shadow:0 14px 30px rgba(0,0,0,.28);
-  transform:scale(.94);
-  opacity:.88;
-  transition:transform .3s ease, opacity .3s ease, box-shadow .3s ease;
+  box-shadow:var(--shadow);
+  cursor:pointer;
+  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease;
+  display:flex;
+  flex-direction:column;
+  opacity:.96;
 }
 
-.news-poster:nth-child(3n){
-  transform:translateY(8px) scale(1);
-}
-
-.news-poster:nth-child(2),
-.news-poster:nth-child(5),
-.news-poster:nth-child(8),
-.news-poster:nth-child(11){
-  transform:translateY(0) scale(1.08);
+.news-hero-card:hover,
+.news-hero-card:focus{
+  transform:translateY(-4px);
+  box-shadow:0 18px 36px rgba(0,0,0,.30);
+  border-color:rgba(214,177,94,.25);
   opacity:1;
 }
 
-.news-poster:hover{
-  transform:translateY(-4px) scale(1.04);
-  opacity:1;
-  box-shadow:0 20px 40px rgba(0,0,0,.4);
+.news-hero-card-image-wrap{
+  width:100%;
+  height:220px;
+  overflow:hidden;
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid var(--line);
 }
 
-.news-poster img{
+.news-hero-card-image-wrap img{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
+}
+
+.news-hero-card-body{
+  padding:16px;
+  display:flex;
+  flex-direction:column;
+  flex:1;
+}
+
+.news-hero-card-author{
+  color:var(--gold2);
+  font-size:13px;
+  font-weight:800;
+  letter-spacing:.4px;
+  margin-bottom:6px;
+}
+
+.news-hero-card-date{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:10px;
+}
+
+.news-hero-card-title{
+  margin:0 0 10px;
+  font-size:28px;
+  line-height:1.05;
+  font-family:Georgia,"Times New Roman",serif;
+  color:var(--text);
+}
+
+.news-hero-card-excerpt{
+  margin:0;
+  color:var(--muted);
+  font-size:14px;
+  line-height:1.7;
+}
+
+.news-hero-card-readmore{
+  margin-top:14px;
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  color:var(--gold2);
+  font-weight:800;
+  font-size:14px;
 }
 
 @keyframes newsPosterScroll{
@@ -1958,20 +2005,21 @@ section{
     width:36px;
   }
 
-  .news-poster{
-    width:108px;
-    height:190px;
-    border-radius:22px;
+  .news-hero-card{
+    flex:0 0 86vw;
+    width:86vw;
+    min-height:390px;
   }
 
-  .news-poster:nth-child(2),
-  .news-poster:nth-child(5),
-  .news-poster:nth-child(8),
-  .news-poster:nth-child(11){
-    transform:scale(1.02);
+  .news-hero-card-image-wrap{
+    height:240px;
   }
 
-  /* MOBILE HORIZONTAL NEWS SLIDESHOW */
+  .news-hero-card-title{
+    font-size:24px;
+  }
+
+  /* keep normal grid mobile fallback if ever used elsewhere */
   .news-grid{
     display:flex;
     gap:16px;
@@ -2006,6 +2054,14 @@ section{
 @media (max-width:640px){
   .news-modal-title{
     font-size:28px;
+  }
+
+  .news-hero-card{
+    min-height:360px;
+  }
+
+  .news-hero-card-image-wrap{
+    height:210px;
   }
 }
 
@@ -2099,11 +2155,13 @@ section{
       <p class="hint">Posted by super admin</p>
     </div>
 
-    <section id="newsUpdates">
+   <section id="newsUpdates">
   <div class="container">
     <div class="section-title">
-      <h2>Christian News Letter</h2>
+      <h2>SRM News Letter</h2>
+      <p class="hint">Tap a slide or story to read more</p>
     </div>
+
 
     <div id="newsUpdatesGrid" class="news-grid"></div>
   </div>
@@ -2166,6 +2224,11 @@ section{
       </div>
     </div>
   </section>
+
+  <div class="news-hero-slider">
+  <div class="news-hero-track" id="newsHeroTrack"></div>
+</div>
+
 
   <section id="about">
     <div class="container">
@@ -5792,7 +5855,6 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
 
 let NEWS_UPDATES = [];
 
-
 async function loadNewsUpdates() {
   try {
     const snap = await getDocs(
@@ -5817,66 +5879,100 @@ function renderNewsUpdates() {
 
   if (!NEWS_UPDATES.length) {
     grid.innerHTML = `
-      <div class="card">
-        
-        <p class="smallmuted" style="margin-bottom:0;">News Letters will appear here.</p>
+      <div class="news-hero-slider">
+        <div class="news-hero-track" id="newsHeroTrack">
+          <div
+            class="news-hero-card"
+            tabindex="0"
+            role="button"
+            aria-label="Open default news"
+          >
+            <div class="news-hero-card-image-wrap">
+              <img
+                src="srm.png"
+                alt="Default news"
+                onerror="this.onerror=null; this.src='srm.png';"
+              >
+            </div>
+
+            <div class="news-hero-card-body">
+              <div class="news-hero-card-author">Solid Rock Ministries</div>
+              <h3 class="news-hero-card-title">Christian News Letter</h3>
+              <p class="news-hero-card-excerpt">News Letters will appear here.</p>
+              <div class="news-hero-card-readmore">Read more →</div>
+            </div>
+          </div>
+        </div>
       </div>
     `;
     return;
   }
 
-  grid.innerHTML = NEWS_UPDATES.map(item => {
-    const canEdit = !!outreachAdminState[item.outreachId];
+  grid.innerHTML = `
+    <div class="news-hero-slider">
+      <div class="news-hero-track" id="newsHeroTrack">
+        ${NEWS_UPDATES.map(item => {
+          const canEdit = !!outreachAdminState[item.outreachId];
 
-    let publishedText = "Latest update";
-    try {
-      if (item.createdAt?.toDate) {
-        publishedText = item.createdAt.toDate().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-      } else if (item.createdAt) {
-        const d = new Date(item.createdAt);
-        if (!isNaN(d.getTime())) {
-          publishedText = d.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          });
-        }
-      }
-    } catch {}
+          let publishedText = "Latest update";
+          try {
+            if (item.createdAt?.toDate) {
+              publishedText = item.createdAt.toDate().toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric"
+              });
+            } else if (item.createdAt) {
+              const d = new Date(item.createdAt);
+              if (!isNaN(d.getTime())) {
+                publishedText = d.toLocaleDateString("en-US", {
+                  year: "numeric",
+                  month: "long",
+                  day: "numeric"
+                });
+              }
+            }
+          } catch {}
 
-    return `
-      <article class="news-card" data-news-id="${escapeHtml(item.id)}" tabindex="0" role="button" aria-label="Read ${escapeHtml(item.title)}">
-       <img
+          return `
+            <article
+              class="news-hero-card"
+              data-news-id="${escapeHtml(item.id)}"
+              tabindex="0"
+              role="button"
+              aria-label="Read ${escapeHtml(item.title || "News update")}"
+              title="${escapeHtml(item.title || "News update")}"
+            >
+              <div class="news-hero-card-image-wrap">
+                <img
   class="news-thumb"
   src="${escapeHtml(item.imageUrl || "srm.png")}"
   alt="${escapeHtml(item.title || "News update")}"
-  onclick="event.stopPropagation(); openLightbox('${escapeHtml(item.imageUrl || "srm.png")}')"
-  style="cursor:zoom-in;"
   onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
 >
+              </div>
 
-        <div class="news-body">
-          <div class="news-author">${escapeHtml(item.author || "Solid Rock Ministries")}</div>
-          <div class="news-card-date">${escapeHtml(publishedText)}</div>
+              <div class="news-hero-card-body">
+                <div class="news-hero-card-author">${escapeHtml(item.author || "Solid Rock Ministries")}</div>
+                <div class="news-hero-card-date">${escapeHtml(publishedText)}</div>
 
-          <h3 class="news-title">${escapeHtml(item.title || "News Update")}</h3>
-          <p class="news-excerpt">${escapeHtml(item.excerpt || "")}</p>
-          <div class="news-readmore">Read more →</div>
+                <h3 class="news-hero-card-title">${escapeHtml(item.title || "News Update")}</h3>
+                <p class="news-hero-card-excerpt">${escapeHtml(item.excerpt || "")}</p>
+                <div class="news-hero-card-readmore">Read more →</div>
 
-          ${canEdit ? `
-            <div class="toolbar-row" style="margin-top:12px;">
-              <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
-              <button class="danger-btn delete-news-btn" type="button" data-id="${escapeHtml(item.id)}" data-path="${escapeHtml(item.imageStoragePath || "")}">Delete</button>
-            </div>
-          ` : ""}
-        </div>
-      </article>
-    `;
-  }).join("");
+                ${canEdit ? `
+                  <div class="toolbar-row" style="margin-top:12px;">
+                    <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
+                    <button class="danger-btn delete-news-btn" type="button" data-id="${escapeHtml(item.id)}" data-path="${escapeHtml(item.imageStoragePath || "")}">Delete</button>
+                  </div>
+                ` : ""}
+              </div>
+            </article>
+          `;
+        }).join("")}
+      </div>
+    </div>
+  `;
 
   bindNewsCards();
   bindNewsAdminButtons();
@@ -5887,6 +5983,7 @@ window.openNewsArticleById = function(newsId) {
   if (!item) return;
   openNewsArticle(item);
 };
+
 
 async function saveNewsUpdate(outreachId) {
   const feedback = document.getElementById(`${outreachId}-news-feedback`);
@@ -6112,25 +6209,25 @@ function bindNewsAdminButtons() {
 }
 
 function bindNewsCards() {
-  document.querySelectorAll(".news-card").forEach(card => {
+  document.querySelectorAll(".news-card, .news-hero-card").forEach(card => {
     if (card.dataset.boundRead === "true") return;
     card.dataset.boundRead = "true";
 
     const open = (e) => {
       if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
-      if (e.target.closest(".news-thumb")) return;
 
       const id = card.dataset.newsId;
-      const item = NEWS_UPDATES.find(n => n.id === id);
+      const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
       if (item) openNewsArticle(item);
     };
 
     card.addEventListener("click", open);
+
     card.addEventListener("keydown", (e) => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         const id = card.dataset.newsId;
-        const item = NEWS_UPDATES.find(n => n.id === id);
+        const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
         if (item) openNewsArticle(item);
       }
     });
@@ -6138,6 +6235,8 @@ function bindNewsCards() {
 }
 
 window.openNewsArticle = function(article) {
+  console.log("openNewsArticle fired:", article);
+
   const modal = document.getElementById("newsModal");
   const content = document.getElementById("newsModalContent");
   if (!modal || !content) return;
@@ -6168,12 +6267,12 @@ window.openNewsArticle = function(article) {
     <div class="news-article-wrap">
       <div class="news-article-image-wrap">
         <img
-  class="news-modal-image clickable-news-image"
-  src="${escapeHtml(article.imageUrl || "srm.png")}"
-  alt="${escapeHtml(article.title || "News image")}"
-  onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
-  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
->
+          class="news-modal-image clickable-news-image"
+          src="${escapeHtml(article.imageUrl || "srm.png")}"
+          alt="${escapeHtml(article.title || "News image")}"
+          onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
+          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+        >
       </div>
 
       <div class="news-article-content">
@@ -6218,7 +6317,6 @@ window.closeNewsModal = function() {
 
   renderOutreaches();
   renderNewsUpdates();
-  renderNewsHeroSlider();
   updateSuperAdminUI();
   await loadGeneralAnnouncements();
   updateMemberAccessVisibility();
@@ -7242,6 +7340,175 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
+function renderNewsHeroSlider() {
+  const track = document.getElementById("newsHeroTrack");
+  if (!track) return;
+
+  const items = (NEWS_UPDATES || []).slice(0, 10);
+
+  if (!items.length) {
+    track.innerHTML = `
+      <div class="news-hero-card" tabindex="0" role="button" aria-label="Open default news">
+        <div class="news-hero-card-image-wrap">
+          <img
+            src="srm.png"
+            alt="Default news"
+            onerror="this.onerror=null; this.src='srm.png';"
+          >
+        </div>
+        <div class="news-hero-card-body">
+          <div class="news-hero-card-author">Solid Rock Ministries</div>
+          <h3 class="news-hero-card-title">Christian News Letter</h3>
+          <p class="news-hero-card-excerpt">News letters will appear here.</p>
+          <div class="news-hero-card-readmore">Read more →</div>
+        </div>
+      </div>
+    `;
+    return;
+  }
+
+  const doubled = [...items, ...items];
+
+  track.innerHTML = doubled.map(item => {
+    let publishedText = "Latest update";
+
+    try {
+      if (item.createdAt?.toDate) {
+        publishedText = item.createdAt.toDate().toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      } else if (item.createdAt) {
+        const d = new Date(item.createdAt);
+        if (!isNaN(d.getTime())) {
+          publishedText = d.toLocaleDateString("en-US", {
+            year: "numeric",
+            month: "long",
+            day: "numeric"
+          });
+        }
+      }
+    } catch {}
+
+    return `
+      <div
+        class="news-hero-card"
+        data-id="${escapeHtml(item.id)}"
+        tabindex="0"
+        role="button"
+        aria-label="Open ${escapeHtml(item.title || "News update")}"
+        title="${escapeHtml(item.title || "News update")}"
+      >
+        <div class="news-hero-card-image-wrap">
+          <img
+            src="${escapeHtml(item.imageUrl || "srm.png")}"
+            alt="${escapeHtml(item.title || "News poster")}"
+            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+          >
+        </div>
+
+        <div class="news-hero-card-body">
+          <div class="news-hero-card-author">${escapeHtml(item.author || "Solid Rock Ministries")}</div>
+          <div class="news-hero-card-date">${escapeHtml(publishedText)}</div>
+          <h3 class="news-hero-card-title">${escapeHtml(item.title || "Christian News Letter")}</h3>
+          <p class="news-hero-card-excerpt">${escapeHtml(item.excerpt || "")}</p>
+          <div class="news-hero-card-readmore">Read more →</div>
+        </div>
+      </div>
+    `;
+  }).join("");
+
+  bindHeroSliderClicks();
+  bindHeroTouchPause();
+}
+
+function bindHeroSliderClicks() {
+  document.querySelectorAll(".news-hero-card").forEach(card => {
+    if (card.dataset.bound === "true") return;
+    card.dataset.bound = "true";
+
+    const open = () => {
+      const id = card.dataset.id;
+      if (!id) return;
+      openNewsArticleById(id);
+    };
+
+    card.addEventListener("click", open);
+
+    card.addEventListener("keydown", e => {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        open();
+      }
+    });
+  });
+}
+
+
+window.openNewsArticle = function(article) {
+  const modal = document.getElementById("newsModal");
+  const content = document.getElementById("newsModalContent");
+
+  if (!modal || !content || !article) return;
+
+  const outreachName = article.outreachId
+    ? getOutreachDisplayName(article.outreachId)
+    : "Solid Rock Ministries";
+
+  let publishedText = "Latest update";
+  try {
+    if (article.createdAt?.toDate) {
+      publishedText = article.createdAt.toDate().toLocaleDateString("en-US", {
+        year: "numeric",
+        month: "long",
+        day: "numeric"
+      });
+    } else if (article.createdAt) {
+      const d = new Date(article.createdAt);
+      if (!isNaN(d.getTime())) {
+        publishedText = d.toLocaleDateString("en-US", {
+          year: "numeric",
+          month: "long",
+          day: "numeric"
+        });
+      }
+    }
+  } catch {}
+
+  content.innerHTML = `
+    <div class="news-article-wrap">
+      <div class="news-article-image-wrap">
+        <img
+          class="news-modal-image clickable-news-image"
+          src="${escapeHtml(article.imageUrl || "srm.png")}"
+          alt="${escapeHtml(article.title || "News image")}"
+          onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
+          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+        >
+      </div>
+
+      <div class="news-article-content">
+        <div class="news-article-meta-top">
+          <span class="news-article-pill">${escapeHtml(outreachName)}</span>
+          <span class="news-article-pill">${escapeHtml(publishedText)}</span>
+        </div>
+
+        <div class="news-modal-author">${escapeHtml(article.author || "Solid Rock Ministries")}</div>
+        <h2 class="news-modal-title">${escapeHtml(article.title || "News Update")}</h2>
+
+        <div class="news-article-divider"></div>
+
+        <div class="news-modal-text">
+          ${article.body || "<p>No content available.</p>"}
+        </div>
+      </div>
+    </div>
+  `;
+
+  modal.classList.add("active");
+};
+
 </script>
 
 
@@ -7341,10 +7608,6 @@ function updateAdminLogoutLinkVisibility() {
   </div>
 </div>
 
-<div class="news-hero-slider">
-  <div class="news-hero-track" id="newsHeroTrack"></div>
-</div>
-
 
 <div id="newsModal" class="modal-overlay" onclick="if(event.target===this) closeNewsModal()">
   <div class="modal-card news-article-modal-card" style="width:min(96vw,1100px);max-height:92vh;overflow:auto;">
@@ -7353,20 +7616,12 @@ function updateAdminLogoutLinkVisibility() {
   </div>
 </div>
 
-<div id="newsModal" class="news-modal">
-  <div class="news-modal-content">
-    <span class="close-modal" onclick="closeNewsModal()">&times;</span>
-
-    <img id="modalImage" class="modal-img">
-    <h2 id="modalTitle"></h2>
-    <p id="modalBody"></p>
-  </div>
-</div>
 
 <div id="newsImageLightbox" class="lightbox" onclick="closeNewsImageLightbox(event)">
   <button class="lightbox-close" type="button" aria-label="Close">&times;</button>
   <img id="newsImageLightboxImg" alt="Full news image">
 </div>
+
 
 
 </body>
