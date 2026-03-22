@@ -1672,16 +1672,16 @@ section{
   flex-direction:column;
 }
 
-.news-card-date{
-  color:var(--muted);
-  font-size:13px;
-  margin-bottom:10px;
-}
-
 .news-card:hover{
   transform:translateY(-4px);
   box-shadow:0 18px 36px rgba(0,0,0,.28);
   border-color:rgba(214,177,94,.25);
+}
+
+.news-card-date{
+  color:var(--muted);
+  font-size:13px;
+  margin-bottom:10px;
 }
 
 .news-thumb{
@@ -1717,6 +1717,7 @@ section{
   margin:0;
   color:var(--muted);
   font-size:14px;
+  line-height:1.7;
 }
 
 .news-readmore{
@@ -1729,101 +1730,7 @@ section{
   font-size:14px;
 }
 
-.news-modal-image{
-  width:100%;
-  height:auto;
-  max-height:none;
-  object-fit:contain;
-  display:block;
-  border-radius:20px;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
-  background:rgba(255,255,255,.03);
-}
-
-.news-modal-author{
-  color:var(--gold2);
-  font-weight:800;
-  font-size:13px;
-  margin-bottom:8px;
-  letter-spacing:.4px;
-}
-
-.news-modal-title{
-  margin:0 0 14px;
-  font-size:36px;
-  line-height:1.05;
-  font-family:Georgia,"Times New Roman",serif;
-  color:var(--text);
-}
-
-.news-modal-text{
-  color:var(--muted);
-  line-height:1.8;
-  font-size:15px;
-}
-
-.news-modal-text p{
-  margin:0 0 14px;
-}
-
-@media (max-width:640px){
-  .news-thumb{
-    height:260px;
-  }
-
-  .news-title{
-    font-size:24px;
-  }
-
-  .news-modal-title{
-    font-size:28px;
-  }
-}
-
-.news-modal-image{
-  width:100%;
-  max-height:360px;
-  object-fit:cover;
-  border-radius:18px;
-  margin-bottom:16px;
-  border:1px solid var(--line);
-}
-
-.news-modal-author{
-  color:var(--gold2);
-  font-weight:800;
-  font-size:13px;
-  margin-bottom:8px;
-  letter-spacing:.4px;
-}
-
-.news-modal-title{
-  margin:0 0 14px;
-  font-size:36px;
-  line-height:1.05;
-  font-family:Georgia,"Times New Roman",serif;
-  color:var(--text);
-}
-
-.news-modal-text{
-  color:var(--muted);
-  line-height:1.8;
-  font-size:15px;
-}
-
-.news-modal-text p{
-  margin:0 0 14px;
-}
-
-.clickable-news-image{
-  cursor:zoom-in;
-}
-
-.clickable-news-image:hover{
-  filter:brightness(1.05);
-}
-
+/* ===== NEWS ARTICLE MODAL ===== */
 .news-article-image-wrap{
   width:100%;
   margin:0 0 24px;
@@ -1832,19 +1739,15 @@ section{
   align-items:center;
 }
 
-.news-article-image-wrap{
-  width:100%;
-  margin:0 0 24px;
-}
-
 .news-modal-image{
   width:100%;
   height:auto;
-object-fit:contain;
+  object-fit:contain;
   display:block;
   border-radius:22px;
   border:1px solid var(--line);
   box-shadow:var(--shadow);
+  background:rgba(255,255,255,.03);
 }
 
 .news-article-content{
@@ -1927,6 +1830,94 @@ object-fit:contain;
   transform:scale(1.01);
 }
 
+/* ===== NEWS HERO POSTER STRIP ===== */
+.news-hero-slider{
+  position:relative;
+  overflow:hidden;
+  width:100%;
+  padding:18px 0 28px;
+  margin:0 auto 26px;
+  background:linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,0));
+}
+
+.news-hero-slider::before,
+.news-hero-slider::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:70px;
+  z-index:2;
+  pointer-events:none;
+}
+
+.news-hero-slider::before{
+  left:0;
+  background:linear-gradient(90deg, rgba(11,18,32,1), rgba(11,18,32,0));
+}
+
+.news-hero-slider::after{
+  right:0;
+  background:linear-gradient(270deg, rgba(11,18,32,1), rgba(11,18,32,0));
+}
+
+.news-hero-track{
+  display:flex;
+  align-items:flex-start;
+  gap:18px;
+  width:max-content;
+  animation:newsPosterScroll 26s linear infinite;
+}
+
+.news-hero-slider:hover .news-hero-track{
+  animation-play-state:paused;
+}
+
+.news-poster{
+  flex:0 0 auto;
+  width:140px;
+  height:240px;
+  border-radius:26px;
+  overflow:hidden;
+  position:relative;
+  background:rgba(255,255,255,.04);
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
+  transform:scale(.94);
+  opacity:.88;
+  transition:transform .3s ease, opacity .3s ease, box-shadow .3s ease;
+}
+
+.news-poster:nth-child(3n){
+  transform:translateY(8px) scale(1);
+}
+
+.news-poster:nth-child(2),
+.news-poster:nth-child(5),
+.news-poster:nth-child(8),
+.news-poster:nth-child(11){
+  transform:translateY(0) scale(1.08);
+  opacity:1;
+}
+
+.news-poster:hover{
+  transform:translateY(-4px) scale(1.04);
+  opacity:1;
+  box-shadow:0 20px 40px rgba(0,0,0,.4);
+}
+
+.news-poster img{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+}
+
+@keyframes newsPosterScroll{
+  from{ transform:translateX(0); }
+  to{ transform:translateX(-50%); }
+}
+
+/* ===== MOBILE ===== */
 @media (max-width:900px){
   .news-modal-image{
     height:min(52vh, 360px);
@@ -1949,6 +1940,72 @@ object-fit:contain;
   .news-article-pill{
     font-size:12px;
     padding:7px 12px;
+  }
+}
+
+@media (max-width:768px){
+  .news-hero-track{
+    gap:14px;
+  }
+
+  .news-hero-slider{
+    padding:14px 0 22px;
+    margin-bottom:18px;
+  }
+
+  .news-hero-slider::before,
+  .news-hero-slider::after{
+    width:36px;
+  }
+
+  .news-poster{
+    width:108px;
+    height:190px;
+    border-radius:22px;
+  }
+
+  .news-poster:nth-child(2),
+  .news-poster:nth-child(5),
+  .news-poster:nth-child(8),
+  .news-poster:nth-child(11){
+    transform:scale(1.02);
+  }
+
+  /* MOBILE HORIZONTAL NEWS SLIDESHOW */
+  .news-grid{
+    display:flex;
+    gap:16px;
+    overflow-x:auto;
+    overflow-y:hidden;
+    scroll-snap-type:x mandatory;
+    -webkit-overflow-scrolling:touch;
+    scrollbar-width:none;
+    padding-bottom:6px;
+  }
+
+  .news-grid::-webkit-scrollbar{
+    display:none;
+  }
+
+  .news-card{
+    min-width:86vw;
+    max-width:86vw;
+    flex:0 0 auto;
+    scroll-snap-align:center;
+  }
+
+  .news-thumb{
+    height:260px;
+  }
+
+  .news-title{
+    font-size:24px;
+  }
+}
+
+@media (max-width:640px){
+  .news-modal-title{
+    font-size:28px;
   }
 }
 
@@ -6161,6 +6218,7 @@ window.closeNewsModal = function() {
 
   renderOutreaches();
   renderNewsUpdates();
+  renderNewsHeroSlider();
   updateSuperAdminUI();
   await loadGeneralAnnouncements();
   updateMemberAccessVisibility();
@@ -7184,7 +7242,33 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
+function renderNewsHeroSlider() {
+  const track = document.getElementById("newsHeroTrack");
+  if (!track) return;
 
+  const posters = NEWS_UPDATES.filter(item => item.imageUrl);
+
+  if (!posters.length) {
+    track.innerHTML = `
+      <div class="news-poster"><img src="srm.png" alt="Default"></div>
+      <div class="news-poster"><img src="srm.png" alt="Default"></div>
+      <div class="news-poster"><img src="srm.png" alt="Default"></div>
+    `;
+    return;
+  }
+
+  const doubled = [...posters, ...posters];
+
+  track.innerHTML = doubled.map(item => `
+    <div class="news-poster" onclick="openNewsArticleById('${escapeHtml(item.id)}')" style="cursor:pointer;">
+      <img
+        src="${escapeHtml(item.imageUrl || 'srm.png')}"
+        alt="${escapeHtml(item.title || 'News poster')}"
+        onerror="this.onerror=null; this.src='srm.png';"
+      >
+    </div>
+  `).join("");
+}
 
 
 </script>
@@ -7285,6 +7369,30 @@ function updateAdminLogoutLinkVisibility() {
     </div>
   </div>
 </div>
+
+<div class="news-hero-slider">
+  <div class="news-hero-track" id="newsHeroTrack"></div>
+</div>
+
+<div class="news-hero-slider">
+  <div class="news-hero-track" id="newsHeroTrack">
+    <div class="news-poster"><img src="news1.jpg" alt="News 1"></div>
+    <div class="news-poster"><img src="news2.jpg" alt="News 2"></div>
+    <div class="news-poster"><img src="news3.jpg" alt="News 3"></div>
+    <div class="news-poster"><img src="news4.jpg" alt="News 4"></div>
+    <div class="news-poster"><img src="news5.jpg" alt="News 5"></div>
+    <div class="news-poster"><img src="news6.jpg" alt="News 6"></div>
+
+    <!-- duplicate for smooth infinite effect -->
+    <div class="news-poster"><img src="news1.jpg" alt="News 1"></div>
+    <div class="news-poster"><img src="news2.jpg" alt="News 2"></div>
+    <div class="news-poster"><img src="news3.jpg" alt="News 3"></div>
+    <div class="news-poster"><img src="news4.jpg" alt="News 4"></div>
+    <div class="news-poster"><img src="news5.jpg" alt="News 5"></div>
+    <div class="news-poster"><img src="news6.jpg" alt="News 6"></div>
+  </div>
+</div>
+
 
 <div id="newsModal" class="modal-overlay" onclick="if(event.target===this) closeNewsModal()">
   <div class="modal-card news-article-modal-card" style="width:min(96vw,1100px);max-height:92vh;overflow:auto;">
