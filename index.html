@@ -4017,13 +4017,19 @@ window.closeReactionUsersModal = function() {
 
               <div id="${escapeHtml(outreach.id)}-leave-board" class="hidden" style="margin-top:14px;">
                 <div class="divider"></div>
-                <h3 style="margin-bottom:10px;">Leave Membership</h3>
+                
                 <p class="smallmuted" style="margin-top:0;">
                   You are logged in as <strong>${escapeHtml(toDisplayName(savedMemberName) || "Member")}</strong>. Click below to remove your membership from this outreach.
                 </p>
 
                 <div class="toolbar-row" style="margin-top:12px;">
                   <button class="danger-btn leave-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Leave Membership</button>
+                  <button
+          class="ghost-btn member-logout-btn"
+          type="button"
+          onclick="memberLogout()">
+          Logout
+        </button>
                 </div>
               </div>
 
@@ -5857,7 +5863,12 @@ async function loadNewsUpdates() {
 
     const items = [];
     snap.forEach(docSnap => {
-      items.push({ id: docSnap.id, ...docSnap.data() });
+      const data = docSnap.data();
+      const status = data.status || "approved";
+
+      if (status === "approved") {
+        items.push({ id: docSnap.id, ...data });
+      }
     });
 
     NEWS_UPDATES = items;
@@ -5867,15 +5878,22 @@ async function loadNewsUpdates() {
   }
 }
 
+
+
 function renderNewsUpdates() {
   const grid = document.getElementById("newsUpdatesGrid");
   if (!grid) return;
 
+  stopHeroSliderAuto();
+
+  const memberPanelHtml = getMemberNewsPostPanelHtml();
+
   if (!NEWS_UPDATES.length) {
     grid.innerHTML = `
-      <div class="news-hero-slider">
+      ${memberPanelHtml}
+      <div class="news-hero-slider" id="newsHeroSlider">
         <div class="news-hero-track" id="newsHeroTrack">
-          <div
+          <article
             class="news-hero-card"
             tabindex="0"
             role="button"
@@ -5895,18 +5913,21 @@ function renderNewsUpdates() {
               <p class="news-hero-card-excerpt">News Letters will appear here.</p>
               <div class="news-hero-card-readmore">Read more →</div>
             </div>
-          </div>
+          </article>
         </div>
       </div>
     `;
+
+    bindMemberNewsButtons();
     return;
   }
 
   grid.innerHTML = `
-    <div class="news-hero-slider">
+    ${memberPanelHtml}
+    <div class="news-hero-slider" id="newsHeroSlider">
       <div class="news-hero-track" id="newsHeroTrack">
         ${NEWS_UPDATES.map(item => {
-          const canEdit = !!outreachAdminState[item.outreachId];
+          const canManage = canManageNewsItem(item);
 
           let publishedText = "Latest update";
           try {
@@ -5939,11 +5960,11 @@ function renderNewsUpdates() {
             >
               <div class="news-hero-card-image-wrap">
                 <img
-  class="news-thumb"
-  src="${escapeHtml(item.imageUrl || "srm.png")}"
-  alt="${escapeHtml(item.title || "News update")}"
-  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
->
+                  class="news-thumb"
+                  src="${escapeHtml(item.imageUrl || "srm.png")}"
+                  alt="${escapeHtml(item.title || "News update")}"
+                  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+                >
               </div>
 
               <div class="news-hero-card-body">
@@ -5954,8 +5975,8 @@ function renderNewsUpdates() {
                 <p class="news-hero-card-excerpt">${escapeHtml(item.excerpt || "")}</p>
                 <div class="news-hero-card-readmore">Read more →</div>
 
-                ${canEdit ? `
-                  <div class="toolbar-row" style="margin-top:12px;">
+                ${canManage ? `
+                  <div class="toolbar-row news-card-toolbar" style="margin-top:12px;">
                     <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
                     <button class="danger-btn delete-news-btn" type="button" data-id="${escapeHtml(item.id)}" data-path="${escapeHtml(item.imageStoragePath || "")}">Delete</button>
                   </div>
@@ -5970,14 +5991,257 @@ function renderNewsUpdates() {
 
   bindNewsCards();
   bindNewsAdminButtons();
+  bindMemberNewsButtons();
+  setupInfiniteHeroSlider();
+  startHeroSliderAuto();
 }
 
-window.openNewsArticleById = function(newsId) {
-  const item = NEWS_UPDATES.find(n => String(n.id) === String(newsId));
-  if (!item) return;
-  openNewsArticle(item);
+function setupInfiniteHeroSlider() {
+  const slider = document.getElementById("newsHeroSlider");
+  const track = document.getElementById("newsHeroTrack");
+  if (!slider || !track) return;
+
+  const originalCards = Array.from(track.querySelectorAll(".news-hero-card"));
+  if (!originalCards.length) return;
+
+  track.innerHTML = "";
+  originalCards.forEach(card => track.appendChild(card));
+
+  if (originalCards.length <= 1) return;
+
+  const firstClone = originalCards[0].cloneNode(true);
+  const lastClone = originalCards[originalCards.length - 1].cloneNode(true);
+
+  firstClone.dataset.clone = "true";
+  lastClone.dataset.clone = "true";
+
+  track.insertBefore(lastClone, track.firstChild);
+  track.appendChild(firstClone);
+
+  bindNewsCards();
+  bindNewsAdminButtons();
+  bindHeroSliderSwipe();
+  updateHeroSliderPosition(false);
+}
+
+function getActiveMemberNewsInfo() {
+  for (const outreach of currentOutreaches) {
+    const savedName = getSavedMemberSession(outreach.id);
+
+    if (savedName && String(savedName).trim()) {
+      return {
+        outreachId: outreach.id,
+        fullName: toDisplayName(savedName),
+        normalizedName: normalizeMemberName(savedName)
+      };
+    }
+  }
+
+  return null;
+}
+
+function getMemberNewsPostPanelHtml() {
+  const memberInfo = getActiveMemberNewsInfo();
+
+  if (!memberInfo || !memberInfo.fullName || !memberInfo.outreachId) {
+    return "";
+  }
+
+  return `
+    <div class="card" style="margin-bottom:18px;">
+      <h3 style="margin-top:0;">Post to SRM News Letter</h3>
+      <p class="smallmuted">
+        Logged-in members can submit testimonies, reflections, and encouragement.
+      </p>
+
+      <label for="member-news-title">Title</label>
+      <input id="member-news-title" type="text" placeholder="Enter title">
+
+      <label for="member-news-author">Author</label>
+      <input id="member-news-author" type="text" value="${escapeHtml(memberInfo.fullName)}" placeholder="Your name">
+
+      <label for="member-news-excerpt">Short Excerpt</label>
+      <textarea id="member-news-excerpt" placeholder="Short preview text"></textarea>
+
+      <label for="member-news-body">Full Article</label>
+      <textarea id="member-news-body" placeholder="Write your full post here..." style="min-height:180px;"></textarea>
+
+      <label for="member-news-image">Image</label>
+      <input id="member-news-image" type="file" accept="image/*,.heic,.heif">
+
+      <div class="toolbar-row" style="margin-top:12px;">
+        <button class="btn" id="submitMemberNewsBtn" type="button">Submit News</button>
+        <button class="ghost-btn" id="clearMemberNewsBtn" type="button">Clear</button>
+      </div>
+
+      <p id="member-news-feedback" class="smallmuted"></p>
+    </div>
+  `;
+}
+
+async function submitMemberNewsUpdate() {
+  const feedback = document.getElementById("member-news-feedback");
+  const title = document.getElementById("member-news-title")?.value.trim() || "";
+  const author = document.getElementById("member-news-author")?.value.trim() || "";
+  const excerpt = document.getElementById("member-news-excerpt")?.value.trim() || "";
+  const bodyRaw = document.getElementById("member-news-body")?.value.trim() || "";
+  const imageInput = document.getElementById("member-news-image");
+  const originalFile = imageInput?.files?.[0] || null;
+
+  const memberInfo = getActiveMemberNewsInfo();
+
+  if (!memberInfo) {
+    if (feedback) {
+      feedback.textContent = "You must be logged in as a member to submit news.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  if (!title || !author || !excerpt || !bodyRaw) {
+    if (feedback) {
+      feedback.textContent = "Please complete title, author, excerpt, and full article.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Submitting your news...";
+      feedback.className = "smallmuted";
+    }
+
+    let imageUrl = "";
+    let imageStoragePath = "";
+
+    if (originalFile) {
+      const file = await normalizeImageFile(originalFile);
+      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
+      const storagePath = `memberNewsSubmissions/${memberInfo.outreachId}/${safeName}`;
+      const storageRef = ref(storage, storagePath);
+
+      await uploadBytes(storageRef, file, {
+        contentType: file.type || "image/jpeg"
+      });
+
+      imageUrl = await getDownloadURL(storageRef);
+      imageStoragePath = storagePath;
+    }
+
+    const body = bodyRaw
+      .split("\n")
+      .map(line => line.trim())
+      .filter(Boolean)
+      .map(line => `<p>${escapeHtml(line)}</p>`)
+      .join("");
+
+    await addDoc(collection(db, "newsUpdates"), {
+      outreachId: memberInfo.outreachId,
+      title,
+      author,
+      excerpt,
+      body,
+      imageUrl,
+      imageStoragePath,
+      createdAt: serverTimestamp(),
+      createdBy: memberInfo.fullName,
+      createdByType: "member",
+      memberName: memberInfo.fullName,
+      memberNormalizedName: memberInfo.normalizedName,
+      status: "approved"
+    });
+
+    clearMemberNewsForm();
+
+    if (feedback) {
+      feedback.textContent = "Your SRM News Letter post was published successfully";
+      feedback.className = "smallmuted success-text";
+    }
+  } catch (error) {
+    console.error("submitMemberNewsUpdate failed:", error);
+    if (feedback) {
+      feedback.textContent = "Submit failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+function clearMemberNewsForm() {
+  const ids = [
+    "member-news-title",
+    "member-news-excerpt",
+    "member-news-body"
+  ];
+
+  ids.forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.value = "";
+  });
+
+  const authorField = document.getElementById("member-news-author");
+  const memberInfo = getActiveMemberNewsInfo();
+  if (authorField) {
+    authorField.value = memberInfo?.fullName || "";
+  }
+
+  const imageField = document.getElementById("member-news-image");
+  if (imageField) imageField.value = "";
+}
+
+function bindMemberNewsButtons() {
+  const submitBtn = document.getElementById("submitMemberNewsBtn");
+  const clearBtn = document.getElementById("clearMemberNewsBtn");
+
+  if (submitBtn && submitBtn.dataset.bound !== "true") {
+    submitBtn.dataset.bound = "true";
+    submitBtn.addEventListener("click", submitMemberNewsUpdate);
+  }
+
+  if (clearBtn && clearBtn.dataset.bound !== "true") {
+    clearBtn.dataset.bound = "true";
+    clearBtn.addEventListener("click", clearMemberNewsForm);
+  }
+}
+
+let heroSliderState = {
+  track: null,
+  realCount: 0,
+  index: 1,
+  cardWidth: 0,
+  gap: 16,
+  timer: null,
+  isDragging: false,
+  startX: 0,
+  currentTranslate: 0,
+  prevTranslate: 0
 };
 
+function getCurrentMemberIdentity() {
+  const memberInfo = getActiveMemberNewsInfo();
+  if (!memberInfo) return null;
+
+  return {
+    fullName: memberInfo.fullName || "",
+    normalizedName: memberInfo.normalizedName || normalizeMemberName(memberInfo.fullName || "")
+  };
+}
+
+function canManageNewsItem(item) {
+  if (!item) return false;
+
+  const outreachId = item.outreachId || "";
+  const isOutreachAdminForItem = !!outreachAdminState[outreachId];
+  if (isOutreachAdminForItem) return true;
+
+  const memberIdentity = getCurrentMemberIdentity();
+  if (!memberIdentity) return false;
+
+  const itemCreatedByType = String(item.createdByType || "").toLowerCase();
+  const itemMemberName = normalizeMemberName(item.memberNormalizedName || item.memberName || item.createdBy || "");
+
+  return itemCreatedByType === "member" && itemMemberName === memberIdentity.normalizedName;
+}
 
 async function saveNewsUpdate(outreachId) {
   const feedback = document.getElementById(`${outreachId}-news-feedback`);
@@ -6067,7 +6331,7 @@ async function saveNewsUpdate(outreachId) {
       });
     } else {
       await addDoc(collection(db, "newsUpdates"), {
-  outreachId: outreachId, // ✅ VERY IMPORTANT (for Firestore rules)
+  outreachId: outreachId,
   title,
   author,
   excerpt,
@@ -6075,7 +6339,9 @@ async function saveNewsUpdate(outreachId) {
   imageUrl,
   imageStoragePath,
   createdAt: serverTimestamp(),
-  createdBy: currentUser?.email || ""
+  createdBy: currentUser?.email || "",
+  createdByType: "admin",
+  status: "approved"
 });
     }
 
@@ -6145,9 +6411,8 @@ async function deleteNewsUpdate(newsId, imageStoragePath = "") {
   const item = NEWS_UPDATES.find(n => n.id === newsId);
   if (!item) return;
 
-  const outreachId = item.outreachId;
-  if (!outreachAdminState[outreachId]) {
-    alert("Only the assigned outreach admin can delete this news item.");
+  if (!canManageNewsItem(item)) {
+    alert("You are not allowed to delete this news item.");
     return;
   }
 
@@ -6158,7 +6423,13 @@ async function deleteNewsUpdate(newsId, imageStoragePath = "") {
       try {
         await deleteObject(ref(storage, imageStoragePath));
       } catch (storageError) {
-        console.warn("News image delete warning:", storageError);
+        console.warn("Image delete warning:", storageError);
+
+        // Ignore missing file and continue deleting Firestore doc
+        if (storageError.code !== "storage/object-not-found") {
+          alert("Image delete failed: " + storageError.message);
+          return;
+        }
       }
     }
 
@@ -6169,6 +6440,7 @@ async function deleteNewsUpdate(newsId, imageStoragePath = "") {
     alert("Delete news failed: " + error.message);
   }
 }
+
 
 function bindNewsAdminButtons() {
   document.querySelectorAll(".save-news-btn").forEach(btn => {
@@ -6202,22 +6474,39 @@ function bindNewsAdminButtons() {
   });
 }
 
-function bindNewsCards() {
-  document.querySelectorAll(".news-card, .news-hero-card").forEach(card => {
+
+  function bindNewsCards() {
+  document.querySelectorAll(".news-hero-card, .news-card").forEach(card => {
     if (card.dataset.boundRead === "true") return;
     card.dataset.boundRead = "true";
 
-    const open = (e) => {
+    let pointerDownX = 0;
+    let pointerDownY = 0;
+    let moved = false;
+
+    card.addEventListener("pointerdown", (e) => {
+      pointerDownX = e.clientX;
+      pointerDownY = e.clientY;
+      moved = false;
+    });
+
+    card.addEventListener("pointermove", (e) => {
+      const dx = Math.abs(e.clientX - pointerDownX);
+      const dy = Math.abs(e.clientY - pointerDownY);
+      if (dx > 8 || dy > 8) moved = true;
+    });
+
+    card.addEventListener("click", (e) => {
       if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      if (moved) return;
 
       const id = card.dataset.newsId;
       const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
       if (item) openNewsArticle(item);
-    };
-
-    card.addEventListener("click", open);
+    });
 
     card.addEventListener("keydown", (e) => {
+      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         const id = card.dataset.newsId;
@@ -6228,69 +6517,6 @@ function bindNewsCards() {
   });
 }
 
-window.openNewsArticle = function(article) {
-  console.log("openNewsArticle fired:", article);
-
-  const modal = document.getElementById("newsModal");
-  const content = document.getElementById("newsModalContent");
-  if (!modal || !content) return;
-
-  const outreachName = article.outreachId ? getOutreachDisplayName(article.outreachId) : "Solid Rock Ministries";
-
-  let publishedText = "Latest update";
-  try {
-    if (article.createdAt?.toDate) {
-      publishedText = article.createdAt.toDate().toLocaleDateString("en-US", {
-        year: "numeric",
-        month: "long",
-        day: "numeric"
-      });
-    } else if (article.createdAt) {
-      const d = new Date(article.createdAt);
-      if (!isNaN(d.getTime())) {
-        publishedText = d.toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-      }
-    }
-  } catch {}
-
-  content.innerHTML = `
-    <div class="news-article-wrap">
-      <div class="news-article-image-wrap">
-        <img
-          class="news-modal-image clickable-news-image"
-          src="${escapeHtml(article.imageUrl || "srm.png")}"
-          alt="${escapeHtml(article.title || "News image")}"
-          onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
-          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-        >
-      </div>
-
-      <div class="news-article-content">
-        <div class="news-article-meta-top">
-          <span class="news-article-pill">${escapeHtml(outreachName)}</span>
-          <span class="news-article-pill">${escapeHtml(publishedText)}</span>
-        </div>
-
-        <div class="news-modal-author">${escapeHtml(article.author || "Solid Rock Ministries")}</div>
-        <h2 class="news-modal-title">${escapeHtml(article.title || "News Update")}</h2>
-
-        <div class="news-article-divider"></div>
-
-        <div class="news-modal-text">${article.body || "<p>No content available.</p>"}</div>
-      </div>
-    </div>
-  `;
-
-  modal.classList.add("active");
-};
-
-window.closeNewsModal = function() {
-  document.getElementById("newsModal")?.classList.remove("active");
-};
  async function initPage() {
   await loadOutreaches();
   await enrichOutreaches();
@@ -6397,6 +6623,19 @@ window.closePhotoManagerModal = function() {
   currentPhotoManagerOutreachId = "";
 };
 
+window.closeNewsModal = function() {
+  const modal = document.getElementById("newsModal");
+  const content = document.getElementById("newsModalContent");
+
+  if (modal) {
+    modal.classList.remove("active");
+  }
+
+  if (content) {
+    content.innerHTML = "";
+  }
+};
+
 
 onAuthStateChanged(auth, async (user) => {
   currentUser = user || null;
@@ -6424,7 +6663,8 @@ onAuthStateChanged(auth, async (user) => {
 });
 
 
-window.memberLogout = function() {
+window.memberLogout = async function() {
+  if (!confirm("Are you sure you want to logout from the member session?")) return;
 
   currentOutreaches.forEach(outreach => {
     clearMemberSession(outreach.id);
@@ -6432,13 +6672,9 @@ window.memberLogout = function() {
 
   localStorage.removeItem("guestModeActive");
 
-  const logoutBtn = document.querySelector(".member-logout-btn");
-  if (logoutBtn) logoutBtn.classList.add("hidden");
+  alert("You have been logged out.");
 
-  alert("You have logged out.");
-
-  initPage();
-
+  await initPage();
 };
 
 
@@ -7334,6 +7570,12 @@ function updateAdminLogoutLinkVisibility() {
 
 
 
+let heroSliderIndex = 0;
+let heroSliderTimer = null;
+let heroSliderTouchStartX = 0;
+let heroSliderTouchEndX = 0;
+
+
 function renderNewsHeroSlider() {
   const track = document.getElementById("newsHeroTrack");
   if (!track) return;
@@ -7358,12 +7600,12 @@ function renderNewsHeroSlider() {
         </div>
       </div>
     `;
+    heroSliderIndex = 0;
+    stopHeroSliderAuto();
     return;
   }
 
-  const doubled = [...items, ...items];
-
-  track.innerHTML = doubled.map(item => {
+  track.innerHTML = items.map(item => {
     let publishedText = "Latest update";
 
     try {
@@ -7386,18 +7628,18 @@ function renderNewsHeroSlider() {
     } catch {}
 
     return `
-      <div
+      <article
         class="news-hero-card"
-        data-id="${escapeHtml(item.id)}"
+        data-news-id="${escapeHtml(item.id)}"
         tabindex="0"
         role="button"
-        aria-label="Open ${escapeHtml(item.title || "News update")}"
+        aria-label="Read ${escapeHtml(item.title || "News update")}"
         title="${escapeHtml(item.title || "News update")}"
       >
         <div class="news-hero-card-image-wrap">
           <img
             src="${escapeHtml(item.imageUrl || "srm.png")}"
-            alt="${escapeHtml(item.title || "News poster")}"
+            alt="${escapeHtml(item.title || "News update")}"
             onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
           >
         </div>
@@ -7409,21 +7651,116 @@ function renderNewsHeroSlider() {
           <p class="news-hero-card-excerpt">${escapeHtml(item.excerpt || "")}</p>
           <div class="news-hero-card-readmore">Read more →</div>
         </div>
-      </div>
+      </article>
     `;
   }).join("");
 
+  heroSliderIndex = 0;
+  updateHeroSliderPosition();
   bindHeroSliderClicks();
-  bindHeroTouchPause();
+  bindHeroSliderSwipe();
+  startHeroSliderAuto();
 }
+
+function getHeroSliderItemsPerView() {
+  return window.innerWidth <= 768 ? 1 : 2;
+}
+
+function getHeroSliderMaxIndex() {
+  const total = document.querySelectorAll("#newsHeroTrack .news-hero-card").length;
+  const perView = getHeroSliderItemsPerView();
+  return Math.max(0, total - perView);
+}
+
+function updateHeroSliderPosition() {
+  const track = document.getElementById("newsHeroTrack");
+  const slider = document.getElementById("newsHeroSlider");
+  if (!track || !slider) return;
+
+  const cards = track.querySelectorAll(".news-hero-card");
+  if (!cards.length) return;
+
+  const step = cards[0].offsetWidth + (window.innerWidth <= 768 ? 14 : 18);
+  track.style.transform = `translateX(-${heroSliderIndex * step}px)`;
+}
+
+function nextHeroSlider() {
+  const maxIndex = getHeroSliderMaxIndex();
+  heroSliderIndex = heroSliderIndex >= maxIndex ? 0 : heroSliderIndex + 1;
+  updateHeroSliderPosition();
+}
+
+function prevHeroSlider() {
+  const maxIndex = getHeroSliderMaxIndex();
+  heroSliderIndex = heroSliderIndex <= 0 ? maxIndex : heroSliderIndex - 1;
+  updateHeroSliderPosition();
+}
+
+function startHeroSliderAuto() {
+  stopHeroSliderAuto();
+  heroSliderTimer = setInterval(() => {
+    nextHeroSlider();
+  }, 4000);
+}
+
+function stopHeroSliderAuto() {
+  if (heroSliderTimer) {
+    clearInterval(heroSliderTimer);
+    heroSliderTimer = null;
+  }
+}
+
+function bindHeroSliderSwipe() {
+  const slider = document.getElementById("newsHeroSlider");
+  if (!slider || slider.dataset.swipeBound === "true") return;
+  slider.dataset.swipeBound = "true";
+
+  slider.addEventListener("touchstart", (e) => {
+    if (!e.touches.length) return;
+    stopHeroSliderAuto();
+    heroSliderTouchStartX = e.touches[0].clientX;
+    heroSliderTouchEndX = heroSliderTouchStartX;
+  }, { passive: true });
+
+  slider.addEventListener("touchmove", (e) => {
+    if (!e.touches.length) return;
+    heroSliderTouchEndX = e.touches[0].clientX;
+  }, { passive: true });
+
+  slider.addEventListener("touchend", () => {
+    const diff = heroSliderTouchStartX - heroSliderTouchEndX;
+
+    if (Math.abs(diff) > 50) {
+      if (diff > 0) {
+        nextHeroSlider();
+      } else {
+        prevHeroSlider();
+      }
+    }
+
+    heroSliderTouchStartX = 0;
+    heroSliderTouchEndX = 0;
+    startHeroSliderAuto();
+  });
+
+  slider.addEventListener("mouseenter", stopHeroSliderAuto);
+  slider.addEventListener("mouseleave", startHeroSliderAuto);
+}
+
+window.addEventListener("resize", () => {
+  updateHeroSliderPosition();
+});
+
 
 function bindHeroSliderClicks() {
   document.querySelectorAll(".news-hero-card").forEach(card => {
     if (card.dataset.bound === "true") return;
     card.dataset.bound = "true";
 
-    const open = () => {
-      const id = card.dataset.id;
+    const open = (e) => {
+      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+
+      const id = card.dataset.newsId;
       if (!id) return;
       openNewsArticleById(id);
     };
@@ -7433,12 +7770,11 @@ function bindHeroSliderClicks() {
     card.addEventListener("keydown", e => {
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
-        open();
+        open(e);
       }
     });
   });
 }
-
 
 window.openNewsArticle = function(article) {
   const modal = document.getElementById("newsModal");
@@ -7616,7 +7952,9 @@ window.openNewsArticle = function(article) {
   <img id="newsImageLightboxImg" alt="Full news image">
 </div>
 
-
+<div class="news-hero-slider" id="newsHeroSlider">
+  <div class="news-hero-track" id="newsHeroTrack"></div>
+</div>
 
 </body>
 </html>
