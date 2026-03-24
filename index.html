@@ -2058,6 +2058,34 @@ section{
   }
 }
 
+.news-hero-card-image-wrap video{
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  display:block;
+  background:rgba(255,255,255,.03);
+}
+
+.news-article-image-wrap video{
+  width:100%;
+  max-width:100%;
+  max-height:60vh;
+  display:block;
+}
+
+
+.news-video-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:2;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(0,0,0,.65);
+  color:#fff;
+  font-size:12px;
+  font-weight:700;
+}
 
 
   </style>
@@ -3766,7 +3794,7 @@ window.closeReactionUsersModal = function() {
 <textarea id="${escapeHtml(outreach.id)}-news-body" placeholder="Write the full article here..." style="min-height:180px;"></textarea>
 
 <label for="${escapeHtml(outreach.id)}-news-image">News Image</label>
-<input id="${escapeHtml(outreach.id)}-news-image" type="file" accept="image/*,.heic,.heif">
+<input id="${escapeHtml(outreach.id)}-news-image" type="file" accept="image/*,video/mp4,video/webm,video/ogg,.heic,.heif">
 
 <div class="toolbar-row" style="margin-top:12px;">
   <button class="btn save-news-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Post News</button>
@@ -5899,6 +5927,7 @@ function renderNewsUpdates() {
           >
             <div class="news-hero-card-image-wrap">
               <img
+                class="news-thumb"
                 src="srm.png"
                 alt="Default news"
                 onerror="this.onerror=null; this.src='srm.png';"
@@ -5957,12 +5986,25 @@ function renderNewsUpdates() {
               title="${escapeHtml(item.title || "News update")}"
             >
               <div class="news-hero-card-image-wrap">
-                <img
-                  class="news-thumb"
-                  src="${escapeHtml(item.imageUrl || "srm.png")}"
-                  alt="${escapeHtml(item.title || "News update")}"
-                  onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-                >
+                ${item.mediaType === "video" ? `
+                  <span class="news-video-badge">▶ Video</span>
+                  <video
+                    class="news-thumb"
+                    src="${escapeHtml(item.imageUrl || "")}"
+                    muted
+                    playsinline
+                    preload="metadata"
+                    onloadeddata="this.currentTime=0.1"
+                    onerror="this.outerHTML='<img class=&quot;news-thumb&quot; src=&quot;srm.png&quot; alt=&quot;Default news&quot;>';">
+                  </video>
+                ` : `
+                  <img
+                    class="news-thumb"
+                    src="${escapeHtml(item.imageUrl || "srm.png")}"
+                    alt="${escapeHtml(item.title || "News update")}"
+                    onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+                  >
+                `}
               </div>
 
               <div class="news-hero-card-body">
@@ -5991,7 +6033,6 @@ function renderNewsUpdates() {
   bindNewsAdminButtons();
   bindMemberNewsButtons();
   setupInfiniteHeroSlider();
-  startHeroSliderAuto();
 }
 
 
@@ -6039,7 +6080,7 @@ function getMemberNewsPostPanelHtml() {
       <textarea id="member-news-body" placeholder="Write your full post here..." style="min-height:180px;"></textarea>
 
       <label for="member-news-image">Image</label>
-      <input id="member-news-image" type="file" accept="image/*,.heic,.heif">
+      <input id="member-news-image" type="file" accept="image/*,video/mp4,video/webm,video/ogg,.heic,.heif">
 
       <div class="toolbar-row" style="margin-top:12px;">
         <button class="btn" id="submitMemberNewsBtn" type="button">Submit News</button>
@@ -6049,6 +6090,31 @@ function getMemberNewsPostPanelHtml() {
       <p id="member-news-feedback" class="smallmuted"></p>
     </div>
   `;
+}
+
+function isVideoFile(file) {
+  if (!file) return false;
+
+  const type = String(file.type || "").toLowerCase();
+  const name = String(file.name || "").toLowerCase();
+
+  return (
+    type.startsWith("video/") ||
+    name.endsWith(".mp4") ||
+    name.endsWith(".webm") ||
+    name.endsWith(".ogg") ||
+    name.endsWith(".mov")
+  );
+}
+
+async function normalizeMediaFile(file) {
+  if (!file) throw new Error("No file provided.");
+
+  if (isVideoFile(file)) {
+    return file;
+  }
+
+  return await normalizeImageFile(file);
 }
 
 async function submitMemberNewsUpdate() {
@@ -6084,17 +6150,20 @@ async function submitMemberNewsUpdate() {
       feedback.className = "smallmuted";
     }
 
-    let imageUrl = "";
+        let imageUrl = "";
     let imageStoragePath = "";
+    let mediaType = "image";
 
     if (originalFile) {
-      const file = await normalizeImageFile(originalFile);
+      const file = await normalizeMediaFile(originalFile);
+      mediaType = isVideoFile(originalFile) ? "video" : "image";
+
       const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
       const storagePath = `memberNewsSubmissions/${memberInfo.outreachId}/${safeName}`;
       const storageRef = ref(storage, storagePath);
 
       await uploadBytes(storageRef, file, {
-        contentType: file.type || "image/jpeg"
+        contentType: file.type || (mediaType === "video" ? "video/mp4" : "image/jpeg")
       });
 
       imageUrl = await getDownloadURL(storageRef);
@@ -6116,6 +6185,7 @@ async function submitMemberNewsUpdate() {
       body,
       imageUrl,
       imageStoragePath,
+      mediaType,
       createdAt: serverTimestamp(),
       createdBy: memberInfo.fullName,
       createdByType: "member",
@@ -6262,7 +6332,7 @@ function getHeroSliderLoopWidth() {
 function startHeroSliderAuto() {
   stopHeroSliderAuto();
 
-  if (!heroSliderState.track || heroSliderState.originalCount <= 1) return;
+  if (!heroSliderState.track || heroSliderState.originalCount <= 3) return;
 
   const animate = () => {
     if (!heroSliderState.paused && !heroSliderState.isDragging) {
@@ -6419,8 +6489,9 @@ async function saveNewsUpdate(outreachId) {
       feedback.className = "smallmuted";
     }
 
-    let imageUrl = "";
+        let imageUrl = "";
     let imageStoragePath = "";
+    let mediaType = "image";
 
     if (editingId) {
       const existingSnap = await getDoc(doc(db, "newsUpdates", editingId));
@@ -6428,17 +6499,20 @@ async function saveNewsUpdate(outreachId) {
         const existing = existingSnap.data();
         imageUrl = existing.imageUrl || "";
         imageStoragePath = existing.imageStoragePath || "";
+        mediaType = existing.mediaType || "image";
       }
     }
 
     if (originalFile) {
-      const file = await normalizeImageFile(originalFile);
+      const file = await normalizeMediaFile(originalFile);
+      mediaType = isVideoFile(originalFile) ? "video" : "image";
+
       const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
       const storagePath = `newsUpdates/${outreachId}/${safeName}`;
       const storageRef = ref(storage, storagePath);
 
       await uploadBytes(storageRef, file, {
-        contentType: file.type || "image/jpeg"
+        contentType: file.type || (mediaType === "video" ? "video/mp4" : "image/jpeg")
       });
 
       const uploadedUrl = await getDownloadURL(storageRef);
@@ -6447,7 +6521,7 @@ async function saveNewsUpdate(outreachId) {
         try {
           await deleteObject(ref(storage, imageStoragePath));
         } catch (storageError) {
-          console.warn("Old news image delete warning:", storageError);
+          console.warn("Old news media delete warning:", storageError);
         }
       }
 
@@ -6470,6 +6544,7 @@ async function saveNewsUpdate(outreachId) {
         body,
         imageUrl,
         imageStoragePath,
+        mediaType,
         updatedAt: serverTimestamp(),
         updatedBy: currentUser?.email || ""
       });
@@ -6482,6 +6557,7 @@ async function saveNewsUpdate(outreachId) {
   body,
   imageUrl,
   imageStoragePath,
+  mediaType,
   createdAt: serverTimestamp(),
   createdBy: currentUser?.email || "",
   createdByType: "admin",
@@ -6566,18 +6642,26 @@ async function deleteNewsUpdate(newsId, imageStoragePath = "") {
     if (imageStoragePath) {
       try {
         await deleteObject(ref(storage, imageStoragePath));
+        console.log("Storage file deleted successfully");
       } catch (storageError) {
-        console.warn("Image delete warning:", storageError);
+        console.error("Storage delete failed:", storageError);
 
-        // Ignore missing file and continue deleting Firestore doc
         if (storageError.code !== "storage/object-not-found") {
-          alert("Image delete failed: " + storageError.message);
+          alert("Storage delete failed: " + storageError.message);
           return;
         }
       }
     }
 
-    await deleteDoc(doc(db, "newsUpdates", newsId));
+    try {
+      await deleteDoc(doc(db, "newsUpdates", newsId));
+      console.log("Firestore news document deleted successfully");
+    } catch (firestoreError) {
+      console.error("Firestore delete failed:", firestoreError);
+      alert("Firestore delete failed: " + firestoreError.message);
+      return;
+    }
+
     await initPage();
   } catch (error) {
     console.error("deleteNewsUpdate failed:", error);
@@ -7747,14 +7831,25 @@ window.openNewsArticle = function(article) {
 
   content.innerHTML = `
     <div class="news-article-wrap">
-      <div class="news-article-image-wrap">
-        <img
-          class="news-modal-image clickable-news-image"
-          src="${escapeHtml(article.imageUrl || "srm.png")}"
-          alt="${escapeHtml(article.title || "News image")}"
-          onclick="event.stopPropagation(); openLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
-          onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-        >
+            <div class="news-article-image-wrap">
+        ${article.mediaType === "video" ? `
+          <video
+            class="news-modal-image"
+            src="${escapeHtml(article.imageUrl || "")}"
+            controls
+            playsinline
+            preload="metadata"
+            style="width:100%;max-width:100%;max-height:60vh;border-radius:22px;background:rgba(255,255,255,.03);border:1px solid var(--line);box-shadow:var(--shadow);">
+          </video>
+        ` : `
+          <img
+            class="news-modal-image clickable-news-image"
+            src="${escapeHtml(article.imageUrl || "srm.png")}"
+            alt="${escapeHtml(article.title || "News image")}"
+            onclick="event.stopPropagation(); openNewsImageLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
+            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
+          >
+        `}
       </div>
 
       <div class="news-article-content">
