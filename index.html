@@ -1660,25 +1660,49 @@ section{
 }
 
 .news-card{
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border:1px solid var(--line);
+  position:relative;
+  background:linear-gradient(135deg, #4f7cff 0%, #7b6cff 38%, #ff6ec7 100%);
+  background-size:240% 240%;
+  animation:newsCardGradientFlow 14s ease-in-out infinite;
+  border:1px solid rgba(255,255,255,.16);
   border-radius:22px;
   overflow:hidden;
-  box-shadow:var(--shadow);
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,255,255,.04) inset;
   cursor:pointer;
-  transition:transform .2s ease, box-shadow .2s ease, border-color .2s ease;
+  transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, filter .28s ease;
   display:flex;
   flex-direction:column;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+.news-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,.28), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,.12), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+  pointer-events:none;
+  z-index:0;
 }
 
 .news-card:hover{
-  transform:translateY(-4px);
-  box-shadow:0 18px 36px rgba(0,0,0,.28);
-  border-color:rgba(214,177,94,.25);
+  transform:translateY(-6px) scale(1.01);
+  box-shadow:
+    0 22px 44px rgba(42,61,150,.34),
+    0 0 28px rgba(255,110,199,.22),
+    0 0 42px rgba(79,124,255,.26),
+    0 0 58px rgba(255,110,199,.18);
+  border-color:rgba(255,255,255,.30);
+  filter:saturate(1.08) brightness(1.02);
 }
 
 .news-card-date{
-  color:var(--muted);
+  color:rgba(255,255,255,.82);
   font-size:13px;
   margin-bottom:10px;
 }
@@ -1686,22 +1710,32 @@ section{
 .news-thumb{
   width:100%;
   height:420px;
-  object-fit:contain;
+  object-fit:cover;
   display:block;
   background:rgba(255,255,255,.03);
-  border-bottom:1px solid var(--line);
+  border-bottom:1px solid rgba(255,255,255,.14);
+  transition:transform .45s ease, filter .35s ease;
+}
+
+.news-card:hover .news-thumb{
+  transform:scale(1.04);
+  filter:saturate(1.05);
 }
 
 .news-body{
+  position:relative;
+  z-index:1;
   padding:16px;
+  background:linear-gradient(180deg, rgba(8,14,34,.10), rgba(8,14,34,.18));
 }
 
 .news-author{
-  color:var(--gold2);
+  color:#ffe08a;
   font-size:13px;
   font-weight:800;
   letter-spacing:.4px;
   margin-bottom:8px;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);
 }
 
 .news-title{
@@ -1709,12 +1743,13 @@ section{
   font-size:28px;
   line-height:1.05;
   font-family:Georgia,"Times New Roman",serif;
-  color:var(--text);
+  color:#fff;
+  text-shadow:0 2px 12px rgba(50,24,88,.22);
 }
 
 .news-excerpt{
   margin:0;
-  color:var(--muted);
+  color:rgba(255,255,255,.92);
   font-size:14px;
   line-height:1.7;
 }
@@ -1724,9 +1759,10 @@ section{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  color:var(--gold2);
+  color:#ffe08a;
   font-weight:800;
   font-size:14px;
+  text-shadow:0 1px 4px rgba(0,0,0,.14);
 }
 
 /* ===== NEWS ARTICLE MODAL ===== */
@@ -1736,20 +1772,20 @@ section{
   display:flex;
   justify-content:center;
   align-items:center;
-  max-height:55vh;
+  max-height:60vh;
   overflow:hidden;
 }
 
 .news-modal-image{
   width:auto;
   max-width:100%;
-  max-height:55vh;
+  max-height:60vh;
   height:auto;
   object-fit:contain;
   display:block;
   border-radius:22px;
-  border:1px solid var(--line);
-  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:0 14px 30px rgba(0,0,0,.28);
   background:rgba(255,255,255,.03);
 }
 
@@ -1775,16 +1811,18 @@ section{
   justify-content:center;
   padding:8px 14px;
   border-radius:999px;
-  border:1px solid rgba(214,177,94,.24);
-  background:rgba(214,177,94,.10);
-  color:var(--gold2);
+  border:1px solid rgba(255,255,255,.18);
+  background:rgba(255,255,255,.10);
+  color:#ffe08a;
   font-size:13px;
   font-weight:800;
   letter-spacing:.3px;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
 .news-modal-author{
-  color:var(--gold2);
+  color:#ffe08a;
   font-weight:800;
   font-size:14px;
   margin-bottom:10px;
@@ -1797,19 +1835,19 @@ section{
   font-size:clamp(34px, 5vw, 58px);
   line-height:1.02;
   font-family:Georgia,"Times New Roman",serif;
-  color:var(--text);
+  color:#fff;
 }
 
 .news-article-divider{
   width:84px;
   height:2px;
   margin:0 auto 22px;
-  background:linear-gradient(90deg, transparent, var(--gold), transparent);
+  background:linear-gradient(90deg, transparent, #ffe08a, transparent);
   border-radius:999px;
 }
 
 .news-modal-text{
-  color:var(--muted);
+  color:rgba(255,255,255,.88);
   line-height:1.9;
   font-size:17px;
   text-align:center;
@@ -1821,6 +1859,10 @@ section{
 
 .news-article-modal-card{
   padding:18px;
+  background:linear-gradient(135deg, rgba(79,124,255,.18), rgba(123,108,255,.18), rgba(255,110,199,.18));
+  border:1px solid rgba(255,255,255,.12);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
 }
 
 .clickable-news-image{
@@ -1854,6 +1896,16 @@ section{
   transition:transform .35s ease;
 }
 
+.news-hero-slider::before,
+.news-hero-slider::after{
+  content:"";
+  position:absolute;
+  top:0;
+  bottom:0;
+  width:70px;
+  z-index:2;
+  pointer-events:none;
+}
 
 .news-hero-slider::before{
   left:0;
@@ -1865,68 +1917,144 @@ section{
   background:linear-gradient(270deg, rgba(11,18,32,1), rgba(11,18,32,0));
 }
 
-
-.news-hero-slider:hover .news-hero-track{
-  animation-play-state:paused;
-}
-
 /* merged newsletter card */
 .news-hero-card{
   flex:0 0 320px;
   width:320px;
   min-height:430px;
-  background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-  border:1px solid var(--line);
+  position:relative;
   border-radius:22px;
   overflow:hidden;
-  box-shadow:var(--shadow);
+  border:1px solid rgba(255,255,255,.16);
+  box-shadow:
+    0 14px 30px rgba(0,0,0,.28),
+    0 0 0 1px rgba(255,255,255,.04) inset;
+  background:linear-gradient(135deg, #4f7cff 0%, #7b6cff 38%, #ff6ec7 100%);
+  background-size:240% 240%;
+  animation:newsCardGradientFlow 14s ease-in-out infinite;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
   cursor:pointer;
-  transition:transform .25s ease, box-shadow .25s ease, border-color .25s ease, opacity .25s ease;
+  transition:
+    transform .30s ease,
+    box-shadow .30s ease,
+    border-color .30s ease,
+    opacity .30s ease,
+    filter .30s ease;
   display:flex;
   flex-direction:column;
-  opacity:.96;
+  opacity:.97;
+}
+
+.news-hero-card::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,.28), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,.12), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+  pointer-events:none;
+  z-index:0;
+}
+
+.news-hero-card::after{
+  content:"";
+  position:absolute;
+  inset:-2px;
+  border-radius:24px;
+  background:linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,0), rgba(255,255,255,.16));
+  opacity:.18;
+  pointer-events:none;
+  z-index:0;
 }
 
 .news-hero-card:hover,
 .news-hero-card:focus{
-  transform:translateY(-4px);
-  box-shadow:0 18px 36px rgba(0,0,0,.30);
-  border-color:rgba(214,177,94,.25);
+  transform:translateY(-6px) scale(1.012);
+  box-shadow:
+    0 24px 48px rgba(42,61,150,.36),
+    0 0 30px rgba(255,110,199,.24),
+    0 0 48px rgba(79,124,255,.28),
+    0 0 64px rgba(255,110,199,.20);
+  border-color:rgba(255,255,255,.30);
+  filter:saturate(1.10) brightness(1.02);
   opacity:1;
 }
 
 .news-hero-card-image-wrap{
+  position:relative;
   width:100%;
   height:220px;
   overflow:hidden;
-  background:rgba(255,255,255,.03);
-  border-bottom:1px solid var(--line);
+  background:
+    linear-gradient(135deg, rgba(79,124,255,.16), rgba(255,110,199,.14)),
+    rgba(255,255,255,.06);
+  border-bottom:1px solid rgba(255,255,255,.14);
+  z-index:1;
 }
 
-.news-hero-card-image-wrap img{
+.news-hero-card-image-wrap::before{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,.14), transparent 26%),
+    radial-gradient(circle at 82% 78%, rgba(255,110,199,.16), transparent 24%);
+  pointer-events:none;
+  z-index:1;
+}
+
+.news-hero-card-image-wrap::after{
+  content:"";
+  position:absolute;
+  inset:0;
+  background:
+    linear-gradient(180deg, rgba(15,20,50,.04) 0%, rgba(15,20,50,.18) 100%),
+    linear-gradient(135deg, rgba(79,124,255,.18), rgba(255,110,199,.16));
+  mix-blend-mode:screen;
+  pointer-events:none;
+  z-index:2;
+}
+
+.news-hero-card-image-wrap img,
+.news-hero-card-image-wrap video{
   width:100%;
   height:100%;
   object-fit:cover;
   display:block;
+  background:rgba(255,255,255,.03);
+  transition:transform .45s ease, filter .35s ease, opacity .35s ease;
+  position:relative;
+  z-index:0;
+}
+
+.news-hero-card:hover .news-thumb{
+  transform:scale(1.045);
+  filter:saturate(1.08) contrast(1.02);
 }
 
 .news-hero-card-body{
+  position:relative;
+  z-index:1;
   padding:16px;
   display:flex;
   flex-direction:column;
   flex:1;
+  background:linear-gradient(180deg, rgba(8,14,34,.10), rgba(8,14,34,.18));
 }
 
 .news-hero-card-author{
-  color:var(--gold2);
+  color:#ffe08a;
   font-size:13px;
   font-weight:800;
   letter-spacing:.4px;
   margin-bottom:6px;
+  text-shadow:0 1px 2px rgba(0,0,0,.18);
 }
 
 .news-hero-card-date{
-  color:var(--muted);
+  color:rgba(255,255,255,.82);
   font-size:13px;
   margin-bottom:10px;
 }
@@ -1936,12 +2064,13 @@ section{
   font-size:28px;
   line-height:1.05;
   font-family:Georgia,"Times New Roman",serif;
-  color:var(--text);
+  color:#fff;
+  text-shadow:0 2px 12px rgba(50,24,88,.22);
 }
 
 .news-hero-card-excerpt{
   margin:0;
-  color:var(--muted);
+  color:rgba(255,255,255,.92);
   font-size:14px;
   line-height:1.7;
 }
@@ -1951,21 +2080,99 @@ section{
   display:inline-flex;
   align-items:center;
   gap:8px;
-  color:var(--gold2);
+  color:#ffe08a;
   font-weight:800;
   font-size:14px;
+  text-shadow:0 1px 4px rgba(0,0,0,.14);
 }
 
-@keyframes newsPosterScroll{
-  from{ transform:translateX(0); }
-  to{ transform:translateX(-50%); }
+.news-video-badge{
+  position:absolute;
+  top:12px;
+  right:12px;
+  z-index:4;
+  padding:6px 10px;
+  border-radius:999px;
+  background:rgba(17,22,44,.52);
+  border:1px solid rgba(255,255,255,.18);
+  color:#fff;
+  font-size:12px;
+  font-weight:800;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 8px 20px rgba(0,0,0,.20);
 }
+
+.news-hero-card:hover .news-video-badge{
+  background:rgba(255,110,199,.32);
+  border-color:rgba(255,255,255,.28);
+}
+
+.news-hero-card[data-media-type="video"] .news-hero-card-image-wrap{
+  background:
+    linear-gradient(135deg, rgba(79,124,255,.26), rgba(255,110,199,.22)),
+    rgba(255,255,255,.06);
+}
+
+.news-hero-card[data-media-type="video"] .news-hero-card-image-wrap::before{
+  content:"";
+  position:absolute;
+  inset:auto auto 12px 12px;
+  width:54px;
+  height:54px;
+  border-radius:50%;
+  background:rgba(10,14,32,.38);
+  border:1px solid rgba(255,255,255,.20);
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+  box-shadow:0 10px 24px rgba(0,0,0,.24);
+  z-index:4;
+}
+
+.news-hero-card[data-media-type="video"] .news-hero-card-image-wrap::after{
+  content:"";
+  position:absolute;
+  inset:auto auto 28px 34px;
+  width:0;
+  height:0;
+  border-top:9px solid transparent;
+  border-bottom:9px solid transparent;
+  border-left:14px solid #fff;
+  z-index:5;
+  pointer-events:none;
+}
+
+.news-hero-card[data-media-type="video"] .news-thumb{
+  filter:saturate(1.02) contrast(1.02);
+}
+
+.news-hero-card[data-media-type="video"]:hover .news-thumb{
+  filter:saturate(1.10) contrast(1.04) brightness(1.02);
+}
+
+@keyframes newsCardGradientFlow{
+  0%   { background-position:0% 50%; }
+  25%  { background-position:50% 25%; }
+  50%  { background-position:100% 50%; }
+  75%  { background-position:50% 75%; }
+  100% { background-position:0% 50%; }
+}
+
+.news-hero-slider,
+.news-hero-slider *{
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+.news-hero-slider.dragging{
+  cursor:grabbing;
+}
+
+.news-hero-slider.dragging .news-hero-card{
+  animation-play-state:paused;
+}
+
 @media (max-width:768px){
-  .news-hero-card-image-wrap{
-    height:340px;
-  }
-}
-
   .news-article-content{
     max-width:100%;
     padding:0 2px 8px;
@@ -1985,24 +2192,21 @@ section{
     padding:7px 12px;
   }
 
-
-@media (max-width:768px){
   .news-hero-track{
     gap:14px;
   }
-
-
 
   .news-hero-slider::before,
   .news-hero-slider::after{
     width:36px;
   }
 
-    .news-hero-card{
-    flex:0 0 68vw;      /* 🔥 smaller width */
+  .news-hero-card{
+    flex:0 0 68vw;
     width:68vw;
     max-width:68vw;
-    margin:0 auto;      /* center it */
+    margin:0 auto;
+    min-height:390px;
   }
 
   .news-hero-card-image-wrap{
@@ -2013,7 +2217,6 @@ section{
     font-size:20px;
   }
 
-  /* keep normal grid mobile fallback if ever used elsewhere */
   .news-grid{
     display:flex;
     gap:16px;
@@ -2051,6 +2254,8 @@ section{
   }
 
   .news-hero-card{
+    flex:0 0 85vw;
+    width:85vw;
     min-height:360px;
   }
 
@@ -2059,44 +2264,11 @@ section{
   }
 }
 
-.news-hero-card-image-wrap video{
-  width:100%;
-  height:100%;
-  object-fit:cover;
-  display:block;
-  background:rgba(255,255,255,.03);
-}
-
 .news-article-image-wrap video{
   width:100%;
   max-width:100%;
   max-height:60vh;
   display:block;
-}
-
-
-.news-video-badge{
-  position:absolute;
-  top:12px;
-  right:12px;
-  z-index:2;
-  padding:6px 10px;
-  border-radius:999px;
-  background:rgba(0,0,0,.65);
-  color:#fff;
-  font-size:12px;
-  font-weight:700;
-}
-
-.news-hero-slider,
-.news-hero-slider *{
-  -webkit-user-select:none;
-  user-select:none;
-}
-
-
-.news-hero-slider.dragging{
-  cursor:grabbing;
 }
 
 
@@ -5990,16 +6162,17 @@ function renderNewsUpdates() {
 
           return `
             <article
-              class="news-hero-card"
-              data-news-id="${escapeHtml(item.id)}"
-              tabindex="0"
-              role="button"
-              aria-label="Read ${escapeHtml(item.title || "News update")}"
-              title="${escapeHtml(item.title || "News update")}"
-            >
+  class="news-hero-card"
+  data-news-id="${escapeHtml(item.id)}"
+  data-media-type="${escapeHtml(item.mediaType || "image")}"
+  tabindex="0"
+  role="button"
+  aria-label="Read ${escapeHtml(item.title || "News update")}"
+  title="${escapeHtml(item.title || "News update")}"
+>
               <div class="news-hero-card-image-wrap">
                 ${item.mediaType === "video" ? `
-                  <span class="news-video-badge">▶ Video</span>
+
                   <video
                     class="news-thumb"
                     src="${escapeHtml(item.imageUrl || "")}"
@@ -6276,6 +6449,7 @@ let heroSliderState = {
   movedByDrag: false
 };
 
+
 function setupInfiniteHeroSlider() {
   const slider = document.getElementById("newsHeroSlider");
   const track = document.getElementById("newsHeroTrack");
@@ -6283,45 +6457,34 @@ function setupInfiniteHeroSlider() {
 
   stopHeroSliderAuto();
 
-  const originalCards = Array.from(track.querySelectorAll(".news-hero-card"));
-  if (!originalCards.length) return;
-
-  track.innerHTML = "";
-  originalCards.forEach(card => track.appendChild(card));
+  const cards = Array.from(track.querySelectorAll(".news-hero-card"));
+  if (!cards.length) return;
 
   heroSliderState.slider = slider;
   heroSliderState.track = track;
-  heroSliderState.cards = originalCards;
-  heroSliderState.originalCount = originalCards.length;
+  heroSliderState.cards = cards;
+  heroSliderState.originalCount = cards.length;
   heroSliderState.offset = 0;
   heroSliderState.paused = false;
   heroSliderState.isDragging = false;
   heroSliderState.movedByDrag = false;
 
-  // If only 1 to 3 cards, do NOT clone
-  if (originalCards.length <= 3) {
-    updateHeroSliderMeasurements();
-    track.style.transform = "translateX(0px)";
-    bindNewsCards();
-    bindNewsAdminButtons();
-    bindHeroSliderSwipe();
-    return;
-  }
-
-  // clone only when enough cards exist
-  originalCards.forEach(card => {
-    const clone = card.cloneNode(true);
-    clone.dataset.clone = "true";
-    track.appendChild(clone);
-  });
-
-  heroSliderState.cards = Array.from(track.querySelectorAll(".news-hero-card"));
-
   updateHeroSliderMeasurements();
+  track.style.transform = "translateX(0px)";
+
   bindNewsCards();
   bindNewsAdminButtons();
   bindHeroSliderSwipe();
   startHeroSliderAuto();
+}
+
+function getHeroSliderMaxOffset() {
+  const slider = heroSliderState.slider;
+  const track = heroSliderState.track;
+  if (!slider || !track) return 0;
+
+  const maxOffset = track.scrollWidth - slider.clientWidth;
+  return Math.max(0, maxOffset);
 }
 
 function updateHeroSliderMeasurements() {
@@ -6344,18 +6507,20 @@ function getHeroSliderLoopWidth() {
 function startHeroSliderAuto() {
   stopHeroSliderAuto();
 
-  if (!heroSliderState.track || heroSliderState.originalCount <= 3) return;
+  if (!heroSliderState.track || heroSliderState.originalCount <= 1) return;
 
   const animate = () => {
     if (!heroSliderState.paused && !heroSliderState.isDragging) {
-      heroSliderState.offset += heroSliderState.speed;
+      const maxOffset = getHeroSliderMaxOffset();
+      if (maxOffset > 0) {
+        heroSliderState.offset += heroSliderState.speed;
 
-      const loopWidth = getHeroSliderLoopWidth();
-      if (heroSliderState.offset >= loopWidth) {
-        heroSliderState.offset -= loopWidth;
+        if (heroSliderState.offset >= maxOffset) {
+          heroSliderState.offset = 0;
+        }
+
+        heroSliderState.track.style.transform = `translateX(-${heroSliderState.offset}px)`;
       }
-
-      heroSliderState.track.style.transform = `translateX(-${heroSliderState.offset}px)`;
     }
 
     heroSliderState.rafId = requestAnimationFrame(animate);
@@ -6375,6 +6540,9 @@ function handleHeroSliderResize() {
   updateHeroSliderMeasurements();
 }
 
+
+
+
 function bindHeroSliderSwipe() {
   const slider = heroSliderState.slider;
   const track = heroSliderState.track;
@@ -6382,6 +6550,8 @@ function bindHeroSliderSwipe() {
   if (slider.dataset.swipeBound === "true") return;
 
   slider.dataset.swipeBound = "true";
+
+  let pointerId = null;
 
   slider.addEventListener("dragstart", (e) => {
     e.preventDefault();
@@ -6395,36 +6565,38 @@ function bindHeroSliderSwipe() {
     heroSliderState.movedByDrag = false;
     heroSliderState.dragStartX = e.clientX;
     heroSliderState.dragStartOffset = heroSliderState.offset;
+    pointerId = e.pointerId;
 
     slider.classList.add("dragging");
-    slider.setPointerCapture?.(e.pointerId);
   });
 
-  slider.addEventListener("pointermove", (e) => {
+    slider.addEventListener("pointermove", (e) => {
     if (!heroSliderState.isDragging) return;
-
-    e.preventDefault();
+    if (pointerId !== null && e.pointerId !== pointerId) return;
 
     const dx = e.clientX - heroSliderState.dragStartX;
 
-    if (Math.abs(dx) > 8) {
-      heroSliderState.movedByDrag = true;
-    }
+    if (Math.abs(dx) < 18) return;
 
-    const loopWidth = getHeroSliderLoopWidth();
+    e.preventDefault();
+    heroSliderState.movedByDrag = true;
+
+    const maxOffset = getHeroSliderMaxOffset();
     let nextOffset = heroSliderState.dragStartOffset - dx;
 
-    while (nextOffset < 0) nextOffset += loopWidth;
-    while (nextOffset >= loopWidth) nextOffset -= loopWidth;
+    if (nextOffset < 0) nextOffset = 0;
+    if (nextOffset > maxOffset) nextOffset = maxOffset;
 
     heroSliderState.offset = nextOffset;
     heroSliderState.track.style.transform = `translateX(-${heroSliderState.offset}px)`;
   });
 
-  const endDrag = () => {
+  const endDrag = (e) => {
     if (!heroSliderState.isDragging) return;
+    if (pointerId !== null && e.pointerId !== pointerId) return;
 
     heroSliderState.isDragging = false;
+    pointerId = null;
     slider.classList.remove("dragging");
 
     setTimeout(() => {
@@ -6436,7 +6608,6 @@ function bindHeroSliderSwipe() {
 
   slider.addEventListener("pointerup", endDrag);
   slider.addEventListener("pointercancel", endDrag);
-  slider.addEventListener("lostpointercapture", endDrag);
 
   slider.addEventListener("mouseenter", () => {
     heroSliderState.paused = true;
@@ -6721,36 +6892,38 @@ function bindNewsAdminButtons() {
 }
 
 
- function bindNewsCards() {
+ 
+  
+
+function bindNewsCards() {
   document.querySelectorAll(".news-hero-card, .news-card").forEach(card => {
     if (card.dataset.boundRead === "true") return;
     card.dataset.boundRead = "true";
 
-    let pointerDownX = 0;
-    let pointerDownY = 0;
+    let startX = 0;
+    let startY = 0;
     let moved = false;
 
     card.addEventListener("pointerdown", (e) => {
-      pointerDownX = e.clientX;
-      pointerDownY = e.clientY;
+      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      startX = e.clientX;
+      startY = e.clientY;
       moved = false;
     });
 
     card.addEventListener("pointermove", (e) => {
-      const dx = Math.abs(e.clientX - pointerDownX);
-      const dy = Math.abs(e.clientY - pointerDownY);
+      const dx = Math.abs(e.clientX - startX);
+      const dy = Math.abs(e.clientY - startY);
       if (dx > 12 || dy > 12) moved = true;
     });
 
     card.addEventListener("click", (e) => {
       if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
-      if (moved) return;
+      if (moved || heroSliderState.movedByDrag) return;
 
       const id = card.dataset.newsId;
       const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
-      if (item) {
-        openNewsArticle(item);
-      }
+      if (item) openNewsArticle(item);
     });
 
     card.addEventListener("keydown", (e) => {
@@ -6760,9 +6933,7 @@ function bindNewsAdminButtons() {
         e.preventDefault();
         const id = card.dataset.newsId;
         const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
-        if (item) {
-          openNewsArticle(item);
-        }
+        if (item) openNewsArticle(item);
       }
     });
   });
