@@ -1842,6 +1842,7 @@ section{
   margin:0 auto 26px;
   background:linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,0));
   touch-action:pan-y;
+  cursor:grab;
 }
 
 .news-hero-track{
@@ -2085,6 +2086,17 @@ section{
   color:#fff;
   font-size:12px;
   font-weight:700;
+}
+
+.news-hero-slider,
+.news-hero-slider *{
+  -webkit-user-select:none;
+  user-select:none;
+}
+
+
+.news-hero-slider.dragging{
+  cursor:grabbing;
 }
 
 
@@ -6371,11 +6383,12 @@ function bindHeroSliderSwipe() {
 
   slider.dataset.swipeBound = "true";
 
+  slider.addEventListener("dragstart", (e) => {
+    e.preventDefault();
+  });
+
   slider.addEventListener("pointerdown", (e) => {
     if (heroSliderState.originalCount <= 1) return;
-
-    /* ✅ allow swipe only on touch devices */
-    if (e.pointerType === "mouse") return;
 
     heroSliderState.isDragging = true;
     heroSliderState.paused = true;
@@ -6383,13 +6396,17 @@ function bindHeroSliderSwipe() {
     heroSliderState.dragStartX = e.clientX;
     heroSliderState.dragStartOffset = heroSliderState.offset;
 
+    slider.classList.add("dragging");
     slider.setPointerCapture?.(e.pointerId);
   });
 
   slider.addEventListener("pointermove", (e) => {
     if (!heroSliderState.isDragging) return;
 
+    e.preventDefault();
+
     const dx = e.clientX - heroSliderState.dragStartX;
+
     if (Math.abs(dx) > 8) {
       heroSliderState.movedByDrag = true;
     }
@@ -6408,10 +6425,11 @@ function bindHeroSliderSwipe() {
     if (!heroSliderState.isDragging) return;
 
     heroSliderState.isDragging = false;
+    slider.classList.remove("dragging");
 
     setTimeout(() => {
       heroSliderState.movedByDrag = false;
-    }, 80);
+    }, 120);
 
     heroSliderState.paused = false;
   };
