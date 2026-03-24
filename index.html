@@ -1536,8 +1536,7 @@ section{
   font-size:13px;
 }
 
-
-/* ===== PHOTO MANAGER ===== */
+/* ===== PHOTO MANAGER ===== */ 
 .photo-modal-grid{
   display:grid;
   grid-template-columns:repeat(3, minmax(0, 1fr));
@@ -1842,6 +1841,16 @@ section{
   padding:5px 0 28px;
   margin:0 auto 26px;
   background:linear-gradient(180deg, rgba(0,0,0,.12), rgba(0,0,0,0));
+  touch-action:pan-y;
+}
+
+.news-hero-track{
+  display:flex;
+  align-items:stretch;
+  gap:18px;
+  width:max-content;
+  will-change:transform;
+  transition:transform .35s ease;
 }
 
 
@@ -1855,13 +1864,6 @@ section{
   background:linear-gradient(270deg, rgba(11,18,32,1), rgba(11,18,32,0));
 }
 
-.news-hero-track{
-  display:flex;
-  align-items:stretch;
-  gap:18px;
-  width:max-content;
-  animation:newsPosterScroll 30s linear infinite;
-}
 
 .news-hero-slider:hover .news-hero-track{
   animation-play-state:paused;
@@ -1988,10 +1990,7 @@ section{
     gap:14px;
   }
 
-  .news-hero-slider{
-    padding:14px 0 22px;
-    margin-bottom:18px;
-  }
+
 
   .news-hero-slider::before,
   .news-hero-slider::after{
@@ -2058,6 +2057,8 @@ section{
     height:210px;
   }
 }
+
+
 
   </style>
 </head>
@@ -2219,9 +2220,6 @@ section{
     </div>
   </section>
 
-  <div class="news-hero-slider">
-  <div class="news-hero-track" id="newsHeroTrack"></div>
-</div>
 
 
   <section id="about">
@@ -5996,33 +5994,7 @@ function renderNewsUpdates() {
   startHeroSliderAuto();
 }
 
-function setupInfiniteHeroSlider() {
-  const slider = document.getElementById("newsHeroSlider");
-  const track = document.getElementById("newsHeroTrack");
-  if (!slider || !track) return;
 
-  const originalCards = Array.from(track.querySelectorAll(".news-hero-card"));
-  if (!originalCards.length) return;
-
-  track.innerHTML = "";
-  originalCards.forEach(card => track.appendChild(card));
-
-  if (originalCards.length <= 1) return;
-
-  const firstClone = originalCards[0].cloneNode(true);
-  const lastClone = originalCards[originalCards.length - 1].cloneNode(true);
-
-  firstClone.dataset.clone = "true";
-  lastClone.dataset.clone = "true";
-
-  track.insertBefore(lastClone, track.firstChild);
-  track.appendChild(firstClone);
-
-  bindNewsCards();
-  bindNewsAdminButtons();
-  bindHeroSliderSwipe();
-  updateHeroSliderPosition(false);
-}
 
 function getActiveMemberNewsInfo() {
   for (const outreach of currentOutreaches) {
@@ -6204,18 +6176,190 @@ function bindMemberNewsButtons() {
   }
 }
 
+
 let heroSliderState = {
+  slider: null,
   track: null,
-  realCount: 0,
-  index: 1,
+  cards: [],
   cardWidth: 0,
-  gap: 16,
-  timer: null,
+  gap: 18,
+  originalCount: 0,
+  offset: 0,
+  speed: 0.22, // smaller = slower, bigger = faster
+  rafId: null,
+  paused: false,
   isDragging: false,
-  startX: 0,
-  currentTranslate: 0,
-  prevTranslate: 0
+  dragStartX: 0,
+  dragStartOffset: 0,
+  movedByDrag: false
 };
+
+function setupInfiniteHeroSlider() {
+  const slider = document.getElementById("newsHeroSlider");
+  const track = document.getElementById("newsHeroTrack");
+  if (!slider || !track) return;
+
+  stopHeroSliderAuto();
+
+  const originalCards = Array.from(track.querySelectorAll(".news-hero-card"));
+  if (!originalCards.length) return;
+
+  track.innerHTML = "";
+  originalCards.forEach(card => track.appendChild(card));
+
+  heroSliderState.slider = slider;
+  heroSliderState.track = track;
+  heroSliderState.cards = originalCards;
+  heroSliderState.originalCount = originalCards.length;
+  heroSliderState.offset = 0;
+  heroSliderState.paused = false;
+  heroSliderState.isDragging = false;
+  heroSliderState.movedByDrag = false;
+
+  // If only 1 to 3 cards, do NOT clone
+  if (originalCards.length <= 3) {
+    updateHeroSliderMeasurements();
+    track.style.transform = "translateX(0px)";
+    bindNewsCards();
+    bindNewsAdminButtons();
+    bindHeroSliderSwipe();
+    return;
+  }
+
+  // clone only when enough cards exist
+  originalCards.forEach(card => {
+    const clone = card.cloneNode(true);
+    clone.dataset.clone = "true";
+    track.appendChild(clone);
+  });
+
+  heroSliderState.cards = Array.from(track.querySelectorAll(".news-hero-card"));
+
+  updateHeroSliderMeasurements();
+  bindNewsCards();
+  bindNewsAdminButtons();
+  bindHeroSliderSwipe();
+  startHeroSliderAuto();
+}
+
+function updateHeroSliderMeasurements() {
+  const { track } = heroSliderState;
+  if (!track) return;
+
+  const firstCard = track.querySelector(".news-hero-card");
+  if (!firstCard) return;
+
+  const style = getComputedStyle(track);
+  heroSliderState.gap = parseFloat(style.gap || style.columnGap || "18") || 18;
+  heroSliderState.cardWidth = firstCard.getBoundingClientRect().width;
+}
+
+function getHeroSliderLoopWidth() {
+  const { cardWidth, gap, originalCount } = heroSliderState;
+  return (cardWidth + gap) * originalCount;
+}
+
+function startHeroSliderAuto() {
+  stopHeroSliderAuto();
+
+  if (!heroSliderState.track || heroSliderState.originalCount <= 1) return;
+
+  const animate = () => {
+    if (!heroSliderState.paused && !heroSliderState.isDragging) {
+      heroSliderState.offset += heroSliderState.speed;
+
+      const loopWidth = getHeroSliderLoopWidth();
+      if (heroSliderState.offset >= loopWidth) {
+        heroSliderState.offset -= loopWidth;
+      }
+
+      heroSliderState.track.style.transform = `translateX(-${heroSliderState.offset}px)`;
+    }
+
+    heroSliderState.rafId = requestAnimationFrame(animate);
+  };
+
+  heroSliderState.rafId = requestAnimationFrame(animate);
+}
+
+function stopHeroSliderAuto() {
+  if (heroSliderState.rafId) {
+    cancelAnimationFrame(heroSliderState.rafId);
+    heroSliderState.rafId = null;
+  }
+}
+
+function handleHeroSliderResize() {
+  updateHeroSliderMeasurements();
+}
+
+function bindHeroSliderSwipe() {
+  const slider = heroSliderState.slider;
+  const track = heroSliderState.track;
+  if (!slider || !track) return;
+  if (slider.dataset.swipeBound === "true") return;
+
+  slider.dataset.swipeBound = "true";
+
+  slider.addEventListener("pointerdown", (e) => {
+    if (heroSliderState.originalCount <= 1) return;
+
+    /* ✅ allow swipe only on touch devices */
+    if (e.pointerType === "mouse") return;
+
+    heroSliderState.isDragging = true;
+    heroSliderState.paused = true;
+    heroSliderState.movedByDrag = false;
+    heroSliderState.dragStartX = e.clientX;
+    heroSliderState.dragStartOffset = heroSliderState.offset;
+
+    slider.setPointerCapture?.(e.pointerId);
+  });
+
+  slider.addEventListener("pointermove", (e) => {
+    if (!heroSliderState.isDragging) return;
+
+    const dx = e.clientX - heroSliderState.dragStartX;
+    if (Math.abs(dx) > 8) {
+      heroSliderState.movedByDrag = true;
+    }
+
+    const loopWidth = getHeroSliderLoopWidth();
+    let nextOffset = heroSliderState.dragStartOffset - dx;
+
+    while (nextOffset < 0) nextOffset += loopWidth;
+    while (nextOffset >= loopWidth) nextOffset -= loopWidth;
+
+    heroSliderState.offset = nextOffset;
+    heroSliderState.track.style.transform = `translateX(-${heroSliderState.offset}px)`;
+  });
+
+  const endDrag = () => {
+    if (!heroSliderState.isDragging) return;
+
+    heroSliderState.isDragging = false;
+
+    setTimeout(() => {
+      heroSliderState.movedByDrag = false;
+    }, 80);
+
+    heroSliderState.paused = false;
+  };
+
+  slider.addEventListener("pointerup", endDrag);
+  slider.addEventListener("pointercancel", endDrag);
+  slider.addEventListener("lostpointercapture", endDrag);
+
+  slider.addEventListener("mouseenter", () => {
+    heroSliderState.paused = true;
+  });
+
+  slider.addEventListener("mouseleave", () => {
+    if (!heroSliderState.isDragging) {
+      heroSliderState.paused = false;
+    }
+  });
+}
 
 function getCurrentMemberIdentity() {
   const memberInfo = getActiveMemberNewsInfo();
@@ -6475,7 +6619,7 @@ function bindNewsAdminButtons() {
 }
 
 
-  function bindNewsCards() {
+ function bindNewsCards() {
   document.querySelectorAll(".news-hero-card, .news-card").forEach(card => {
     if (card.dataset.boundRead === "true") return;
     card.dataset.boundRead = "true";
@@ -6493,7 +6637,7 @@ function bindNewsAdminButtons() {
     card.addEventListener("pointermove", (e) => {
       const dx = Math.abs(e.clientX - pointerDownX);
       const dy = Math.abs(e.clientY - pointerDownY);
-      if (dx > 8 || dy > 8) moved = true;
+      if (dx > 12 || dy > 12) moved = true;
     });
 
     card.addEventListener("click", (e) => {
@@ -6502,16 +6646,21 @@ function bindNewsAdminButtons() {
 
       const id = card.dataset.newsId;
       const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
-      if (item) openNewsArticle(item);
+      if (item) {
+        openNewsArticle(item);
+      }
     });
 
     card.addEventListener("keydown", (e) => {
       if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
         const id = card.dataset.newsId;
         const item = NEWS_UPDATES.find(n => String(n.id) === String(id));
-        if (item) openNewsArticle(item);
+        if (item) {
+          openNewsArticle(item);
+        }
       }
     });
   });
@@ -6555,9 +6704,6 @@ if (adminLogoutLink) {
   });
 }
 
-  (async function initAll() {
-    await initPage();
-  })();
 
   function hideVisitorButtonsForSuperAdmin() {
     if (!isSuperAdmin) return;
@@ -7569,213 +7715,6 @@ function updateAdminLogoutLinkVisibility() {
 }
 
 
-
-let heroSliderIndex = 0;
-let heroSliderTimer = null;
-let heroSliderTouchStartX = 0;
-let heroSliderTouchEndX = 0;
-
-
-function renderNewsHeroSlider() {
-  const track = document.getElementById("newsHeroTrack");
-  if (!track) return;
-
-  const items = (NEWS_UPDATES || []).slice(0, 10);
-
-  if (!items.length) {
-    track.innerHTML = `
-      <div class="news-hero-card" tabindex="0" role="button" aria-label="Open default news">
-        <div class="news-hero-card-image-wrap">
-          <img
-            src="srm.png"
-            alt="Default news"
-            onerror="this.onerror=null; this.src='srm.png';"
-          >
-        </div>
-        <div class="news-hero-card-body">
-          <div class="news-hero-card-author">Solid Rock Ministries</div>
-          <h3 class="news-hero-card-title">Christian News Letter</h3>
-          <p class="news-hero-card-excerpt">News letters will appear here.</p>
-          <div class="news-hero-card-readmore">Read more →</div>
-        </div>
-      </div>
-    `;
-    heroSliderIndex = 0;
-    stopHeroSliderAuto();
-    return;
-  }
-
-  track.innerHTML = items.map(item => {
-    let publishedText = "Latest update";
-
-    try {
-      if (item.createdAt?.toDate) {
-        publishedText = item.createdAt.toDate().toLocaleDateString("en-US", {
-          year: "numeric",
-          month: "long",
-          day: "numeric"
-        });
-      } else if (item.createdAt) {
-        const d = new Date(item.createdAt);
-        if (!isNaN(d.getTime())) {
-          publishedText = d.toLocaleDateString("en-US", {
-            year: "numeric",
-            month: "long",
-            day: "numeric"
-          });
-        }
-      }
-    } catch {}
-
-    return `
-      <article
-        class="news-hero-card"
-        data-news-id="${escapeHtml(item.id)}"
-        tabindex="0"
-        role="button"
-        aria-label="Read ${escapeHtml(item.title || "News update")}"
-        title="${escapeHtml(item.title || "News update")}"
-      >
-        <div class="news-hero-card-image-wrap">
-          <img
-            src="${escapeHtml(item.imageUrl || "srm.png")}"
-            alt="${escapeHtml(item.title || "News update")}"
-            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-          >
-        </div>
-
-        <div class="news-hero-card-body">
-          <div class="news-hero-card-author">${escapeHtml(item.author || "Solid Rock Ministries")}</div>
-          <div class="news-hero-card-date">${escapeHtml(publishedText)}</div>
-          <h3 class="news-hero-card-title">${escapeHtml(item.title || "Christian News Letter")}</h3>
-          <p class="news-hero-card-excerpt">${escapeHtml(item.excerpt || "")}</p>
-          <div class="news-hero-card-readmore">Read more →</div>
-        </div>
-      </article>
-    `;
-  }).join("");
-
-  heroSliderIndex = 0;
-  updateHeroSliderPosition();
-  bindHeroSliderClicks();
-  bindHeroSliderSwipe();
-  startHeroSliderAuto();
-}
-
-function getHeroSliderItemsPerView() {
-  return window.innerWidth <= 768 ? 1 : 2;
-}
-
-function getHeroSliderMaxIndex() {
-  const total = document.querySelectorAll("#newsHeroTrack .news-hero-card").length;
-  const perView = getHeroSliderItemsPerView();
-  return Math.max(0, total - perView);
-}
-
-function updateHeroSliderPosition() {
-  const track = document.getElementById("newsHeroTrack");
-  const slider = document.getElementById("newsHeroSlider");
-  if (!track || !slider) return;
-
-  const cards = track.querySelectorAll(".news-hero-card");
-  if (!cards.length) return;
-
-  const step = cards[0].offsetWidth + (window.innerWidth <= 768 ? 14 : 18);
-  track.style.transform = `translateX(-${heroSliderIndex * step}px)`;
-}
-
-function nextHeroSlider() {
-  const maxIndex = getHeroSliderMaxIndex();
-  heroSliderIndex = heroSliderIndex >= maxIndex ? 0 : heroSliderIndex + 1;
-  updateHeroSliderPosition();
-}
-
-function prevHeroSlider() {
-  const maxIndex = getHeroSliderMaxIndex();
-  heroSliderIndex = heroSliderIndex <= 0 ? maxIndex : heroSliderIndex - 1;
-  updateHeroSliderPosition();
-}
-
-function startHeroSliderAuto() {
-  stopHeroSliderAuto();
-  heroSliderTimer = setInterval(() => {
-    nextHeroSlider();
-  }, 4000);
-}
-
-function stopHeroSliderAuto() {
-  if (heroSliderTimer) {
-    clearInterval(heroSliderTimer);
-    heroSliderTimer = null;
-  }
-}
-
-function bindHeroSliderSwipe() {
-  const slider = document.getElementById("newsHeroSlider");
-  if (!slider || slider.dataset.swipeBound === "true") return;
-  slider.dataset.swipeBound = "true";
-
-  slider.addEventListener("touchstart", (e) => {
-    if (!e.touches.length) return;
-    stopHeroSliderAuto();
-    heroSliderTouchStartX = e.touches[0].clientX;
-    heroSliderTouchEndX = heroSliderTouchStartX;
-  }, { passive: true });
-
-  slider.addEventListener("touchmove", (e) => {
-    if (!e.touches.length) return;
-    heroSliderTouchEndX = e.touches[0].clientX;
-  }, { passive: true });
-
-  slider.addEventListener("touchend", () => {
-    const diff = heroSliderTouchStartX - heroSliderTouchEndX;
-
-    if (Math.abs(diff) > 50) {
-      if (diff > 0) {
-        nextHeroSlider();
-      } else {
-        prevHeroSlider();
-      }
-    }
-
-    heroSliderTouchStartX = 0;
-    heroSliderTouchEndX = 0;
-    startHeroSliderAuto();
-  });
-
-  slider.addEventListener("mouseenter", stopHeroSliderAuto);
-  slider.addEventListener("mouseleave", startHeroSliderAuto);
-}
-
-window.addEventListener("resize", () => {
-  updateHeroSliderPosition();
-});
-
-
-function bindHeroSliderClicks() {
-  document.querySelectorAll(".news-hero-card").forEach(card => {
-    if (card.dataset.bound === "true") return;
-    card.dataset.bound = "true";
-
-    const open = (e) => {
-      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
-
-      const id = card.dataset.newsId;
-      if (!id) return;
-      openNewsArticleById(id);
-    };
-
-    card.addEventListener("click", open);
-
-    card.addEventListener("keydown", e => {
-      if (e.key === "Enter" || e.key === " ") {
-        e.preventDefault();
-        open(e);
-      }
-    });
-  });
-}
-
 window.openNewsArticle = function(article) {
   const modal = document.getElementById("newsModal");
   const content = document.getElementById("newsModalContent");
@@ -7952,9 +7891,6 @@ window.openNewsArticle = function(article) {
   <img id="newsImageLightboxImg" alt="Full news image">
 </div>
 
-<div class="news-hero-slider" id="newsHeroSlider">
-  <div class="news-hero-track" id="newsHeroTrack"></div>
-</div>
 
 </body>
 </html>
