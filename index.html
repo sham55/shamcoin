@@ -2330,6 +2330,40 @@ section{
 }
 
 
+.live-stream-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:18px;
+  overflow:hidden;
+  background:#000;
+  margin-top:12px;
+}
+
+.live-stream-wrap iframe{
+  width:100%;
+  height:100%;
+  display:block;
+  border:0;
+}
+
+.live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:6px 12px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:700;
+  letter-spacing:.08em;
+  background:rgba(255,0,60,.14);
+  color:#ff6b81;
+  border:1px solid rgba(255,107,129,.32);
+  box-shadow:0 0 18px rgba(255,0,60,.15);
+  text-transform:uppercase;
+}
+
+
   </style>
 </head>
 <body>
@@ -2818,6 +2852,7 @@ section{
       name: "Vogtareuth Outreach",
       shortName: "Germany",
       location: "Bavaria Region",
+      liveStreamUrl: "https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID",
       address: "Reuther Feld, Vogtareuth, Germany",
       description: "Latest updates for the Vogtareuth group",
       historyTitle: "Vogtareuth Outreach",
@@ -4019,6 +4054,44 @@ window.closeReactionUsersModal = function() {
           <div class="divider"></div>
         `}
 
+        <h3>Live Stream</h3>
+
+<label for="${escapeHtml(outreach.id)}-live-stream-url">Live Stream Embed URL</label>
+<input
+  id="${escapeHtml(outreach.id)}-live-stream-url"
+  type="text"
+  value="${escapeHtml(outreach.liveStreamUrl || "")}"
+  placeholder="https://www.youtube.com/embed/live_stream?channel=YOUR_CHANNEL_ID"
+>
+
+<label for="${escapeHtml(outreach.id)}-live-stream-label">Live Label</label>
+<input
+  id="${escapeHtml(outreach.id)}-live-stream-label"
+  type="text"
+  value="${escapeHtml(outreach.liveStreamLabel || "Watch Live")}"
+  placeholder="Watch Live"
+>
+
+<div class="toolbar-row" style="margin-top:12px;">
+  <button
+    class="btn save-live-stream-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Save Live Stream
+  </button>
+
+  <button
+    class="ghost-btn clear-live-stream-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Clear
+  </button>
+</div>
+
+<p id="${escapeHtml(outreach.id)}-live-stream-feedback" class="smallmuted"></p>
+
+<div class="divider"></div>
+
         <h3>Post News + Update</h3>
 
 <input id="${escapeHtml(outreach.id)}-editing-news-id" type="hidden">
@@ -4074,260 +4147,112 @@ window.closeReactionUsersModal = function() {
   `;
 }
 
-  function buildOutreachCard(outreach) {
-    const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
-    const savedMemberName = getSavedMemberSession(outreach.id);
+ 
+function buildOutreachCard(outreach) {
+  const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
+  const savedMemberName = getSavedMemberSession(outreach.id);
 
-    return `
-      <div class="outreach-shell">
-        <div class="outreach-header">
-          <div class="outreach-logo-wrap">
-            <img class="outreach-logo" src="${escapeHtml(logoSrc)}"
-              alt="${escapeHtml(outreach.name)}"
-              onclick="openLightbox(this.src)">
-          </div>
-
-          <div>
-            <h3 class="outreach-title">${escapeHtml(outreach.name)}</h3>
-            <div class="outreach-subtitle">${escapeHtml(outreach.shortName || outreach.name)}</div>
-
-            <div class="meta-row">
-              <span class="tagpill">🌍 ${escapeHtml(outreach.location || "Location")}</span>
-              <span class="tagpill">👥 ${escapeHtml(outreach.ministryType || "Fellowship Gathering")}</span>
-              <span class="tagpill">🗂️ ${escapeHtml(outreach.category || "Outreach Ministry")}</span>
-              <span class="tagpill">💒 ${escapeHtml(outreach.address || "Address not set")}</span>
-            </div>
-          </div>
+  return `
+    <div class="outreach-shell">
+      <div class="outreach-header">
+        <div class="outreach-logo-wrap">
+          <img class="outreach-logo" src="${escapeHtml(logoSrc)}"
+            alt="${escapeHtml(outreach.name)}"
+            onclick="openLightbox(this.src)">
         </div>
 
-        <div class="outreach-panels">
-          <div class="panel">
-  <h3>${escapeHtml(outreach.historyTitle || "History")}</h3>
-  <p class="smallmuted">
-    ${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}
-  </p>
+        <div>
+          <h3 class="outreach-title">${escapeHtml(outreach.name)}</h3>
+          <div class="outreach-subtitle">${escapeHtml(outreach.shortName || outreach.name)}</div>
 
-  <div class="workers-section">
-    <h4 style="margin:14px 0 8px;">Workers:</h4>
-    <div id="workers-${escapeHtml(outreach.id)}" class="workers-grid"></div>
-
-    ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
-      <div class="worker-admin">
-        <label for="worker-name-${escapeHtml(outreach.id)}">Worker Name</label>
-        <input
-          type="text"
-          id="worker-name-${escapeHtml(outreach.id)}"
-          placeholder="Enter worker name"
-        >
-
-        <label for="worker-photo-${escapeHtml(outreach.id)}">Worker Photo</label>
-        <input
-  type="file"
-  id="worker-photo-${escapeHtml(outreach.id)}"
-  accept="image/*,.heic,.heif"
->
-
-        <div class="worker-admin-actions">
-          <button
-            class="btn"
-            type="button"
-            onclick="addWorker('${escapeHtml(outreach.id)}')">
-            Add Worker
-          </button>
+          <div class="meta-row">
+            <span class="tagpill">🌍 ${escapeHtml(outreach.location || "Location")}</span>
+            <span class="tagpill">👥 ${escapeHtml(outreach.ministryType || "Fellowship Gathering")}</span>
+            <span class="tagpill">🗂️ ${escapeHtml(outreach.category || "Outreach Ministry")}</span>
+            <span class="tagpill">💒 ${escapeHtml(outreach.address || "Address not set")}</span>
+          </div>
         </div>
-
-        <p id="worker-feedback-${escapeHtml(outreach.id)}" class="smallmuted"></p>
       </div>
-    ` : ""}
-  </div>
-</div>
 
-          <div class="panel">
-            <h3>📣 Announcements</h3>
-            ${buildAnnouncementHtml(outreach)}
-          </div>
+      <div class="outreach-panels">
 
-          <div class="panel">
-            <div class="member-row">
-              <h3 style="margin:0;">Members</h3>
-              <span class="member-count-badge"> ${escapeHtml(outreach.memberCount || 0)}</span>
-            </div>
-            ${buildMemberList(outreach)}
-          </div>
+        <!-- HISTORY -->
+        <div class="panel">
+          <h3>${escapeHtml(outreach.historyTitle || "History")}</h3>
+          <p class="smallmuted">
+            ${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}
+          </p>
+        </div>
 
-          <div class="panel">
+        <!-- ANNOUNCEMENTS -->
+        <div class="panel">
+          <h3>📣 Announcements</h3>
+          ${buildAnnouncementHtml(outreach)}
+        </div>
+
+        <div class="panel">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <h3 style="margin:0;">📌 Ministry Scope</h3>
+    <h3 style="margin:0;">📺 Live Stream</h3>
 
-    ${outreachAdminState[outreach.id] ? `
-      <div class="toolbar-row">
-        <button
-          class="ghost-btn toggle-ministry-scope-edit-btn"
-          type="button"
-          data-outreach="${escapeHtml(outreach.id)}">
-          Edit
-        </button>
-      </div>
-    ` : ""}
+    ${
+      outreach.liveStreamUrl
+        ? `<span class="live-badge">🔴 ${escapeHtml(outreach.liveStreamLabel || "LIVE")}</span>`
+        : ``
+    }
   </div>
 
-  <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
   ${
-    (outreach.id === "namatec"
-      ? (outreach.volunteers || [])
-      : (outreach.prayerFocus || [])
-    ).length
+    outreach.liveStreamUrl
       ? `
-        <ul class="list">
-          ${(outreach.id === "namatec"
-            ? (outreach.volunteers || [])
-            : (outreach.prayerFocus || [])
-          ).map(item => `<li>${escapeHtml(item)}</li>`).join("")}
-        </ul>
-      `
-      : ``
-  }
-</div>
-
-  ${outreachAdminState[outreach.id] ? `
-    <div id="${escapeHtml(outreach.id)}-ministry-scope-edit-wrap" class="hidden" style="margin-top:12px;">
-      <p class="smallmuted" style="margin-top:0;">Enter one item per line.</p>
-
-      <textarea
-        id="${escapeHtml(outreach.id)}-ministry-scope-inline-editor"
-        style="min-height:160px;"
-        placeholder="Enter one item per line...">${escapeHtml(
-          (outreach.id === "namatec"
-            ? (outreach.volunteers || [])
-            : (outreach.prayerFocus || [])
-          ).join("\n")
-        )}</textarea>
-
-      <div class="toolbar-row" style="margin-top:12px;">
-        <button
-          class="btn save-inline-ministry-scope-btn"
-          type="button"
-          data-outreach="${escapeHtml(outreach.id)}">
-          Save
-        </button>
-
-        <button
-          class="ghost-btn cancel-inline-ministry-scope-btn"
-          type="button"
-          data-outreach="${escapeHtml(outreach.id)}">
-          Cancel
-        </button>
-      </div>
-
-      <p id="${escapeHtml(outreach.id)}-ministry-scope-inline-feedback" class="smallmuted"></p>
-    </div>
-  ` : ""}
-</div>
-
-          <div class="panel" style="grid-column:1/-1;">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <h3 style="margin:0;">Gallery</h3>
-
-    <button
-      class="ghost-btn open-photo-manager-btn"
-      type="button"
-      data-outreach="${escapeHtml(outreach.id)}">
-      View All Photos
-    </button>
-  </div>
-
-  ${buildGalleryHtml(outreach)}
-</div>
-
-
-          <div class="panel" id="${escapeHtml(outreach.id)}-memberAccessPanel">
-            <h3>Visitor / Member Access</h3>
-
-            <div id="${escapeHtml(outreach.id)}-visitor-board">
-              <div id="${escapeHtml(outreach.id)}-visitor-fields" class="hidden">
-                <label for="${escapeHtml(outreach.id)}-member-name">Full Name</label>
-                <input id="${escapeHtml(outreach.id)}-member-name" type="text" placeholder="Full Name" value="${escapeHtml(toDisplayName(savedMemberName))}">
-
-                <label for="${escapeHtml(outreach.id)}-member-photo">Photo</label>
-                <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*,.heic,.heif"*">
-
-                <label for="${escapeHtml(outreach.id)}-member-message">Optional Message / Prayer Request</label>
-                <textarea id="${escapeHtml(outreach.id)}-member-message" placeholder="Optional message or prayer request"></textarea>
-              </div>
-
-              <div class="toolbar-row" style="margin-top:12px;flex-wrap:wrap;gap:10px;">
-
-  <button class="ghost-btn guest-signin-btn"
-    type="button"
-    data-outreach="${escapeHtml(outreach.id)}">
-    Continue as Guest
-  </button>
-
-  <button class="btn show-join-fields-btn"
-    type="button"
-    data-outreach="${escapeHtml(outreach.id)}">
-    Join as Member
-  </button>
-
-  <button class="ghost-btn member-login-btn"
-    type="button"
-    onclick="openMemberLoginModal()">
-    Member Login
-  </button>
-
-
-</div>
-
-              <div id="${escapeHtml(outreach.id)}-join-actions" class="toolbar-row hidden" style="margin-top:12px;">
-                <button class="btn signup-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Submit Membership</button>
-                <button class="ghost-btn cancel-join-fields-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Cancel</button>
-              </div>
-
-              <div id="${escapeHtml(outreach.id)}-leave-board" class="hidden" style="margin-top:14px;">
-                <div class="divider"></div>
-                
-                <p class="smallmuted" style="margin-top:0;">
-                  You are logged in as <strong>${escapeHtml(toDisplayName(savedMemberName) || "Member")}</strong>. Click below to remove your membership from this outreach.
-                </p>
-
-                <div class="toolbar-row" style="margin-top:12px;">
-                  <button class="danger-btn leave-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Leave Membership</button>
-                  <button
-          class="ghost-btn member-logout-btn"
-          type="button"
-          onclick="memberLogout()">
-          Logout
-        </button>
-                </div>
-              </div>
-
-              <p id="${escapeHtml(outreach.id)}-member-feedback" class="smallmuted"></p>
-            </div>
-          </div>
-
-         ${(isSuperAdmin) ? `
-  <div class="panel" style="grid-column:1/-1;">
-    <div class="admin-card" style="padding:16px;">
-      <h3>⚠️ Super Admin Outreach Controls</h3>
-      <p class="smallmuted">Delete this outreach and all related components.</p>
-      <div class="toolbar-row">
-        <button
-          class="danger-btn delete-outreach-btn"
-          type="button"
-          data-outreach="${escapeHtml(outreach.id)}"
-          data-name="${escapeHtml(outreach.name || outreach.id)}">
-          Delete Outreach
-        </button>
-      </div>
-    </div>
-  </div>
-` : ""}
-
-          ${buildAdminSection(outreach)}
+        <div class="live-stream-wrap">
+          <iframe
+            src="${escapeHtml(outreach.liveStreamUrl)}"
+            title="${escapeHtml(outreach.name)} Live Stream"
+            frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen>
+          </iframe>
         </div>
-      </div>
-    `;
+      `
+      : `<p class="smallmuted">Live stream will appear here when available.</p>`
   }
+</div>
+
+        <!-- MEMBERS -->
+        <div class="panel">
+          <div class="member-row">
+            <h3 style="margin:0;">Members</h3>
+            <span class="member-count-badge">${escapeHtml(outreach.memberCount || 0)}</span>
+          </div>
+          ${buildMemberList(outreach)}
+        </div>
+
+        <!-- MINISTRY SCOPE -->
+        <div class="panel">
+          <h3>📌 Ministry Scope</h3>
+          <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
+            ${
+              (outreach.prayerFocus || []).length
+                ? `<ul class="list">
+                    ${(outreach.prayerFocus || []).map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>`
+                : ""
+            }
+          </div>
+        </div>
+
+        <!-- GALLERY -->
+        <div class="panel" style="grid-column:1/-1;">
+          <h3>Gallery</h3>
+          ${buildGalleryHtml(outreach)}
+        </div>
+
+        ${buildAdminSection(outreach)}
+
+      </div>
+    </div>
+  `;
+}
 
   function renderOutreaches() {
     if (!currentOutreaches.length) {
@@ -6021,6 +5946,19 @@ document.querySelectorAll(".save-inline-ministry-scope-btn").forEach(btn => {
   btn.addEventListener("click", () => {
     saveInlineMinistryScope(btn.dataset.outreach);
   });
+});
+
+
+  document.querySelectorAll(".save-live-stream-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => saveLiveStream(btn.dataset.outreach));
+});
+
+document.querySelectorAll(".clear-live-stream-btn").forEach(btn => {
+  if (btn.dataset.bound === "true") return;
+  btn.dataset.bound = "true";
+  btn.addEventListener("click", () => clearLiveStream(btn.dataset.outreach));
 });
 
 
@@ -8121,6 +8059,97 @@ window.openNewsArticle = function(article) {
 
   modal.classList.add("active");
 };
+
+async function saveLiveStream(outreachId) {
+  const urlInput = document.getElementById(`${outreachId}-live-stream-url`);
+  const labelInput = document.getElementById(`${outreachId}-live-stream-label`);
+  const feedback = document.getElementById(`${outreachId}-live-stream-feedback`);
+
+  const liveStreamUrl = (urlInput?.value || "").trim();
+  const liveStreamLabel = (labelInput?.value || "").trim();
+
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+    if (feedback) {
+      feedback.textContent = "Only admin can save the live stream.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  if (!liveStreamUrl) {
+    if (feedback) {
+      feedback.textContent = "Please enter a live stream embed URL.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Saving live stream...";
+      feedback.className = "smallmuted";
+    }
+
+    await setDoc(doc(db, "outreaches", outreachId), {
+      liveStreamUrl,
+      liveStreamLabel: liveStreamLabel || "LIVE",
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser?.email || currentUser?.uid || "admin"
+    }, { merge: true });
+
+    if (feedback) {
+      feedback.textContent = "Live stream saved successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("saveLiveStream failed:", error);
+    if (feedback) {
+      feedback.textContent = "Save failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+async function clearLiveStream(outreachId) {
+  const feedback = document.getElementById(`${outreachId}-live-stream-feedback`);
+
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) {
+    if (feedback) {
+      feedback.textContent = "Only admin can clear the live stream.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Clearing live stream...";
+      feedback.className = "smallmuted";
+    }
+
+    await setDoc(doc(db, "outreaches", outreachId), {
+      liveStreamUrl: "",
+      liveStreamLabel: "",
+      updatedAt: serverTimestamp(),
+      updatedBy: currentUser?.email || currentUser?.uid || "admin"
+    }, { merge: true });
+
+    if (feedback) {
+      feedback.textContent = "Live stream cleared.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("clearLiveStream failed:", error);
+    if (feedback) {
+      feedback.textContent = "Clear failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
 
 </script>
 
