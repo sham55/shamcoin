@@ -1995,6 +1995,51 @@ section{
   z-index:1;
 }
 
+.news-watermark{
+  position:absolute;
+  bottom:14px;
+  right:14px;
+  width:70px;
+  height:70px;
+
+  background:url("srm.png") center/contain no-repeat;
+
+  opacity:0.10;
+  pointer-events:none;
+  z-index:5;
+
+  filter:
+    grayscale(100%)
+    brightness(1.2);
+
+  transition:all .35s ease;
+}
+
+@keyframes watermarkNeonPulse{
+  0%{
+    filter:
+      grayscale(100%)
+      brightness(1.4)
+      drop-shadow(0 0 6px rgba(80,160,255,0.5));
+  }
+  50%{
+    filter:
+      grayscale(100%)
+      brightness(1.6)
+      drop-shadow(0 0 16px rgba(80,160,255,0.9));
+  }
+  100%{
+    filter:
+      grayscale(100%)
+      brightness(1.4)
+      drop-shadow(0 0 6px rgba(80,160,255,0.5));
+  }
+}
+
+.news-hero-card:hover .news-watermark{
+  animation:watermarkNeonPulse 2.5s ease-in-out infinite;
+}
+
 .news-hero-card-image-wrap::before{
   content:"";
   position:absolute;
@@ -2268,6 +2313,20 @@ section{
   max-width:100%;
   max-height:60vh;
   display:block;
+}
+
+.news-hero-card:hover .news-watermark{
+  opacity:0.22;
+  transform:scale(1.08);
+
+  filter:
+    grayscale(100%)
+    brightness(1.5)
+    drop-shadow(0 0 6px rgba(80,160,255,0.6))
+    drop-shadow(0 0 14px rgba(80,160,255,0.6))
+    drop-shadow(0 0 28px rgba(80,160,255,0.5));
+
+  transition:all .35s ease;
 }
 
 
@@ -6206,6 +6265,8 @@ function renderNewsUpdates() {
                   </div>
                 ` : ""}
               </div>
+              <div class="news-image-overlay"></div>
+              <div class="news-watermark"></div>
             </article>
           `;
         }).join("")}
