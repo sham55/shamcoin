@@ -1661,17 +1661,15 @@ section{
 
 .news-card{
   position:relative;
-  background:linear-gradient(135deg, #4f7cff 0%, #7b6cff 38%, #ff6ec7 100%);
-  background-size:240% 240%;
-  animation:newsCardGradientFlow 14s ease-in-out infinite;
-  border:1px solid rgba(255,255,255,.16);
+  background:linear-gradient(180deg, #0b1220, #0f1b34);
+  border:1px solid rgba(255,255,255,.12);
   border-radius:22px;
   overflow:hidden;
   box-shadow:
     0 14px 30px rgba(0,0,0,.28),
-    0 0 0 1px rgba(255,255,255,.04) inset;
+    0 0 0 1px rgba(255,255,255,.03) inset;
   cursor:pointer;
-  transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, filter .28s ease;
+  transition:transform .28s ease, box-shadow .28s ease, border-color .28s ease, filter .28s ease, background .4s ease;
   display:flex;
   flex-direction:column;
   backdrop-filter:blur(10px);
@@ -1683,22 +1681,25 @@ section{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 22% 18%, rgba(255,255,255,.28), transparent 34%),
-    radial-gradient(circle at 78% 78%, rgba(255,255,255,.12), transparent 32%),
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,.10), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,.05), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
   pointer-events:none;
   z-index:0;
 }
 
 .news-card:hover{
   transform:translateY(-6px) scale(1.01);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(120,140,255,.25), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255,120,200,.25), transparent 50%),
+    linear-gradient(135deg, #121a3a, #1a0f2e);
   box-shadow:
     0 22px 44px rgba(42,61,150,.34),
-    0 0 28px rgba(255,110,199,.22),
-    0 0 42px rgba(79,124,255,.26),
-    0 0 58px rgba(255,110,199,.18);
-  border-color:rgba(255,255,255,.30);
-  filter:saturate(1.08) brightness(1.02);
+    0 0 28px rgba(255,110,199,.18),
+    0 0 42px rgba(79,124,255,.20);
+  border-color:rgba(255,255,255,.22);
+  filter:saturate(1.06) brightness(1.02);
 }
 
 .news-card-date{
@@ -1713,7 +1714,7 @@ section{
   object-fit:cover;
   display:block;
   background:rgba(255,255,255,.03);
-  border-bottom:1px solid rgba(255,255,255,.14);
+  border-bottom:1px solid rgba(255,255,255,.10);
   transition:transform .45s ease, filter .35s ease;
 }
 
@@ -1925,13 +1926,11 @@ section{
   position:relative;
   border-radius:22px;
   overflow:hidden;
-  border:1px solid rgba(255,255,255,.16);
+  border:1px solid rgba(255,255,255,.12);
   box-shadow:
     0 14px 30px rgba(0,0,0,.28),
-    0 0 0 1px rgba(255,255,255,.04) inset;
-  background:linear-gradient(135deg, #4f7cff 0%, #7b6cff 38%, #ff6ec7 100%);
-  background-size:240% 240%;
-  animation:newsCardGradientFlow 14s ease-in-out infinite;
+    0 0 0 1px rgba(255,255,255,.03) inset;
+  background:linear-gradient(180deg, #0b1220, #0f1b34);
   backdrop-filter:blur(10px);
   -webkit-backdrop-filter:blur(10px);
   cursor:pointer;
@@ -1940,7 +1939,8 @@ section{
     box-shadow .30s ease,
     border-color .30s ease,
     opacity .30s ease,
-    filter .30s ease;
+    filter .30s ease,
+    background .45s ease;
   display:flex;
   flex-direction:column;
   opacity:.97;
@@ -1951,9 +1951,9 @@ section{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 22% 18%, rgba(255,255,255,.28), transparent 34%),
-    radial-gradient(circle at 78% 78%, rgba(255,255,255,.12), transparent 32%),
-    linear-gradient(180deg, rgba(255,255,255,.08), rgba(255,255,255,0));
+    radial-gradient(circle at 22% 18%, rgba(255,255,255,.10), transparent 34%),
+    radial-gradient(circle at 78% 78%, rgba(255,255,255,.05), transparent 32%),
+    linear-gradient(180deg, rgba(255,255,255,.04), rgba(255,255,255,0));
   pointer-events:none;
   z-index:0;
 }
@@ -1963,8 +1963,8 @@ section{
   position:absolute;
   inset:-2px;
   border-radius:24px;
-  background:linear-gradient(135deg, rgba(255,255,255,.28), rgba(255,255,255,0), rgba(255,255,255,.16));
-  opacity:.18;
+  background:linear-gradient(135deg, rgba(255,255,255,.16), rgba(255,255,255,0), rgba(255,255,255,.08));
+  opacity:.12;
   pointer-events:none;
   z-index:0;
 }
@@ -1972,13 +1972,16 @@ section{
 .news-hero-card:hover,
 .news-hero-card:focus{
   transform:translateY(-6px) scale(1.012);
+  background:
+    radial-gradient(circle at 30% 20%, rgba(120,140,255,.25), transparent 40%),
+    radial-gradient(circle at 80% 90%, rgba(255,120,200,.25), transparent 50%),
+    linear-gradient(135deg, #121a3a, #1a0f2e);
   box-shadow:
     0 24px 48px rgba(42,61,150,.36),
-    0 0 30px rgba(255,110,199,.24),
-    0 0 48px rgba(79,124,255,.28),
-    0 0 64px rgba(255,110,199,.20);
-  border-color:rgba(255,255,255,.30);
-  filter:saturate(1.10) brightness(1.02);
+    0 0 30px rgba(255,110,199,.20),
+    0 0 48px rgba(79,124,255,.22);
+  border-color:rgba(255,255,255,.22);
+  filter:saturate(1.08) brightness(1.02);
   opacity:1;
 }
 
@@ -1987,10 +1990,8 @@ section{
   width:100%;
   height:220px;
   overflow:hidden;
-  background:
-    linear-gradient(135deg, rgba(79,124,255,.16), rgba(255,110,199,.14)),
-    rgba(255,255,255,.06);
-  border-bottom:1px solid rgba(255,255,255,.14);
+  background:rgba(255,255,255,.03);
+  border-bottom:1px solid rgba(255,255,255,.10);
   z-index:1;
 }
 
@@ -1999,8 +2000,8 @@ section{
   position:absolute;
   inset:0;
   background:
-    radial-gradient(circle at 18% 20%, rgba(255,255,255,.14), transparent 26%),
-    radial-gradient(circle at 82% 78%, rgba(255,110,199,.16), transparent 24%);
+    radial-gradient(circle at 18% 20%, rgba(255,255,255,.10), transparent 26%),
+    radial-gradient(circle at 82% 78%, rgba(255,110,199,.10), transparent 24%);
   pointer-events:none;
   z-index:1;
 }
@@ -2010,11 +2011,22 @@ section{
   position:absolute;
   inset:0;
   background:
-    linear-gradient(180deg, rgba(15,20,50,.04) 0%, rgba(15,20,50,.18) 100%),
-    linear-gradient(135deg, rgba(79,124,255,.18), rgba(255,110,199,.16));
+    linear-gradient(180deg, rgba(15,20,50,.03) 0%, rgba(15,20,50,.14) 100%);
   mix-blend-mode:screen;
   pointer-events:none;
   z-index:2;
+}
+
+.news-hero-card:hover .news-hero-card-image-wrap{
+  background:
+    linear-gradient(135deg, rgba(79,124,255,.16), rgba(255,110,199,.14)),
+    rgba(255,255,255,.06);
+}
+
+.news-hero-card:hover .news-hero-card-image-wrap::after{
+  background:
+    linear-gradient(180deg, rgba(15,20,50,.04) 0%, rgba(15,20,50,.18) 100%),
+    linear-gradient(135deg, rgba(79,124,255,.18), rgba(255,110,199,.16));
 }
 
 .news-hero-card-image-wrap img,
@@ -2035,13 +2047,13 @@ section{
 }
 
 .news-hero-card-body{
-  position:relative;
-  z-index:1;
-  padding:16px;
+  padding:18px;
   display:flex;
   flex-direction:column;
+  justify-content:center;   /* 🔥 vertical center */
+  align-items:center;       /* 🔥 horizontal center */
+  text-align:center;        /* 🔥 text center */
   flex:1;
-  background:linear-gradient(180deg, rgba(8,14,34,.10), rgba(8,14,34,.18));
 }
 
 .news-hero-card-author{
@@ -2060,19 +2072,14 @@ section{
 }
 
 .news-hero-card-title{
-  margin:0 0 10px;
-  font-size:28px;
-  line-height:1.05;
+  font-size:24px;
+  line-height:1.2;
   font-family:Georgia,"Times New Roman",serif;
-  color:#fff;
-  text-shadow:0 2px 12px rgba(50,24,88,.22);
+  letter-spacing:.4px;
 }
 
 .news-hero-card-excerpt{
-  margin:0;
-  color:rgba(255,255,255,.92);
-  font-size:14px;
-  line-height:1.7;
+  max-width:85%;
 }
 
 .news-hero-card-readmore{
@@ -2109,6 +2116,10 @@ section{
 }
 
 .news-hero-card[data-media-type="video"] .news-hero-card-image-wrap{
+  background:rgba(255,255,255,.03);
+}
+
+.news-hero-card[data-media-type="video"]:hover .news-hero-card-image-wrap{
   background:
     linear-gradient(135deg, rgba(79,124,255,.26), rgba(255,110,199,.22)),
     rgba(255,255,255,.06);
@@ -2150,14 +2161,6 @@ section{
   filter:saturate(1.10) contrast(1.04) brightness(1.02);
 }
 
-@keyframes newsCardGradientFlow{
-  0%   { background-position:0% 50%; }
-  25%  { background-position:50% 25%; }
-  50%  { background-position:100% 50%; }
-  75%  { background-position:50% 75%; }
-  100% { background-position:0% 50%; }
-}
-
 .news-hero-slider,
 .news-hero-slider *{
   -webkit-user-select:none;
@@ -2166,10 +2169,6 @@ section{
 
 .news-hero-slider.dragging{
   cursor:grabbing;
-}
-
-.news-hero-slider.dragging .news-hero-card{
-  animation-play-state:paused;
 }
 
 @media (max-width:768px){
