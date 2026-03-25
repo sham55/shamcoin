@@ -2364,6 +2364,293 @@ section{
   text-transform:uppercase;
 }
 
+.live-stream-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:18px;
+  overflow:hidden;
+  background:#000;
+}
+
+/* iframe */
+.live-stream-wrap iframe{
+  width:100%;
+  height:100%;
+  border:0;
+  position:relative;
+  z-index:2;
+}
+
+/* WATERMARK OVERLAY */
+.live-watermark{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:3;
+  pointer-events:none;
+
+  background:radial-gradient(circle at center, rgba(0,150,255,0.08), transparent 70%);
+}
+
+/* LOGO */
+.live-watermark img{
+  width:120px;
+  opacity:0.6;
+
+  /* NEON GLOW */
+  filter:
+    drop-shadow(0 0 6px #00d4ff)
+    drop-shadow(0 0 12px #00d4ff)
+    drop-shadow(0 0 24px #0099ff);
+
+  animation:neonPulse 2.5s infinite ease-in-out;
+}
+
+/* GLOW ANIMATION */
+@keyframes neonPulse{
+  0%,100%{
+    opacity:0.5;
+    transform:scale(1);
+    filter:
+      drop-shadow(0 0 4px #00d4ff)
+      drop-shadow(0 0 10px #00d4ff);
+  }
+  50%{
+    opacity:0.9;
+    transform:scale(1.08);
+    filter:
+      drop-shadow(0 0 10px #00d4ff)
+      drop-shadow(0 0 25px #00d4ff)
+      drop-shadow(0 0 45px #0099ff);
+  }
+}
+
+.live-stream-wrap{
+  position:relative;
+  width:100%;
+  aspect-ratio:16/9;
+  border-radius:22px;
+  overflow:hidden;
+  background:
+    radial-gradient(circle at top, rgba(0,180,255,.14), transparent 45%),
+    linear-gradient(180deg, rgba(8,18,40,.92), rgba(3,8,20,.98));
+  border:1px solid rgba(255,255,255,.08);
+  box-shadow:
+    0 20px 45px rgba(0,0,0,.35),
+    0 0 0 1px rgba(255,255,255,.03) inset,
+    0 0 35px rgba(0,153,255,.08);
+}
+
+/* iframe */
+.live-stream-wrap iframe{
+  position:absolute;
+  inset:0;
+  width:100%;
+  height:100%;
+  border:0;
+  z-index:1;
+  opacity:0;
+  transition:opacity .8s ease;
+}
+
+/* watermark */
+.live-watermark{
+  position:absolute;
+  inset:0;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  z-index:4;
+  pointer-events:none;
+  transition:opacity .8s ease, transform .8s ease;
+}
+
+.live-watermark img{
+  width:min(24vw, 140px);
+  max-width:140px;
+  opacity:.62;
+  filter:
+    drop-shadow(0 0 5px #00d4ff)
+    drop-shadow(0 0 12px #00d4ff)
+    drop-shadow(0 0 26px rgba(0,153,255,.95));
+  animation:liveNeonPulse 2.8s ease-in-out infinite;
+}
+
+@keyframes liveNeonPulse{
+  0%,100%{
+    opacity:.52;
+    transform:scale(1);
+    filter:
+      drop-shadow(0 0 4px #00d4ff)
+      drop-shadow(0 0 10px #00d4ff);
+  }
+  50%{
+    opacity:.95;
+    transform:scale(1.08);
+    filter:
+      drop-shadow(0 0 10px #00d4ff)
+      drop-shadow(0 0 22px #00d4ff)
+      drop-shadow(0 0 46px rgba(0,153,255,1));
+  }
+}
+
+/* waiting overlay */
+.live-waiting-overlay{
+  position:absolute;
+  inset:0;
+  z-index:5;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  justify-content:center;
+  gap:20px;
+  padding:20px;
+  text-align:center;
+  background:
+    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18));
+  backdrop-filter:blur(3px);
+  -webkit-backdrop-filter:blur(3px);
+  transition:opacity .8s ease, transform .8s ease;
+}
+
+.live-starting-text{
+  font-weight:900;
+  letter-spacing:.14em;
+  font-size:clamp(16px, 2.6vw, 28px);
+  color:#dff7ff;
+  text-shadow:
+    0 0 10px rgba(0,212,255,.55),
+    0 0 22px rgba(0,212,255,.35);
+  animation:liveTextPulse 2s ease-in-out infinite;
+}
+
+@keyframes liveTextPulse{
+  0%,100%{
+    opacity:.72;
+    transform:translateY(0);
+  }
+  50%{
+    opacity:1;
+    transform:translateY(-2px);
+  }
+}
+
+/* countdown panel */
+.live-panel-countdown{
+  display:grid;
+  grid-template-columns:repeat(4, minmax(70px, 1fr));
+  gap:12px;
+  width:min(100%, 560px);
+}
+
+.lp-box{
+  border-radius:18px;
+  padding:14px 10px;
+  background:linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+  border:1px solid rgba(255,255,255,.1);
+  box-shadow:
+    0 10px 20px rgba(0,0,0,.18),
+    0 0 0 1px rgba(255,255,255,.02) inset;
+  backdrop-filter:blur(10px);
+  -webkit-backdrop-filter:blur(10px);
+}
+
+.lp-num{
+  font-size:clamp(24px, 4vw, 40px);
+  font-weight:900;
+  line-height:1;
+  color:#fff;
+  text-shadow:0 0 12px rgba(0,212,255,.25);
+}
+
+.lp-lab{
+  margin-top:8px;
+  font-size:11px;
+  letter-spacing:.16em;
+  text-transform:uppercase;
+  color:rgba(255,255,255,.82);
+}
+
+/* particles */
+.live-particles{
+  position:absolute;
+  inset:0;
+  z-index:2;
+  pointer-events:none;
+  overflow:hidden;
+}
+
+.live-particles span{
+  position:absolute;
+  bottom:-30px;
+  width:8px;
+  height:8px;
+  border-radius:50%;
+  background:radial-gradient(circle, rgba(0,212,255,.95), rgba(0,212,255,.08));
+  box-shadow:
+    0 0 8px rgba(0,212,255,.7),
+    0 0 18px rgba(0,212,255,.35);
+  animation:floatParticle linear infinite;
+  opacity:.75;
+}
+
+.live-particles span:nth-child(1){ left:6%;  animation-duration:9s;  animation-delay:0s;   width:7px; height:7px; }
+.live-particles span:nth-child(2){ left:14%; animation-duration:11s; animation-delay:1s;   width:10px; height:10px; }
+.live-particles span:nth-child(3){ left:22%; animation-duration:8s;  animation-delay:2s; }
+.live-particles span:nth-child(4){ left:33%; animation-duration:13s; animation-delay:0.5s; width:6px; height:6px; }
+.live-particles span:nth-child(5){ left:41%; animation-duration:10s; animation-delay:1.6s; }
+.live-particles span:nth-child(6){ left:50%; animation-duration:14s; animation-delay:2.5s; width:11px; height:11px; }
+.live-particles span:nth-child(7){ left:58%; animation-duration:9s;  animation-delay:1.2s; }
+.live-particles span:nth-child(8){ left:66%; animation-duration:12s; animation-delay:2.2s; width:6px; height:6px; }
+.live-particles span:nth-child(9){ left:74%; animation-duration:8.5s;animation-delay:.8s; }
+.live-particles span:nth-child(10){ left:82%; animation-duration:11.5s; animation-delay:1.9s; width:9px; height:9px; }
+.live-particles span:nth-child(11){ left:90%; animation-duration:10.5s; animation-delay:2.8s; width:7px; height:7px; }
+.live-particles span:nth-child(12){ left:47%; animation-duration:15s; animation-delay:3.2s; width:13px; height:13px; }
+
+@keyframes floatParticle{
+  0%{
+    transform:translateY(0) scale(.7);
+    opacity:0;
+  }
+  15%{
+    opacity:.9;
+  }
+  100%{
+    transform:translateY(-120%) scale(1.15);
+    opacity:0;
+  }
+}
+
+.live-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:6px;
+  padding:8px 16px;
+  border-radius:999px;
+  font-size:12px;
+  font-weight:800;
+  letter-spacing:.12em;
+  text-transform:uppercase;
+  color:#ff6f8f;
+  background:rgba(255,0,80,.1);
+  border:1px solid rgba(255,100,140,.28);
+  box-shadow:
+    0 0 16px rgba(255,0,80,.16),
+    0 0 30px rgba(255,0,80,.06);
+}
+
+@media (max-width: 640px){
+  .live-panel-countdown{
+    grid-template-columns:repeat(2, minmax(90px, 1fr));
+  }
+
+  .live-watermark img{
+    width:98px;
+  }
+}
 
   </style>
 </head>
@@ -3138,7 +3425,8 @@ function getOutreachDisplayName(outreachId) {
     `;
   }
 
- function startCountdowns() {
+ 
+  function startCountdowns() {
   if (countdownTimer) clearInterval(countdownTimer);
 
   const paint = () => {
@@ -3168,6 +3456,9 @@ function getOutreachDisplayName(outreachId) {
         <div class="timebox"><div class="num">${cd.secs}</div><div class="lab">Seconds</div></div>
       `;
     });
+
+    updateLivePanelCountdowns();
+    activateScheduledLiveStreams();
   };
 
   paint();
@@ -3489,27 +3780,31 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
 }
 
  async function enrichOutreaches() {
-  const enriched = [];
+  const enriched = await Promise.all(
+    currentOutreaches.map(async (outreach) => {
+      const [photos, schedules, members, reactions, photoReactions] = await Promise.all([
+        loadPhotosForOutreach(outreach.id, outreach.fallbackPhotos || []),
+        loadSchedulesForOutreach(outreach.id, outreach.fallbackSchedules || []),
+        loadMembersForOutreach(outreach.id),
+        loadReactionsForOutreach(outreach.id),
+        loadPhotoReactionsForOutreach(outreach.id)
+      ]);
 
-  for (const outreach of currentOutreaches) {
-    const photos = await loadPhotosForOutreach(outreach.id, outreach.fallbackPhotos || []);
-    const schedules = await loadSchedulesForOutreach(outreach.id, outreach.fallbackSchedules || []);
-    const members = await loadMembersForOutreach(outreach.id);
-    const reactions = await loadReactionsForOutreach(outreach.id);
-    const photoReactions = await loadPhotoReactionsForOutreach(outreach.id);
+      if (!selectedPhotoIds[outreach.id]) {
+        selectedPhotoIds[outreach.id] = new Set();
+      }
 
-    if (!selectedPhotoIds[outreach.id]) selectedPhotoIds[outreach.id] = new Set();
-
-    enriched.push({
-      ...outreach,
-      photos,
-      schedules,
-      members,
-      memberCount: members.length,
-      reactions,
-      photoReactions
-    });
-  }
+      return {
+        ...outreach,
+        photos,
+        schedules,
+        members,
+        memberCount: members.length,
+        reactions,
+        photoReactions
+      };
+    })
+  );
 
   currentOutreaches = enriched;
 }
@@ -3622,13 +3917,6 @@ function buildGalleryHtml(outreach) {
                     😮
                   </button>
 
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "sad" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="sad">
-                    😢
-                  </button>
 
                   <button class="photo-reaction-btn ${reactionSummary.myReaction === "amen" ? "active-reaction" : ""}"
                     type="button"
@@ -3650,7 +3938,6 @@ function buildGalleryHtml(outreach) {
                   ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
                   ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
                   ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
-                  ${reactionSummary.counts.sad ? `<span class="photo-reaction-pill">😢 ${reactionSummary.counts.sad}</span>` : ""}
                   ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
                 </div>
               </div>
@@ -3662,11 +3949,11 @@ function buildGalleryHtml(outreach) {
   `;
 }
 
+
 function getPhotoReactionSummary(reactions, photoId, outreachId = "") {
-  const items = (reactions || []).filter(r => r.photoId === photoId);
+  const items = (reactions || []).filter(r => String(r.photoId || "") === String(photoId));
 
   const uniqueMap = new Map();
-
   items.forEach(item => {
     const key = normalizeMemberName(item.fullName || "");
     if (key) uniqueMap.set(key, item);
@@ -3679,21 +3966,32 @@ function getPhotoReactionSummary(reactions, photoId, outreachId = "") {
     love: uniqueItems.filter(i => i.reaction === "love").length,
     care: uniqueItems.filter(i => i.reaction === "care").length,
     wow: uniqueItems.filter(i => i.reaction === "wow").length,
-    sad: uniqueItems.filter(i => i.reaction === "sad").length,
     amen: uniqueItems.filter(i => i.reaction === "amen").length
   };
 
-  const savedMemberName = outreachId ? getSavedMemberSession(outreachId) : "";
-  let myReaction = "";
+  const activeMember = getActiveMemberSession();
+  const savedMemberName = activeMember?.normalizedName || "";
 
+  let myReaction = "";
   if (savedMemberName) {
     const mine = uniqueItems.find(
-      item => normalizeMemberName(item.fullName || "") === normalizeMemberName(savedMemberName)
+      item => normalizeMemberName(item.fullName || "") === savedMemberName
     );
     myReaction = mine?.reaction || "";
   }
 
   return { counts, myReaction };
+}
+
+function refreshPhotoReactionSurfaces(outreachId, photoId = "") {
+  updatePhotoReactionUI(outreachId, photoId);
+
+  const modal = document.getElementById("photoManagerModal");
+  const modalOpen = modal && modal.classList.contains("active");
+
+  if (modalOpen && currentPhotoManagerOutreachId === outreachId) {
+    renderPhotoManagerGrid(outreachId);
+  }
 }
 
 function getPhotoReactionUsers(reactions, photoId) {
@@ -3727,7 +4025,6 @@ window.showReactionUsers = function(photoId, reactions) {
     love: "❤️ Love",
     care: "🤗 Care",
     wow: "😮 Wow",
-    sad: "😢 Sad",
     amen: "🙏 Amen"
   };
 
@@ -4149,9 +4446,12 @@ window.closeReactionUsersModal = function() {
 }
 
  
-function buildOutreachCard(outreach) {
+
+  function buildOutreachCard(outreach) {
   const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
   const savedMemberName = getSavedMemberSession(outreach.id);
+  const liveStart = outreach.liveStreamStart || getNextScheduleStart(outreach) || "";
+  const hasLive = !!outreach.liveStreamUrl;
 
   return `
     <div class="outreach-shell">
@@ -4183,6 +4483,40 @@ function buildOutreachCard(outreach) {
           <p class="smallmuted">
             ${escapeHtml(outreach.historyText || outreach.description || "Outreach history will appear here.")}
           </p>
+
+          <div class="workers-section">
+            <h4 style="margin:14px 0 8px;">Workers:</h4>
+            <div id="workers-${escapeHtml(outreach.id)}" class="workers-grid"></div>
+
+            ${(outreachAdminState[outreach.id] || isSuperAdmin) ? `
+              <div class="worker-admin">
+                <label for="worker-name-${escapeHtml(outreach.id)}">Worker Name</label>
+                <input
+                  type="text"
+                  id="worker-name-${escapeHtml(outreach.id)}"
+                  placeholder="Enter worker name"
+                >
+
+                <label for="worker-photo-${escapeHtml(outreach.id)}">Worker Photo</label>
+                <input
+                  type="file"
+                  id="worker-photo-${escapeHtml(outreach.id)}"
+                  accept="image/*,.heic,.heif"
+                >
+
+                <div class="worker-admin-actions">
+                  <button
+                    class="btn"
+                    type="button"
+                    onclick="addWorker('${escapeHtml(outreach.id)}')">
+                    Add Worker
+                  </button>
+                </div>
+
+                <p id="worker-feedback-${escapeHtml(outreach.id)}" class="smallmuted"></p>
+              </div>
+            ` : ""}
+          </div>
         </div>
 
         <!-- ANNOUNCEMENTS -->
@@ -4191,33 +4525,91 @@ function buildOutreachCard(outreach) {
           ${buildAnnouncementHtml(outreach)}
         </div>
 
+        <!-- LIVE STREAM -->
         <div class="panel">
-  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-    <h3 style="margin:0;">📺 Live Stream</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <h3 style="margin:0;">📺 Live Stream</h3>
 
-    ${
-      outreach.liveStreamUrl
-        ? `<span class="live-badge">🔴 ${escapeHtml(outreach.liveStreamLabel || "LIVE")}</span>`
-        : ``
-    }
-  </div>
+            ${
+              hasLive
+                ? `<span class="live-badge" id="${escapeHtml(outreach.id)}-live-badge" style="display:none;">🔴 ${escapeHtml(outreach.liveStreamLabel || "LIVE")}</span>`
+                : ``
+            }
+          </div>
 
-  ${
-    outreach.liveStreamUrl
-      ? `
-        <div class="live-stream-wrap">
-          <iframe
-            src="${escapeHtml(outreach.liveStreamUrl)}"
-            title="${escapeHtml(outreach.name)} Live Stream"
-            frameborder="0"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowfullscreen>
-          </iframe>
+          <div
+            id="${escapeHtml(outreach.id)}-live-stream-container"
+            data-outreach-id="${escapeHtml(outreach.id)}"
+            data-live-url="${escapeHtml(outreach.liveStreamUrl || "")}"
+            data-live-start="${escapeHtml(liveStart)}"
+            data-live-activated="false"
+          >
+            ${
+              hasLive
+                ? `
+                  <div class="live-stream-wrap">
+                    <div class="live-particles">
+                      <span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span><span></span><span></span><span></span>
+                      <span></span><span></span>
+                    </div>
+
+                    <div class="live-watermark" id="${escapeHtml(outreach.id)}-watermark">
+                      <img src="${escapeHtml(logoSrc)}" alt="Watermark">
+                    </div>
+
+                    <div class="live-waiting-overlay" id="${escapeHtml(outreach.id)}-waiting-overlay">
+                      <div class="live-starting-text">🔊 LIVE STARTING SOON</div>
+
+                      <div
+                        class="live-panel-countdown"
+                        id="${escapeHtml(outreach.id)}-panel-countdown"
+                        data-live-panel-countdown="${escapeHtml(liveStart)}">
+                        <div class="lp-box">
+                          <div class="lp-num">0</div>
+                          <div class="lp-lab">Days</div>
+                        </div>
+                        <div class="lp-box">
+                          <div class="lp-num">00</div>
+                          <div class="lp-lab">Hours</div>
+                        </div>
+                        <div class="lp-box">
+                          <div class="lp-num">00</div>
+                          <div class="lp-lab">Minutes</div>
+                        </div>
+                        <div class="lp-box">
+                          <div class="lp-num">00</div>
+                          <div class="lp-lab">Seconds</div>
+                        </div>
+                      </div>
+                    </div>
+
+                    <audio
+                      id="${escapeHtml(outreach.id)}-live-audio"
+                      preload="auto"
+                      loop
+                      playsinline>
+                      <source src="worship.mp3" type="audio/mpeg">
+                    </audio>
+
+                    <iframe
+                      id="${escapeHtml(outreach.id)}-live-frame"
+                      src=""
+                      title="${escapeHtml(outreach.name)} Live Stream"
+                      frameborder="0"
+                      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+                      allowfullscreen>
+                    </iframe>
+                  </div>
+
+                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin-top:10px;">
+                    ${liveStart ? "Stream will start automatically when the countdown finishes." : "Live stream is ready."}
+                  </p>
+                `
+                : `<p class="smallmuted">Live stream will appear here when available.</p>`
+            }
+          </div>
         </div>
-      `
-      : `<p class="smallmuted">Live stream will appear here when available.</p>`
-  }
-</div>
 
         <!-- MEMBERS -->
         <div class="panel">
@@ -4230,29 +4622,355 @@ function buildOutreachCard(outreach) {
 
         <!-- MINISTRY SCOPE -->
         <div class="panel">
-          <h3>📌 Ministry Scope</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <h3 style="margin:0;">📌 Ministry Scope</h3>
+
+            ${outreachAdminState[outreach.id] ? `
+              <div class="toolbar-row">
+                <button
+                  class="ghost-btn toggle-ministry-scope-edit-btn"
+                  type="button"
+                  data-outreach="${escapeHtml(outreach.id)}">
+                  Edit
+                </button>
+              </div>
+            ` : ""}
+          </div>
+
           <div id="${escapeHtml(outreach.id)}-ministry-scope-view">
             ${
-              (outreach.prayerFocus || []).length
-                ? `<ul class="list">
-                    ${(outreach.prayerFocus || []).map(item => `<li>${escapeHtml(item)}</li>`).join("")}
-                  </ul>`
-                : ""
+              (outreach.id === "namatec"
+                ? (outreach.volunteers || [])
+                : (outreach.prayerFocus || [])
+              ).length
+                ? `
+                  <ul class="list">
+                    ${(outreach.id === "namatec"
+                      ? (outreach.volunteers || [])
+                      : (outreach.prayerFocus || [])
+                    ).map(item => `<li>${escapeHtml(item)}</li>`).join("")}
+                  </ul>
+                `
+                : ``
             }
           </div>
+
+          ${outreachAdminState[outreach.id] ? `
+            <div id="${escapeHtml(outreach.id)}-ministry-scope-edit-wrap" class="hidden" style="margin-top:12px;">
+              <p class="smallmuted" style="margin-top:0;">Enter one item per line.</p>
+
+              <textarea
+                id="${escapeHtml(outreach.id)}-ministry-scope-inline-editor"
+                style="min-height:160px;"
+                placeholder="Enter one item per line...">${escapeHtml(
+                  (outreach.id === "namatec"
+                    ? (outreach.volunteers || [])
+                    : (outreach.prayerFocus || [])
+                  ).join("\n")
+                )}</textarea>
+
+              <div class="toolbar-row" style="margin-top:12px;">
+                <button
+                  class="btn save-inline-ministry-scope-btn"
+                  type="button"
+                  data-outreach="${escapeHtml(outreach.id)}">
+                  Save
+                </button>
+
+                <button
+                  class="ghost-btn cancel-inline-ministry-scope-btn"
+                  type="button"
+                  data-outreach="${escapeHtml(outreach.id)}">
+                  Cancel
+                </button>
+              </div>
+
+              <p id="${escapeHtml(outreach.id)}-ministry-scope-inline-feedback" class="smallmuted"></p>
+            </div>
+          ` : ""}
         </div>
 
         <!-- GALLERY -->
         <div class="panel" style="grid-column:1/-1;">
-          <h3>Gallery</h3>
+          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+            <h3 style="margin:0;">Gallery</h3>
+
+            <button
+              class="ghost-btn open-photo-manager-btn"
+              type="button"
+              data-outreach="${escapeHtml(outreach.id)}">
+              View All Photos
+            </button>
+          </div>
+
           ${buildGalleryHtml(outreach)}
         </div>
+
+        <!-- VISITOR / MEMBER ACCESS -->
+        <div class="panel" id="${escapeHtml(outreach.id)}-memberAccessPanel">
+          <h3>Visitor / Member Access</h3>
+
+          <div id="${escapeHtml(outreach.id)}-visitor-board">
+            <div id="${escapeHtml(outreach.id)}-visitor-fields" class="hidden">
+              <label for="${escapeHtml(outreach.id)}-member-name">Full Name</label>
+              <input id="${escapeHtml(outreach.id)}-member-name" type="text" placeholder="Full Name" value="${escapeHtml(toDisplayName(savedMemberName))}">
+
+              <label for="${escapeHtml(outreach.id)}-member-photo">Photo</label>
+              <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*,.heic,.heif"*">
+
+              <label for="${escapeHtml(outreach.id)}-member-message">Optional Message / Prayer Request</label>
+              <textarea id="${escapeHtml(outreach.id)}-member-message" placeholder="Optional message or prayer request"></textarea>
+            </div>
+
+            <div class="toolbar-row" style="margin-top:12px;flex-wrap:wrap;gap:10px;">
+              <button class="ghost-btn guest-signin-btn"
+                type="button"
+                data-outreach="${escapeHtml(outreach.id)}">
+                Continue as Guest
+              </button>
+
+              <button class="btn show-join-fields-btn"
+                type="button"
+                data-outreach="${escapeHtml(outreach.id)}">
+                Join as Member
+              </button>
+
+              <button class="ghost-btn member-login-btn"
+                type="button"
+                onclick="openMemberLoginModal()">
+                Member Login
+              </button>
+            </div>
+
+            <div id="${escapeHtml(outreach.id)}-join-actions" class="toolbar-row hidden" style="margin-top:12px;">
+              <button class="btn signup-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Submit Membership</button>
+              <button class="ghost-btn cancel-join-fields-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Cancel</button>
+            </div>
+
+            <div id="${escapeHtml(outreach.id)}-leave-board" class="hidden" style="margin-top:14px;">
+              <div class="divider"></div>
+
+              <p class="smallmuted" style="margin-top:0;">
+                You are logged in as <strong>${escapeHtml(toDisplayName(savedMemberName) || "Member")}</strong>. Click below to remove your membership from this outreach.
+              </p>
+
+              <div class="toolbar-row" style="margin-top:12px;">
+                <button class="danger-btn leave-member-btn" type="button" data-outreach="${escapeHtml(outreach.id)}">Leave Membership</button>
+                <button
+                  class="ghost-btn member-logout-btn"
+                  type="button"
+                  onclick="memberLogout()">
+                  Logout
+                </button>
+              </div>
+            </div>
+
+            <p id="${escapeHtml(outreach.id)}-member-feedback" class="smallmuted"></p>
+          </div>
+        </div>
+
+        ${(isSuperAdmin) ? `
+          <div class="panel" style="grid-column:1/-1;">
+            <div class="admin-card" style="padding:16px;">
+              <h3>⚠️ Super Admin Outreach Controls</h3>
+              <p class="smallmuted">Delete this outreach and all related components.</p>
+              <div class="toolbar-row">
+                <button
+                  class="danger-btn delete-outreach-btn"
+                  type="button"
+                  data-outreach="${escapeHtml(outreach.id)}"
+                  data-name="${escapeHtml(outreach.name || outreach.id)}">
+                  Delete Outreach
+                </button>
+              </div>
+            </div>
+          </div>
+        ` : ""}
 
         ${buildAdminSection(outreach)}
 
       </div>
     </div>
   `;
+}
+
+ function getNextScheduleStart(outreach) {
+  const schedules = (outreach.schedules || [])
+    .filter(item => !computeCountdown(item.when).expired)
+    .sort((a, b) => {
+      const aTime = typeof a.when === "string" && a.when.includes("T") && !a.when.endsWith("Z")
+        ? parseGermanyDateTime(a.when)
+        : new Date(a.when).getTime();
+
+      const bTime = typeof b.when === "string" && b.when.includes("T") && !b.when.endsWith("Z")
+        ? parseGermanyDateTime(b.when)
+        : new Date(b.when).getTime();
+
+      return aTime - bTime;
+    });
+
+  return schedules.length ? schedules[0].when : "";
+}
+
+function updateLivePanelCountdowns() {
+  document.querySelectorAll("[data-live-panel-countdown]").forEach(panel => {
+    const target = panel.getAttribute("data-live-panel-countdown") || "";
+    if (!target) return;
+
+    const cd = computeCountdown(target);
+    const nums = panel.querySelectorAll(".lp-num");
+
+    if (nums.length < 4) return;
+
+    nums[0].textContent = cd.days;
+    nums[1].textContent = cd.hours;
+    nums[2].textContent = cd.mins;
+    nums[3].textContent = cd.secs;
+  });
+}
+
+
+function activateScheduledLiveStreams() {
+  const now = Date.now();
+
+  document.querySelectorAll("[data-live-start]").forEach(container => {
+    const outreachId = container.getAttribute("data-outreach-id") || "";
+    const liveUrlRaw = container.getAttribute("data-live-url") || "";
+    const liveStart = container.getAttribute("data-live-start") || "";
+
+    if (!outreachId || !liveUrlRaw) return;
+
+    const frame = document.getElementById(`${outreachId}-live-frame`);
+    const status = document.getElementById(`${outreachId}-live-status`);
+    const badge = document.getElementById(`${outreachId}-live-badge`);
+    const watermark = document.getElementById(`${outreachId}-watermark`);
+    const waitingOverlay = document.getElementById(`${outreachId}-waiting-overlay`);
+    const audio = document.getElementById(`${outreachId}-live-audio`);
+
+    if (!liveStart) {
+      if (frame && !frame.src) {
+        frame.src = buildAutoplayLiveUrl(liveUrlRaw);
+      }
+
+      if (frame) {
+        frame.style.opacity = "1";
+      }
+
+      if (badge) badge.style.display = "inline-flex";
+
+      if (status) {
+        status.textContent = "The livestream is active.";
+        status.className = "smallmuted success-text";
+      }
+
+      if (watermark) {
+        watermark.style.opacity = "0";
+        watermark.style.transform = "scale(.96)";
+      }
+
+      if (waitingOverlay) {
+        waitingOverlay.style.opacity = "0";
+        waitingOverlay.style.transform = "translateY(8px)";
+        waitingOverlay.style.pointerEvents = "none";
+      }
+
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
+      container.dataset.liveActivated = "true";
+      return;
+    }
+
+    let startTime;
+    if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
+      startTime = parseGermanyDateTime(liveStart);
+    } else {
+      startTime = new Date(liveStart).getTime();
+    }
+
+    if (isNaN(startTime)) return;
+
+    if (now >= startTime) {
+      if (container.dataset.liveActivated !== "true" && frame) {
+        frame.src = buildAutoplayLiveUrl(liveUrlRaw);
+        container.dataset.liveActivated = "true";
+      }
+
+      if (frame) {
+        frame.style.opacity = "1";
+      }
+
+      if (badge) badge.style.display = "inline-flex";
+
+      if (status) {
+        status.textContent = "The livestream is now active.";
+        status.className = "smallmuted success-text";
+      }
+
+      if (watermark) {
+        watermark.style.opacity = "0";
+        watermark.style.transform = "scale(.96)";
+      }
+
+      if (waitingOverlay) {
+        waitingOverlay.style.opacity = "0";
+        waitingOverlay.style.transform = "translateY(8px)";
+        waitingOverlay.style.pointerEvents = "none";
+      }
+
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+    } else {
+      if (badge) badge.style.display = "none";
+
+      if (status) {
+        status.textContent = "Stream will start automatically when the countdown finishes.";
+        status.className = "smallmuted";
+      }
+
+      if (watermark) {
+        watermark.style.opacity = "1";
+        watermark.style.transform = "scale(1)";
+      }
+
+      if (waitingOverlay) {
+        waitingOverlay.style.opacity = "1";
+        waitingOverlay.style.transform = "translateY(0)";
+        waitingOverlay.style.pointerEvents = "auto";
+      }
+
+      if (frame && container.dataset.liveActivated !== "true") {
+        frame.src = "";
+        frame.style.opacity = "0";
+      }
+
+      if (audio && audio.paused) {
+        audio.volume = 0.35;
+        audio.play().catch(() => {});
+      }
+    }
+  });
+}
+
+function buildAutoplayLiveUrl(url) {
+  let finalUrl = String(url || "").trim();
+  if (!finalUrl) return "";
+
+  if (!/[?&]autoplay=/.test(finalUrl)) {
+    finalUrl += (finalUrl.includes("?") ? "&" : "?") + "autoplay=1";
+  }
+  if (!/[?&]mute=/.test(finalUrl)) {
+    finalUrl += "&mute=1";
+  }
+  if (!/[?&]playsinline=/.test(finalUrl)) {
+    finalUrl += "&playsinline=1";
+  }
+
+  return finalUrl;
 }
 
   function renderOutreaches() {
@@ -5042,6 +5760,7 @@ updatePhotoManagerSelectAllState(outreachId);
   }
 };
 
+
 function renderPhotoManagerGrid(outreachId) {
   const outreach = getOutreachById(outreachId);
   const grid = document.getElementById("photoManagerGrid");
@@ -5061,106 +5780,97 @@ function renderPhotoManagerGrid(outreachId) {
 
   grid.innerHTML = `
     <div class="photo-modal-grid">
-      ${photos.map(photo => `
-        <div class="photo-manager-card">
-          <img
-            src="${escapeHtml(photo.url || "srm.png")}"
-            alt="${escapeHtml(photo.caption || "")}"
-            data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
-            loading="lazy"
-            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
-            onclick="openGalleryImage(this)"
-          >
+      ${photos.map(photo => {
+        const reactionSummary = getPhotoReactionSummary(outreach.photoReactions, photo.id, outreachId);
 
-          <div class="photo-manager-body">
-            ${allowDelete ? `
-              <div class="photo-manager-top">
-                <label class="select-chip">
-                  <input
-                    class="photo-manager-check"
-                    type="checkbox"
-                    data-outreach="${escapeHtml(outreachId)}"
-                    data-id="${escapeHtml(photo.id)}"
-                    ${selectedPhotoIds[outreachId]?.has(photo.id) ? "checked" : ""}
-                  >
-                  Select
-                </label>
+        return `
+          <div class="photo-manager-card">
+            <img
+              src="${escapeHtml(photo.url || "srm.png")}"
+              alt="${escapeHtml(photo.caption || "")}"
+              data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+              loading="lazy"
+              onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
+              onclick="openGalleryImage(this)"
+            >
 
-                <button
-                  class="danger-btn"
+            <div class="photo-manager-body">
+              ${allowDelete ? `
+                <div class="photo-manager-top">
+                  <label class="select-chip">
+                    <input
+                      class="photo-manager-check"
+                      type="checkbox"
+                      data-outreach="${escapeHtml(outreachId)}"
+                      data-id="${escapeHtml(photo.id)}"
+                      ${selectedPhotoIds[outreachId]?.has(photo.id) ? "checked" : ""}
+                    >
+                    Select
+                  </label>
+
+                  <button
+                    class="danger-btn"
+                    type="button"
+                    style="padding:8px 10px;font-size:12px;"
+                    onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
+                    Delete
+                  </button>
+                </div>
+              ` : ""}
+
+              <div class="photo-reactions">
+                <button class="photo-reaction-btn ${reactionSummary.myReaction === "like" ? "active-reaction" : ""}"
                   type="button"
-                  style="padding:8px 10px;font-size:12px;"
-                  onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
-                  Delete
-                </button>
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-photo="${escapeHtml(photo.id)}"
+                  data-reaction="like">👍</button>
+
+                <button class="photo-reaction-btn ${reactionSummary.myReaction === "love" ? "active-reaction" : ""}"
+                  type="button"
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-photo="${escapeHtml(photo.id)}"
+                  data-reaction="love">❤️</button>
+
+                <button class="photo-reaction-btn ${reactionSummary.myReaction === "care" ? "active-reaction" : ""}"
+                  type="button"
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-photo="${escapeHtml(photo.id)}"
+                  data-reaction="care">🤗</button>
+
+                <button class="photo-reaction-btn ${reactionSummary.myReaction === "wow" ? "active-reaction" : ""}"
+                  type="button"
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-photo="${escapeHtml(photo.id)}"
+                  data-reaction="wow">😮</button>
+
+                <button class="photo-reaction-btn ${reactionSummary.myReaction === "amen" ? "active-reaction" : ""}"
+                  type="button"
+                  data-outreach="${escapeHtml(outreachId)}"
+                  data-photo="${escapeHtml(photo.id)}"
+                  data-reaction="amen">🙏</button>
               </div>
-            ` : ""}
 
+              <div
+                class="photo-reaction-summary open-photo-reaction-users-btn"
+                data-outreach="${escapeHtml(outreachId)}"
+                data-photo="${escapeHtml(photo.id)}"
+                style="cursor:pointer;${reactionSummary.counts.like || reactionSummary.counts.love || reactionSummary.counts.care || reactionSummary.counts.wow || reactionSummary.counts.amen ? "" : "display:none;"}"
+                title="Click to see who reacted"
+              >
+                ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
+                ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
+                ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
+                ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
+                ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
+              </div>
 
-              ${(() => {
-  const reactionSummary = getPhotoReactionSummary(outreach.photoReactions, photo.id, outreachId);
-  return `
-    <div class="photo-reactions">
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "like" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="like">👍</button>
-
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "love" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="love">❤️</button>
-
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "care" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="care">🤗</button>
-
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "wow" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="wow">😮</button>
-
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "sad" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="sad">😢</button>
-
-      <button class="photo-reaction-btn ${reactionSummary.myReaction === "amen" ? "active-reaction" : ""}"
-        type="button"
-        data-outreach="${escapeHtml(outreachId)}"
-        data-photo="${escapeHtml(photo.id)}"
-        data-reaction="amen">🙏</button>
-    </div>
-
-    <div
-  class="photo-reaction-summary open-photo-reaction-users-btn"
-  data-outreach="${escapeHtml(outreach.id)}"
-  data-photo="${escapeHtml(photo.id)}"
-  style="cursor:pointer;"
-  title="Click to see who reacted"
->
-  ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
-  ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
-  ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
-  ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
-  ${reactionSummary.counts.sad ? `<span class="photo-reaction-pill">😢 ${reactionSummary.counts.sad}</span>` : ""}
-  ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
-</div>
-  `;
-})()}
-
-            ${photo.caption ? `
-              <div class="photo-manager-caption">${escapeHtml(photo.caption)}</div>
-            ` : ""}
+              ${photo.caption ? `
+                <div class="photo-manager-caption">${escapeHtml(photo.caption)}</div>
+              ` : ""}
+            </div>
           </div>
-        </div>
-      `).join("")}
+        `;
+      }).join("")}
 
       ${photoPagingState[outreachId] && !photoPagingState[outreachId].done ? `
         <div class="photo-manager-card photo-manager-loadmore-card">
@@ -5183,46 +5893,30 @@ function renderPhotoManagerGrid(outreachId) {
 
   bindPhotoManagerCheckboxes();
   updatePhotoManagerSelectAllState(outreachId);
+
+  document.querySelectorAll(".photo-reaction-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => {
+      reactToPhoto(btn.dataset.outreach, btn.dataset.photo, btn.dataset.reaction);
+    });
+  });
+
+  document.querySelectorAll(".open-photo-reaction-users-btn").forEach(btn => {
+    if (btn.dataset.boundReactionUsers === "true") return;
+    btn.dataset.boundReactionUsers = "true";
+
+    btn.addEventListener("click", () => {
+      const outreachFound = currentOutreaches.find(
+        o => String(o.id || "").toLowerCase() === String(btn.dataset.outreach || "").toLowerCase()
+      );
+
+      if (!outreachFound) return;
+
+      showReactionUsers(btn.dataset.photo, outreachFound.photoReactions || []);
+    });
+  });
 }
-
-window.loadMorePhotoManagerPhotos = async function(outreachId) {
-  const feedback = document.getElementById("photoManagerFeedback");
-  const outreach = getOutreachById(outreachId);
-
-  if (!outreach) return;
-
-  try {
-    if (feedback) {
-      feedback.textContent = "Loading more photos...";
-      feedback.className = "smallmuted";
-    }
-
-    const morePhotos = await loadMorePhotosForOutreach(outreachId, 12);
-
-    if (morePhotos.length) {
-      outreach.photos = [...(outreach.photos || []), ...morePhotos];
-      renderPhotoManagerGrid(outreachId);
-
-      if (feedback) {
-        feedback.textContent = `Loaded ${morePhotos.length} more photo(s).`;
-        feedback.className = "smallmuted success-text";
-      }
-    } else {
-      renderPhotoManagerGrid(outreachId);
-
-      if (feedback) {
-        feedback.textContent = "No more photos to load.";
-        feedback.className = "smallmuted";
-      }
-    }
-  } catch (error) {
-    console.error("loadMorePhotoManagerPhotos failed:", error);
-    if (feedback) {
-      feedback.textContent = "Failed to load more photos: " + error.message;
-      feedback.className = "smallmuted error-text";
-    }
-  }
-};
 
 
 function bindPhotoManagerCheckboxes() {
@@ -5306,18 +6000,17 @@ const historyText = document.getElementById(`${outreachId}-history-text`)?.value
   }
 
 
+ 
+ 
+ 
   async function reactToPhoto(outreachId, photoId, reaction) {
-  const nameInput = document.getElementById(`${outreachId}-member-name`);
   const feedback = document.getElementById(`${outreachId}-member-feedback`);
+  const activeMember = getActiveMemberSession();
 
-  const savedSessionName = getSavedMemberSession(outreachId);
-  let fullName = (nameInput?.value || "").trim();
+  const fullName = activeMember?.fullName || "";
+  const normalizedName = activeMember?.normalizedName || "";
 
-  if (!fullName && savedSessionName) {
-    fullName = toDisplayName(savedSessionName);
-  }
-
-  if (!fullName) {
+  if (!fullName || !normalizedName) {
     if (feedback) {
       feedback.textContent = "Please log in as a member first to react to a photo.";
       feedback.className = "smallmuted error-text";
@@ -5326,7 +6019,61 @@ const historyText = document.getElementById(`${outreachId}-history-text`)?.value
     return;
   }
 
-  const normalizedName = normalizeMemberName(fullName);
+  const buttons = Array.from(document.querySelectorAll(
+    `.photo-reaction-btn[data-outreach="${window.CSS?.escape ? CSS.escape(String(outreachId)) : outreachId}"][data-photo="${window.CSS?.escape ? CSS.escape(String(photoId)) : photoId}"]`
+  ));
+
+  const outreach = currentOutreaches.find(o => String(o.id) === String(outreachId));
+  if (!outreach) return;
+
+  const previousReactions = Array.isArray(outreach.photoReactions)
+    ? [...outreach.photoReactions]
+    : [];
+
+  const existingLocalIndex = previousReactions.findIndex(item =>
+    String(item.outreach || "").toLowerCase() === String(outreachId).toLowerCase() &&
+    String(item.photoId || "") === String(photoId) &&
+    normalizeMemberName(item.fullName || "") === normalizedName
+  );
+
+  const existingLocal = existingLocalIndex >= 0 ? previousReactions[existingLocalIndex] : null;
+
+  let optimisticReactions = [...previousReactions];
+  let action = "added";
+
+  if (existingLocal) {
+    if (existingLocal.reaction === reaction) {
+      optimisticReactions.splice(existingLocalIndex, 1);
+      action = "removed";
+    } else {
+      optimisticReactions[existingLocalIndex] = {
+        ...existingLocal,
+        reaction,
+        fullName,
+        normalizedName,
+        memberOutreachId: activeMember.outreachId
+      };
+      action = "changed";
+    }
+  } else {
+    optimisticReactions.push({
+      id: `temp-${Date.now()}`,
+      outreach: outreachId,
+      photoId,
+      fullName,
+      normalizedName,
+      reaction,
+      memberOutreachId: activeMember.outreachId
+    });
+    action = "added";
+  }
+
+  outreach.photoReactions = optimisticReactions;
+  refreshPhotoReactionSurfaces(outreachId, photoId);
+
+  buttons.forEach(btn => {
+    btn.disabled = true;
+  });
 
   try {
     if (feedback) {
@@ -5334,41 +6081,32 @@ const historyText = document.getElementById(`${outreachId}-history-text`)?.value
       feedback.className = "smallmuted";
     }
 
-    const snap = await getDocs(collection(db, "photoReactions"));
-    let existingReactionDoc = null;
+    const q = query(
+      collection(db, "photoReactions"),
+      where("photoId", "==", photoId),
+      where("outreach", "==", outreachId),
+      where("normalizedName", "==", normalizedName),
+      limit(1)
+    );
 
-    snap.forEach(docSnap => {
-      const data = docSnap.data();
-      const existingName = normalizeMemberName(data.fullName || "");
-
-      if (
-        !existingReactionDoc &&
-        data.photoId === photoId &&
-        (data.outreach || "").toLowerCase() === outreachId.toLowerCase() &&
-        existingName === normalizedName
-      ) {
-        existingReactionDoc = { id: docSnap.id, ...data };
-      }
-    });
+    const snap = await getDocs(q);
+    const existingReactionDoc = snap.empty
+      ? null
+      : { id: snap.docs[0].id, ...snap.docs[0].data() };
 
     if (existingReactionDoc) {
       if (existingReactionDoc.reaction === reaction) {
         await deleteDoc(doc(db, "photoReactions", existingReactionDoc.id));
-        if (feedback) {
-          feedback.textContent = "Your photo reaction was removed.";
-          feedback.className = "smallmuted success-text";
-        }
+        action = "removed";
       } else {
         await updateDoc(doc(db, "photoReactions", existingReactionDoc.id), {
           fullName,
           normalizedName,
           reaction,
+          memberOutreachId: activeMember.outreachId,
           updatedAt: serverTimestamp()
         });
-        if (feedback) {
-          feedback.textContent = `Your photo reaction was changed to "${reaction}".`;
-          feedback.className = "smallmuted success-text";
-        }
+        action = "changed";
       }
     } else {
       await addDoc(collection(db, "photoReactions"), {
@@ -5377,22 +6115,80 @@ const historyText = document.getElementById(`${outreachId}-history-text`)?.value
         fullName,
         normalizedName,
         reaction,
+        memberOutreachId: activeMember.outreachId,
         createdAt: serverTimestamp()
       });
-      if (feedback) {
-        feedback.textContent = `Your photo reaction "${reaction}" was saved.`;
-        feedback.className = "smallmuted success-text";
-      }
+      action = "added";
     }
 
-    await initPage();
+    const updatedReactions = await loadPhotoReactionsForOutreach(outreachId);
+    outreach.photoReactions = updatedReactions;
+    refreshPhotoReactionSurfaces(outreachId, photoId);
+
+    if (feedback) {
+      if (action === "removed") {
+        feedback.textContent = "Your photo reaction was removed.";
+      } else if (action === "changed") {
+        feedback.textContent = `Your photo reaction was changed to "${reaction}".`;
+      } else {
+        feedback.textContent = `Your photo reaction "${reaction}" was saved.`;
+      }
+      feedback.className = "smallmuted success-text";
+    }
   } catch (error) {
     console.error("Photo reaction failed:", error);
+
+    outreach.photoReactions = previousReactions;
+    refreshPhotoReactionSurfaces(outreachId, photoId);
+
     if (feedback) {
       feedback.textContent = "Photo reaction failed: " + error.message;
       feedback.className = "smallmuted error-text";
     }
+  } finally {
+    buttons.forEach(btn => {
+      btn.disabled = false;
+    });
   }
+}
+
+
+  function updatePhotoReactionUI(outreachId, photoId) {
+  const outreach = currentOutreaches.find(o => String(o.id) === String(outreachId));
+  if (!outreach) return;
+
+  const reactionSummary = getPhotoReactionSummary(
+    outreach.photoReactions || [],
+    photoId,
+    outreachId
+  );
+
+  const safeOutreachId = window.CSS?.escape ? CSS.escape(String(outreachId)) : String(outreachId);
+  const safePhotoId = window.CSS?.escape ? CSS.escape(String(photoId)) : String(photoId);
+
+  document.querySelectorAll(
+    `.photo-reaction-btn[data-outreach="${safeOutreachId}"][data-photo="${safePhotoId}"]`
+  ).forEach(btn => {
+    btn.classList.toggle(
+      "active-reaction",
+      btn.dataset.reaction === reactionSummary.myReaction
+    );
+  });
+
+  const summaryHtml = `
+    ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
+    ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
+    ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
+    ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
+    ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
+  `.trim();
+
+  document.querySelectorAll(
+    `.photo-reaction-summary[data-outreach="${safeOutreachId}"][data-photo="${safePhotoId}"]`
+  ).forEach(summaryEl => {
+    summaryEl.innerHTML = summaryHtml;
+    summaryEl.style.display = summaryHtml ? "flex" : "none";
+  });
 }
 
 async function reactToSchedule(outreachId, scheduleId, reaction) {
@@ -6237,6 +7033,21 @@ function getActiveMemberNewsInfo() {
   return null;
 }
 
+function getActiveMemberSession() {
+  for (const outreach of currentOutreaches) {
+    const savedName = getSavedMemberSession(outreach.id);
+    if (savedName && String(savedName).trim()) {
+      return {
+        outreachId: outreach.id,
+        fullName: toDisplayName(savedName),
+        normalizedName: normalizeMemberName(savedName)
+      };
+    }
+  }
+  return null;
+}
+
+
 function getMemberNewsPostPanelHtml() {
   const memberInfo = getActiveMemberNewsInfo();
 
@@ -6938,28 +7749,51 @@ function bindNewsCards() {
   });
 }
 
- async function initPage() {
+async function initPage() {
+  // 1. load base outreach list first
   await loadOutreaches();
-  await enrichOutreaches();
-  await loadNewsUpdates();
 
+  // 2. set default admin state quickly
   if (currentUser) {
     isSuperAdmin = await isUserSuperAdmin(currentUser);
-    for (const outreach of currentOutreaches) {
-      outreachAdminState[outreach.id] = await isOutreachAdmin(currentUser, outreach.id);
-    }
+
+    const adminChecks = await Promise.all(
+      currentOutreaches.map(outreach => isOutreachAdmin(currentUser, outreach.id))
+    );
+
+    outreachAdminState = {};
+    currentOutreaches.forEach((outreach, index) => {
+      outreachAdminState[outreach.id] = adminChecks[index];
+    });
   } else {
     isSuperAdmin = false;
     outreachAdminState = {};
-    for (const outreach of currentOutreaches) {
+    currentOutreaches.forEach(outreach => {
       outreachAdminState[outreach.id] = false;
-    }
+    });
   }
 
+  // 3. render basic shells immediately
   renderOutreaches();
   renderNewsUpdates();
   updateSuperAdminUI();
-  await loadGeneralAnnouncements();
+  updateMemberAccessVisibility();
+  hideVisitorButtonsForSuperAdmin();
+  bindLightboxSwipe();
+  updateAdminLogoutLinkVisibility();
+  initFloatingShareButton();
+
+  // 4. load heavier data in parallel
+  await Promise.all([
+    enrichOutreaches(),
+    loadNewsUpdates(),
+    loadGeneralAnnouncements()
+  ]);
+
+  // 5. re-render with full loaded data
+  renderOutreaches();
+  renderNewsUpdates();
+  updateSuperAdminUI();
   updateMemberAccessVisibility();
   hideVisitorButtonsForSuperAdmin();
   bindLightboxSwipe();
