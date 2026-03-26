@@ -4454,7 +4454,7 @@ window.closeReactionUsersModal = function() {
   const hasLive = !!outreach.liveStreamUrl;
 
   return `
-    <div class="outreach-shell">
+    <div class="outreach-shell" id="outreach-section-${escapeHtml(outreach.id)}">
       <div class="outreach-header">
         <div class="outreach-logo-wrap">
           <img class="outreach-logo" src="${escapeHtml(logoSrc)}"
@@ -4792,6 +4792,26 @@ window.closeReactionUsersModal = function() {
       </div>
     </div>
   `;
+}
+
+  function scrollToAdminOutreach() {
+  if (!currentUser || isSuperAdmin) return;
+
+  const adminOutreachId = currentOutreaches.find(
+    outreach => outreachAdminState[outreach.id]
+  )?.id;
+
+  if (!adminOutreachId) return;
+
+  const section = document.getElementById(`outreach-section-${adminOutreachId}`);
+  if (!section) return;
+
+  setTimeout(() => {
+    section.scrollIntoView({
+      behavior: "smooth",
+      block: "start"
+    });
+  }, 250);
 }
 
  function getNextScheduleStart(outreach) {
@@ -7749,11 +7769,10 @@ function bindNewsCards() {
   });
 }
 
-async function initPage() {
-  // 1. load base outreach list first
+
+  async function initPage() {
   await loadOutreaches();
 
-  // 2. set default admin state quickly
   if (currentUser) {
     isSuperAdmin = await isUserSuperAdmin(currentUser);
 
@@ -7773,7 +7792,6 @@ async function initPage() {
     });
   }
 
-  // 3. render basic shells immediately
   renderOutreaches();
   renderNewsUpdates();
   updateSuperAdminUI();
@@ -7783,31 +7801,23 @@ async function initPage() {
   updateAdminLogoutLinkVisibility();
   initFloatingShareButton();
 
-  // 4. load heavier data in parallel
   await Promise.all([
     enrichOutreaches(),
     loadNewsUpdates(),
     loadGeneralAnnouncements()
   ]);
 
-  // 5. re-render with full loaded data
   renderOutreaches();
   renderNewsUpdates();
   updateSuperAdminUI();
+  bindAdminLogoutLink();
   updateMemberAccessVisibility();
   hideVisitorButtonsForSuperAdmin();
   bindLightboxSwipe();
   updateAdminLogoutLinkVisibility();
   initFloatingShareButton();
-}
 
-const adminLogoutLink = document.getElementById("adminLogoutLink");
-
-if (adminLogoutLink) {
-  adminLogoutLink.addEventListener("click", async (e) => {
-    e.preventDefault();
-    await handleLogout();
-  });
+  scrollToAdminOutreach();
 }
 
 
@@ -8177,6 +8187,22 @@ function toggleMinistryScopeEdit(outreachId, forceOpen = null) {
       feedback.className = "smallmuted";
     }
   }
+}
+
+
+function bindAdminLogoutLink() {
+  if (document.body.dataset.logoutBound === "true") return;
+  document.body.dataset.logoutBound = "true";
+
+  document.body.addEventListener("click", async (e) => {
+    const btn = e.target.closest("#adminLogoutLink");
+    if (!btn) return;
+
+    e.preventDefault();
+    e.stopPropagation();
+
+    await handleLogout();
+  });
 }
 
 async function saveInlineMinistryScope(outreachId) {
