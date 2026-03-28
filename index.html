@@ -4445,8 +4445,6 @@ window.closeReactionUsersModal = function() {
   `;
 }
 
- 
-
   function buildOutreachCard(outreach) {
   const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
   const savedMemberName = getSavedMemberSession(outreach.id);
@@ -4558,32 +4556,6 @@ window.closeReactionUsersModal = function() {
                       <img src="${escapeHtml(logoSrc)}" alt="Watermark">
                     </div>
 
-                    <div class="live-waiting-overlay" id="${escapeHtml(outreach.id)}-waiting-overlay">
-                      <div class="live-starting-text">🔊 LIVE STARTING SOON</div>
-
-                      <div
-                        class="live-panel-countdown"
-                        id="${escapeHtml(outreach.id)}-panel-countdown"
-                        data-live-panel-countdown="${escapeHtml(liveStart)}">
-                        <div class="lp-box">
-                          <div class="lp-num">0</div>
-                          <div class="lp-lab">Days</div>
-                        </div>
-                        <div class="lp-box">
-                          <div class="lp-num">00</div>
-                          <div class="lp-lab">Hours</div>
-                        </div>
-                        <div class="lp-box">
-                          <div class="lp-num">00</div>
-                          <div class="lp-lab">Minutes</div>
-                        </div>
-                        <div class="lp-box">
-                          <div class="lp-num">00</div>
-                          <div class="lp-lab">Seconds</div>
-                        </div>
-                      </div>
-                    </div>
-
                     <audio
                       id="${escapeHtml(outreach.id)}-live-audio"
                       preload="auto"
@@ -4602,11 +4574,15 @@ window.closeReactionUsersModal = function() {
                     </iframe>
                   </div>
 
-                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin-top:10px;">
-                    ${liveStart ? "Stream will start automatically when the countdown finishes." : "Live stream is ready."}
+                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin:12px 0 0;">
+                    Checking live stream availability...
                   </p>
                 `
-                : `<p class="smallmuted">Live stream will appear here when available.</p>`
+                : `
+                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin:12px 0 0;">
+                    Live stream will appear here when available.
+                  </p>
+                `
             }
           </div>
         </div>
@@ -4716,7 +4692,7 @@ window.closeReactionUsersModal = function() {
               <input id="${escapeHtml(outreach.id)}-member-name" type="text" placeholder="Full Name" value="${escapeHtml(toDisplayName(savedMemberName))}">
 
               <label for="${escapeHtml(outreach.id)}-member-photo">Photo</label>
-              <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*,.heic,.heif"*">
+              <input id="${escapeHtml(outreach.id)}-member-photo" type="file" accept="image/*,.heic,.heif">
 
               <label for="${escapeHtml(outreach.id)}-member-message">Optional Message / Prayer Request</label>
               <textarea id="${escapeHtml(outreach.id)}-member-message" placeholder="Optional message or prayer request"></textarea>
@@ -4793,6 +4769,7 @@ window.closeReactionUsersModal = function() {
     </div>
   `;
 }
+
 
   function scrollToAdminOutreach() {
   if (!currentUser || isSuperAdmin) return;
