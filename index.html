@@ -2335,103 +2335,7 @@ section{
   position:relative;
   width:100%;
   aspect-ratio:16/9;
-  border-radius:18px;
-  overflow:hidden;
-  background:#000;
   margin-top:12px;
-}
-
-.live-stream-wrap iframe{
-  width:100%;
-  height:100%;
-  display:block;
-  border:0;
-}
-
-.live-badge{
-  display:inline-flex;
-  align-items:center;
-  gap:6px;
-  padding:6px 12px;
-  border-radius:999px;
-  font-size:12px;
-  font-weight:700;
-  letter-spacing:.08em;
-  background:rgba(255,0,60,.14);
-  color:#ff6b81;
-  border:1px solid rgba(255,107,129,.32);
-  box-shadow:0 0 18px rgba(255,0,60,.15);
-  text-transform:uppercase;
-}
-
-.live-stream-wrap{
-  position:relative;
-  width:100%;
-  aspect-ratio:16/9;
-  border-radius:18px;
-  overflow:hidden;
-  background:#000;
-}
-
-/* iframe */
-.live-stream-wrap iframe{
-  width:100%;
-  height:100%;
-  border:0;
-  position:relative;
-  z-index:2;
-}
-
-/* WATERMARK OVERLAY */
-.live-watermark{
-  position:absolute;
-  inset:0;
-  display:flex;
-  align-items:center;
-  justify-content:center;
-  z-index:3;
-  pointer-events:none;
-
-  background:radial-gradient(circle at center, rgba(0,150,255,0.08), transparent 70%);
-}
-
-/* LOGO */
-.live-watermark img{
-  width:120px;
-  opacity:0.6;
-
-  /* NEON GLOW */
-  filter:
-    drop-shadow(0 0 6px #00d4ff)
-    drop-shadow(0 0 12px #00d4ff)
-    drop-shadow(0 0 24px #0099ff);
-
-  animation:neonPulse 2.5s infinite ease-in-out;
-}
-
-/* GLOW ANIMATION */
-@keyframes neonPulse{
-  0%,100%{
-    opacity:0.5;
-    transform:scale(1);
-    filter:
-      drop-shadow(0 0 4px #00d4ff)
-      drop-shadow(0 0 10px #00d4ff);
-  }
-  50%{
-    opacity:0.9;
-    transform:scale(1.08);
-    filter:
-      drop-shadow(0 0 10px #00d4ff)
-      drop-shadow(0 0 25px #00d4ff)
-      drop-shadow(0 0 45px #0099ff);
-  }
-}
-
-.live-stream-wrap{
-  position:relative;
-  width:100%;
-  aspect-ratio:16/9;
   border-radius:22px;
   overflow:hidden;
   background:
@@ -2450,13 +2354,15 @@ section{
   inset:0;
   width:100%;
   height:100%;
+  display:block;
   border:0;
   z-index:1;
   opacity:0;
-  transition:opacity .8s ease;
+  visibility:hidden;
+  transition:opacity .8s ease, visibility .8s ease;
 }
 
-/* watermark */
+/* WATERMARK OVERLAY */
 .live-watermark{
   position:absolute;
   inset:0;
@@ -2465,9 +2371,11 @@ section{
   justify-content:center;
   z-index:4;
   pointer-events:none;
-  transition:opacity .8s ease, transform .8s ease;
+  background:radial-gradient(circle at center, rgba(0,150,255,0.08), transparent 70%);
+  transition:opacity .8s ease, transform .8s ease, visibility .8s ease;
 }
 
+/* LOGO */
 .live-watermark img{
   width:min(24vw, 140px);
   max-width:140px;
@@ -2509,11 +2417,10 @@ section{
   gap:20px;
   padding:20px;
   text-align:center;
-  background:
-    linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18));
+  background:linear-gradient(180deg, rgba(0,0,0,.08), rgba(0,0,0,.18));
   backdrop-filter:blur(3px);
   -webkit-backdrop-filter:blur(3px);
-  transition:opacity .8s ease, transform .8s ease;
+  transition:opacity .8s ease, transform .8s ease, visibility .8s ease;
 }
 
 .live-starting-text{
@@ -2600,12 +2507,12 @@ section{
 .live-particles span:nth-child(1){ left:6%;  animation-duration:9s;  animation-delay:0s;   width:7px; height:7px; }
 .live-particles span:nth-child(2){ left:14%; animation-duration:11s; animation-delay:1s;   width:10px; height:10px; }
 .live-particles span:nth-child(3){ left:22%; animation-duration:8s;  animation-delay:2s; }
-.live-particles span:nth-child(4){ left:33%; animation-duration:13s; animation-delay:0.5s; width:6px; height:6px; }
+.live-particles span:nth-child(4){ left:33%; animation-duration:13s; animation-delay:.5s;  width:6px; height:6px; }
 .live-particles span:nth-child(5){ left:41%; animation-duration:10s; animation-delay:1.6s; }
 .live-particles span:nth-child(6){ left:50%; animation-duration:14s; animation-delay:2.5s; width:11px; height:11px; }
 .live-particles span:nth-child(7){ left:58%; animation-duration:9s;  animation-delay:1.2s; }
 .live-particles span:nth-child(8){ left:66%; animation-duration:12s; animation-delay:2.2s; width:6px; height:6px; }
-.live-particles span:nth-child(9){ left:74%; animation-duration:8.5s;animation-delay:.8s; }
+.live-particles span:nth-child(9){ left:74%; animation-duration:8.5s; animation-delay:.8s; }
 .live-particles span:nth-child(10){ left:82%; animation-duration:11.5s; animation-delay:1.9s; width:9px; height:9px; }
 .live-particles span:nth-child(11){ left:90%; animation-duration:10.5s; animation-delay:2.8s; width:7px; height:7px; }
 .live-particles span:nth-child(12){ left:47%; animation-duration:15s; animation-delay:3.2s; width:13px; height:13px; }
@@ -2624,31 +2531,59 @@ section{
   }
 }
 
+/* badge */
 .live-badge{
-  display:inline-flex;
+  display:none;
   align-items:center;
-  gap:6px;
-  padding:8px 16px;
+  gap:8px;
+  padding:10px 18px;
   border-radius:999px;
   font-size:12px;
   font-weight:800;
   letter-spacing:.12em;
   text-transform:uppercase;
-  color:#ff6f8f;
-  background:rgba(255,0,80,.1);
-  border:1px solid rgba(255,100,140,.28);
+  border:1px solid rgba(255,255,255,.14);
+  background:rgba(255,70,110,.12);
+  color:#ff6b8f;
   box-shadow:
     0 0 16px rgba(255,0,80,.16),
-    0 0 30px rgba(255,0,80,.06);
+    0 0 30px rgba(255,0,80,.06),
+    0 0 0 1px rgba(255,255,255,.03) inset;
+  transition:all .28s ease;
 }
 
-@media (max-width: 640px){
+.live-badge.is-live{
+  background:rgba(39,201,120,.14);
+  border-color:rgba(39,201,120,.45);
+  color:#57e389;
+  box-shadow:
+    0 0 18px rgba(39,201,120,.18),
+    0 0 30px rgba(39,201,120,.08),
+    0 0 0 1px rgba(255,255,255,.03) inset;
+}
+
+.live-badge .dot{
+  width:12px;
+  height:12px;
+  border-radius:50%;
+  background:currentColor;
+  box-shadow:0 0 12px currentColor;
+  flex:none;
+}
+
+@media (max-width:640px){
   .live-panel-countdown{
     grid-template-columns:repeat(2, minmax(90px, 1fr));
   }
 
   .live-watermark img{
     width:98px;
+  }
+
+  .live-badge{
+    padding:8px 14px;
+    font-size:11px;
+    letter-spacing:.1em;
   }
 }
 
@@ -4524,68 +4459,75 @@ window.closeReactionUsersModal = function() {
         </div>
 
         <!-- LIVE STREAM -->
-        <div class="panel">
-          <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-            <h3 style="margin:0;">📺 Live Stream</h3>
+<div class="panel">
+  <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+    <h3 style="margin:0;">📺 Live Stream</h3>
 
-            ${
-              hasLive
-                ? `<span class="live-badge" id="${escapeHtml(outreach.id)}-live-badge" style="display:none;">🔴 ${escapeHtml(outreach.liveStreamLabel || "LIVE")}</span>`
-                : ``
-            }
+    ${
+      hasLive
+        ? `<span class="live-badge" id="${escapeHtml(outreach.id)}-live-badge">
+            <span class="dot"></span>
+            <span id="${escapeHtml(outreach.id)}-live-badge-text">WATCH LIVE</span>
+          </span>`
+        : ``
+    }
+  </div>
+
+  <div
+  id="${escapeHtml(outreach.id)}-live-stream-container"
+  data-outreach-id="${escapeHtml(outreach.id)}"
+  data-live-url="${escapeHtml(outreach.liveStreamUrl || "")}"
+  data-live-start="${escapeHtml(liveStart)}"
+  data-live-activated="false"
+>
+  ${
+    hasLive
+      ? `
+        <div class="live-stream-wrap">
+          <div class="live-particles">
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span><span></span><span></span><span></span>
+            <span></span><span></span>
           </div>
 
-          <div
-            id="${escapeHtml(outreach.id)}-live-stream-container"
-            data-outreach-id="${escapeHtml(outreach.id)}"
-            data-live-url="${escapeHtml(outreach.liveStreamUrl || "")}"
-            data-live-start="${escapeHtml(liveStart)}"
-            data-live-activated="false"
-          >
-            ${
-              hasLive
-                ? `
-                  <div class="live-stream-wrap">
-                    <div class="live-particles">
-                      <span></span><span></span><span></span><span></span><span></span>
-                      <span></span><span></span><span></span><span></span><span></span>
-                      <span></span><span></span>
-                    </div>
-
-                    <div class="live-watermark" id="${escapeHtml(outreach.id)}-watermark">
-                      <img src="${escapeHtml(logoSrc)}" alt="Watermark">
-                    </div>
-
-                    <audio
-                      id="${escapeHtml(outreach.id)}-live-audio"
-                      preload="auto"
-                      loop
-                      playsinline>
-                      <source src="worship.mp3" type="audio/mpeg">
-                    </audio>
-
-                    <iframe
-                      id="${escapeHtml(outreach.id)}-live-frame"
-                      src=""
-                      title="${escapeHtml(outreach.name)} Live Stream"
-                      frameborder="0"
-                      allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-                      allowfullscreen>
-                    </iframe>
-                  </div>
-
-                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin:12px 0 0;">
-                    Checking live stream availability...
-                  </p>
-                `
-                : `
-                  <p class="smallmuted" id="${escapeHtml(outreach.id)}-live-status" style="margin:12px 0 0;">
-                    Live stream will appear here when available.
-                  </p>
-                `
-            }
+          <div class="live-watermark" id="${escapeHtml(outreach.id)}-watermark">
+            <img src="${escapeHtml(logoSrc)}" alt="Watermark">
           </div>
+
+          <audio
+            id="${escapeHtml(outreach.id)}-live-audio"
+            preload="auto"
+            loop
+            playsinline>
+            <source src="worship.mp3" type="audio/mpeg">
+          </audio>
+
+          <iframe
+            id="${escapeHtml(outreach.id)}-live-frame"
+            src=""
+            title="${escapeHtml(outreach.name)} Live Stream"
+            frameborder="0"
+            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+            allowfullscreen>
+          </iframe>
         </div>
+
+        <div
+          id="${escapeHtml(outreach.id)}-live-status"
+          class="smallmuted"
+          style="display:none; margin:12px 0 0;">
+        </div>
+      `
+      : `
+        <div
+          id="${escapeHtml(outreach.id)}-live-status"
+          class="smallmuted"
+          style="display:none; margin:12px 0 0;">
+        </div>
+      `
+  }
+</div>
+</div>
 
         <!-- MEMBERS -->
         <div class="panel">
@@ -4835,40 +4777,86 @@ function activateScheduledLiveStreams() {
     const liveUrlRaw = container.getAttribute("data-live-url") || "";
     const liveStart = container.getAttribute("data-live-start") || "";
 
-    if (!outreachId || !liveUrlRaw) return;
+    if (!outreachId) return;
 
     const frame = document.getElementById(`${outreachId}-live-frame`);
     const status = document.getElementById(`${outreachId}-live-status`);
     const badge = document.getElementById(`${outreachId}-live-badge`);
+    const badgeText = document.getElementById(`${outreachId}-live-badge-text`);
     const watermark = document.getElementById(`${outreachId}-watermark`);
     const waitingOverlay = document.getElementById(`${outreachId}-waiting-overlay`);
     const audio = document.getElementById(`${outreachId}-live-audio`);
 
-    if (!liveStart) {
-      if (frame && !frame.src) {
-        frame.src = buildAutoplayLiveUrl(liveUrlRaw);
+    const cleanUrl = buildAutoplayLiveUrl(liveUrlRaw);
+
+    function setBadgeOff() {
+      if (badge) {
+        badge.style.display = "none";
+        badge.classList.remove("is-live");
+      }
+
+      if (badgeText) {
+        badgeText.textContent = "WATCH LIVE";
+      }
+    }
+
+    function setBadgeOn() {
+      if (badge) {
+        badge.style.display = "inline-flex";
+        badge.classList.add("is-live");
+      }
+
+      if (badgeText) {
+        badgeText.textContent = "LIVE NOW";
+      }
+    }
+
+    function showWaitingMessage() {
+      if (status) {
+        status.textContent = "The Live Stream will start when the countdown is finished.";
+        status.className = "smallmuted";
+        status.style.display = "block";
+      }
+    }
+
+    function showLiveMessage(message) {
+      if (status) {
+        status.textContent = message;
+        status.className = "smallmuted success-text";
+        status.style.display = "block";
+      }
+    }
+
+    function setLiveOn(message = "The livestream is now active.") {
+      if (!cleanUrl) {
+        setLiveOff();
+        return;
+      }
+
+      if (frame && frame.getAttribute("src") !== cleanUrl) {
+        frame.setAttribute("src", cleanUrl);
       }
 
       if (frame) {
         frame.style.opacity = "1";
+        frame.style.visibility = "visible";
       }
 
-      if (badge) badge.style.display = "inline-flex";
-
-      if (status) {
-        status.textContent = "The livestream is active.";
-        status.className = "smallmuted success-text";
-      }
+      setBadgeOn();
+      showLiveMessage(message);
 
       if (watermark) {
         watermark.style.opacity = "0";
         watermark.style.transform = "scale(.96)";
+        watermark.style.pointerEvents = "none";
+        watermark.style.visibility = "hidden";
       }
 
       if (waitingOverlay) {
         waitingOverlay.style.opacity = "0";
         waitingOverlay.style.transform = "translateY(8px)";
         waitingOverlay.style.pointerEvents = "none";
+        waitingOverlay.style.visibility = "hidden";
       }
 
       if (audio) {
@@ -4877,6 +4865,49 @@ function activateScheduledLiveStreams() {
       }
 
       container.dataset.liveActivated = "true";
+    }
+
+    function setLiveOff() {
+      setBadgeOff();
+      showWaitingMessage();
+
+      if (watermark) {
+        watermark.style.opacity = "1";
+        watermark.style.transform = "scale(1)";
+        watermark.style.pointerEvents = "auto";
+        watermark.style.visibility = "visible";
+      }
+
+      if (waitingOverlay) {
+        waitingOverlay.style.opacity = "1";
+        waitingOverlay.style.transform = "translateY(0)";
+        waitingOverlay.style.pointerEvents = "auto";
+        waitingOverlay.style.visibility = "visible";
+      }
+
+      if (frame) {
+        frame.setAttribute("src", "");
+        frame.style.opacity = "0";
+        frame.style.visibility = "hidden";
+      }
+
+      if (audio && audio.paused) {
+        audio.volume = 0.35;
+        audio.play().catch(() => {});
+      }
+
+      container.dataset.liveActivated = "false";
+    }
+
+    if (!cleanUrl) {
+      setLiveOff();
+      return;
+    }
+
+    // No schedule but a live URL exists:
+    // keep showing the stream after refresh.
+    if (!liveStart) {
+      setLiveOn("The livestream is active.");
       return;
     }
 
@@ -4887,68 +4918,15 @@ function activateScheduledLiveStreams() {
       startTime = new Date(liveStart).getTime();
     }
 
-    if (isNaN(startTime)) return;
+    if (isNaN(startTime)) {
+      setLiveOff();
+      return;
+    }
 
     if (now >= startTime) {
-      if (container.dataset.liveActivated !== "true" && frame) {
-        frame.src = buildAutoplayLiveUrl(liveUrlRaw);
-        container.dataset.liveActivated = "true";
-      }
-
-      if (frame) {
-        frame.style.opacity = "1";
-      }
-
-      if (badge) badge.style.display = "inline-flex";
-
-      if (status) {
-        status.textContent = "The livestream is now active.";
-        status.className = "smallmuted success-text";
-      }
-
-      if (watermark) {
-        watermark.style.opacity = "0";
-        watermark.style.transform = "scale(.96)";
-      }
-
-      if (waitingOverlay) {
-        waitingOverlay.style.opacity = "0";
-        waitingOverlay.style.transform = "translateY(8px)";
-        waitingOverlay.style.pointerEvents = "none";
-      }
-
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
+      setLiveOn("The livestream is now active.");
     } else {
-      if (badge) badge.style.display = "none";
-
-      if (status) {
-        status.textContent = "Stream will start automatically when the countdown finishes.";
-        status.className = "smallmuted";
-      }
-
-      if (watermark) {
-        watermark.style.opacity = "1";
-        watermark.style.transform = "scale(1)";
-      }
-
-      if (waitingOverlay) {
-        waitingOverlay.style.opacity = "1";
-        waitingOverlay.style.transform = "translateY(0)";
-        waitingOverlay.style.pointerEvents = "auto";
-      }
-
-      if (frame && container.dataset.liveActivated !== "true") {
-        frame.src = "";
-        frame.style.opacity = "0";
-      }
-
-      if (audio && audio.paused) {
-        audio.volume = 0.35;
-        audio.play().catch(() => {});
-      }
+      setLiveOff();
     }
   });
 }
@@ -4956,6 +4934,36 @@ function activateScheduledLiveStreams() {
 function buildAutoplayLiveUrl(url) {
   let finalUrl = String(url || "").trim();
   if (!finalUrl) return "";
+
+  finalUrl = finalUrl.replace(/^['"]+|['"]+$/g, "");
+
+  try {
+    const parsed = new URL(finalUrl);
+    const host = parsed.hostname.replace(/^www\./, "");
+
+    if (host === "youtube.com" && parsed.pathname === "/watch") {
+      const videoId = parsed.searchParams.get("v");
+      if (videoId) {
+        finalUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    } else if (host === "youtu.be") {
+      const videoId = parsed.pathname.replace(/^\/+/, "").split("/")[0];
+      if (videoId) {
+        finalUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    } else if (host === "youtube.com" && parsed.pathname.startsWith("/live/")) {
+      const videoId = parsed.pathname.split("/live/")[1]?.split("/")[0]?.split("?")[0];
+      if (videoId) {
+        finalUrl = `https://www.youtube.com/embed/${videoId}`;
+      }
+    } else if (host === "youtube.com" && parsed.pathname.startsWith("/embed/")) {
+      finalUrl = parsed.origin + parsed.pathname;
+    } else {
+      return "";
+    }
+  } catch (err) {
+    return "";
+  }
 
   if (!/[?&]autoplay=/.test(finalUrl)) {
     finalUrl += (finalUrl.includes("?") ? "&" : "?") + "autoplay=1";
@@ -4965,6 +4973,9 @@ function buildAutoplayLiveUrl(url) {
   }
   if (!/[?&]playsinline=/.test(finalUrl)) {
     finalUrl += "&playsinline=1";
+  }
+  if (!/[?&]rel=/.test(finalUrl)) {
+    finalUrl += "&rel=0";
   }
 
   return finalUrl;
