@@ -4907,9 +4907,9 @@ function activateScheduledLiveStreams() {
     // No schedule but a live URL exists:
     // keep showing the stream after refresh.
     if (!liveStart) {
-      setLiveOn("The livestream is active.");
-      return;
-    }
+  setLiveOff();
+  return;
+   }
 
     let startTime;
     if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
