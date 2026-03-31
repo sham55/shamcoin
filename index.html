@@ -4509,6 +4509,7 @@ function getPhotoReactionUsers(reactions, photoId) {
 
   function buildOutreachCard(outreach) {
   const logoSrc = outreach.logoUrl || outreach.fallbackLogo || "srm.png";
+const livePanelLogo = "srm.png"; // same default live panel image for all outreaches
   const savedMemberName = getSavedMemberSession(outreach.id);
   const liveStart = outreach.liveStreamStart || getNextScheduleStart(outreach) || "";
   const hasLive = !!outreach.liveStreamUrl;
@@ -4601,59 +4602,47 @@ function getPhotoReactionUsers(reactions, photoId) {
   </div>
 
   <div
-  id="${escapeHtml(outreach.id)}-live-stream-container"
-  data-outreach-id="${escapeHtml(outreach.id)}"
-  data-live-url="${escapeHtml(outreach.liveStreamUrl || "")}"
-  data-live-start="${escapeHtml(liveStart)}"
-  data-live-activated="false"
->
-  ${
-    hasLive
-      ? `
-        <div class="live-stream-wrap">
-          <div class="live-particles">
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span><span></span><span></span><span></span>
-            <span></span><span></span>
-          </div>
+    id="${escapeHtml(outreach.id)}-live-stream-container"
+    data-outreach-id="${escapeHtml(outreach.id)}"
+    data-live-url="${escapeHtml(outreach.liveStreamUrl || "")}"
+    data-live-start="${escapeHtml(liveStart)}"
+    data-live-activated="false"
+  >
+    <div class="live-stream-wrap">
+      <div class="live-particles">
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span><span></span><span></span><span></span>
+        <span></span><span></span>
+      </div>
 
-          <div class="live-watermark" id="${escapeHtml(outreach.id)}-watermark">
-            <img src="${escapeHtml(logoSrc)}" alt="Watermark">
-          </div>
+      <div class="live-watermark" id="${escapeHtml(outreach.id)}-watermark">
+        <img src="${escapeHtml(livePanelLogo)}" alt="Watermark">
+      </div>
 
-          <audio
-            id="${escapeHtml(outreach.id)}-live-audio"
-            preload="auto"
-            loop
-            playsinline>
-            <source src="worship.mp3" type="audio/mpeg">
-          </audio>
+      <audio
+        id="${escapeHtml(outreach.id)}-live-audio"
+        preload="auto"
+        loop
+        playsinline>
+        <source src="worship.mp3" type="audio/mpeg">
+      </audio>
 
-          <iframe
-            id="${escapeHtml(outreach.id)}-live-frame"
-            src=""
-            title="${escapeHtml(outreach.name)} Live Stream"
-            frameborder="0"
-            allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
-            allowfullscreen>
-          </iframe>
-        </div>
+      <iframe
+        id="${escapeHtml(outreach.id)}-live-frame"
+        src=""
+        title="${escapeHtml(outreach.name)} Live Stream"
+        frameborder="0"
+        allow="autoplay; encrypted-media; picture-in-picture; fullscreen"
+        allowfullscreen>
+      </iframe>
+    </div>
 
-        <div
-          id="${escapeHtml(outreach.id)}-live-status"
-          class="smallmuted"
-          style="display:none; margin:12px 0 0;">
-        </div>
-      `
-      : `
-        <div
-          id="${escapeHtml(outreach.id)}-live-status"
-          class="smallmuted"
-          style="display:none; margin:12px 0 0;">
-        </div>
-      `
-  }
-</div>
+    <div
+      id="${escapeHtml(outreach.id)}-live-status"
+      class="smallmuted"
+      style="display:none; margin:12px 0 0;">
+    </div>
+  </div>
 </div>
 
         <!-- MEMBERS -->
