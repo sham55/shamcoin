@@ -2501,6 +2501,24 @@ section{
   transition:opacity .8s ease, transform .8s ease, visibility .8s ease;
 }
 
+
+.live-soon-message{
+  display:none;
+  margin-top:10px;
+  padding:10px 16px;
+  border-radius:14px;
+  font-weight:700;
+  letter-spacing:.04em;
+  color:#dff7ff;
+  background:rgba(0,180,255,.12);
+  border:1px solid rgba(0,212,255,.22);
+  box-shadow:
+    0 0 14px rgba(0,212,255,.14),
+    0 0 0 1px rgba(255,255,255,.03) inset;
+  text-align:center;
+}
+
+
 /* LOGO */
 .live-watermark img{
   width:min(24vw, 140px);
@@ -4619,6 +4637,35 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
         <img src="${escapeHtml(livePanelLogo)}" alt="Watermark">
       </div>
 
+      <div class="live-waiting-overlay" id="${escapeHtml(outreach.id)}-waiting-overlay">
+        <div class="live-starting-text">Starting Soon</div>
+
+        <div
+          class="live-panel-countdown"
+          data-live-panel-countdown="${escapeHtml(liveStart)}">
+          <div class="lp-box">
+            <div class="lp-num">0</div>
+            <div class="lp-lab">Days</div>
+          </div>
+          <div class="lp-box">
+            <div class="lp-num">0</div>
+            <div class="lp-lab">Hours</div>
+          </div>
+          <div class="lp-box">
+            <div class="lp-num">0</div>
+            <div class="lp-lab">Minutes</div>
+          </div>
+          <div class="lp-box">
+            <div class="lp-num">0</div>
+            <div class="lp-lab">Seconds</div>
+          </div>
+        </div>
+
+        <div class="live-soon-message" id="${escapeHtml(outreach.id)}-live-soon-message">
+          Live stream begins in 60 minutes.
+        </div>
+      </div>
+
       <audio
         id="${escapeHtml(outreach.id)}-live-audio"
         preload="auto"
@@ -4881,6 +4928,28 @@ function updateLivePanelCountdowns() {
     nums[1].textContent = cd.hours;
     nums[2].textContent = cd.mins;
     nums[3].textContent = cd.secs;
+
+    const overlay = panel.closest(".live-waiting-overlay");
+    const soonMessage = overlay?.querySelector(".live-soon-message");
+
+    if (!soonMessage) return;
+
+    const totalMinutes =
+      (Number(cd.days) * 24 * 60) +
+      (Number(cd.hours) * 60) +
+      Number(cd.mins);
+
+    if (!cd.expired && totalMinutes <= 60) {
+      soonMessage.style.display = "block";
+
+      if (totalMinutes <= 1) {
+        soonMessage.textContent = "Live stream begins in less than 1 minute.";
+      } else {
+        soonMessage.textContent = `Live stream begins in ${totalMinutes} minute${totalMinutes === 1 ? "" : "s"}.`;
+      }
+    } else {
+      soonMessage.style.display = "none";
+    }
   });
 }
 
@@ -4929,7 +4998,7 @@ function activateScheduledLiveStreams() {
 
     function showWaitingMessage() {
       if (status) {
-        status.textContent = "The Live Stream will start when the countdown is finished.";
+        status.textContent = "";
         status.className = "smallmuted";
         status.style.display = "block";
       }
@@ -4969,11 +5038,19 @@ function activateScheduledLiveStreams() {
       }
 
       if (waitingOverlay) {
-        waitingOverlay.style.opacity = "0";
-        waitingOverlay.style.transform = "translateY(8px)";
-        waitingOverlay.style.pointerEvents = "none";
-        waitingOverlay.style.visibility = "hidden";
-      }
+  if (liveStart) {
+    // SHOW overlay only if scheduled
+    waitingOverlay.style.opacity = "1";
+    waitingOverlay.style.transform = "translateY(0)";
+    waitingOverlay.style.pointerEvents = "auto";
+    waitingOverlay.style.visibility = "visible";
+  } else {
+    // HIDE overlay if no announcement / schedule
+    waitingOverlay.style.opacity = "0";
+    waitingOverlay.style.pointerEvents = "none";
+    waitingOverlay.style.visibility = "hidden";
+  }
+}
 
       if (audio) {
         audio.pause();
@@ -4983,37 +5060,80 @@ function activateScheduledLiveStreams() {
       container.dataset.liveActivated = "true";
     }
 
-    function setLiveOff() {
-      setBadgeOff();
-      showWaitingMessage();
+   function setLiveOff() {
+  setBadgeOff();
 
-      if (watermark) {
-        watermark.style.opacity = "1";
-        watermark.style.transform = "scale(1)";
-        watermark.style.pointerEvents = "auto";
-        watermark.style.visibility = "visible";
-      }
+  let showCountdown = false;
 
-      if (waitingOverlay) {
-        waitingOverlay.style.opacity = "1";
-        waitingOverlay.style.transform = "translateY(0)";
-        waitingOverlay.style.pointerEvents = "auto";
-        waitingOverlay.style.visibility = "visible";
-      }
+  if (liveStart) {
+    let startTime;
 
-      if (frame) {
-        frame.setAttribute("src", "");
-        frame.style.opacity = "0";
-        frame.style.visibility = "hidden";
-      }
-
-      if (audio && audio.paused) {
-        audio.volume = 0.35;
-        audio.play().catch(() => {});
-      }
-
-      container.dataset.liveActivated = "false";
+    if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
+      startTime = parseGermanyDateTime(liveStart);
+    } else {
+      startTime = new Date(liveStart).getTime();
     }
+
+    const now = Date.now();
+    const diffMinutes = (startTime - now) / 60000;
+
+    // ✅ show only if within 60 minutes
+    if (diffMinutes <= 60 && diffMinutes > 0) {
+      showCountdown = true;
+    }
+  }
+
+  if (watermark) {
+    watermark.style.opacity = "1";
+    watermark.style.transform = "scale(1)";
+    watermark.style.pointerEvents = "auto";
+    watermark.style.visibility = "visible";
+  }
+
+  if (waitingOverlay) {
+    if (showCountdown) {
+      waitingOverlay.style.opacity = "1";
+      waitingOverlay.style.transform = "translateY(0)";
+      waitingOverlay.style.pointerEvents = "auto";
+      waitingOverlay.style.visibility = "visible";
+    } else {
+      waitingOverlay.style.opacity = "0";
+      waitingOverlay.style.transform = "translateY(8px)";
+      waitingOverlay.style.pointerEvents = "none";
+      waitingOverlay.style.visibility = "hidden";
+    }
+  }
+
+  if (status) {
+    if (showCountdown) {
+      status.textContent = "Live stream begins soon.";
+      status.className = "smallmuted";
+      status.style.display = "block";
+    } else {
+      status.textContent = "Live Stream appears here, when admin posts announcement ";
+      status.className = "smallmuted";
+      status.style.display = "block";
+    }
+  }
+
+  if (frame) {
+    frame.setAttribute("src", "");
+    frame.style.opacity = "0";
+    frame.style.visibility = "hidden";
+  }
+
+  if (audio) {
+    if (showCountdown && audio.paused) {
+      audio.volume = 0.35;
+      audio.play().catch(() => {});
+    } else {
+      audio.pause();
+      audio.currentTime = 0;
+    }
+  }
+
+  container.dataset.liveActivated = "false";
+}
 
     if (!cleanUrl) {
       setLiveOff();
