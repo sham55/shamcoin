@@ -5,7 +5,9 @@
   <meta name="viewport" content="width=device-width,initial-scale=1" />
   <title>Solid Rock Ministries</title>
   <meta name="description" content="Solid Rock Ministries — established in Baguio City, Philippines (1992)." />
-
+  <link rel="icon" type="image/png" sizes="48x48" href="/favicon-48x48.png">
+<link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png">
+<link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png">
   <link rel="icon" type="image/svg+xml" href="/favicon.svg">
   <link rel="shortcut icon" href="/favicon.ico">
   <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png">
@@ -1543,12 +1545,136 @@ section{
   gap:16px;
 }
 
+.reaction-icon-btn:hover .reaction-mini--wow{
+  animation:miniPop .45s ease;
+}
+
+.reaction-icon-btn:hover .reaction-mini--sad{
+  animation:miniDip .45s ease;
+}
+
+.reaction-icon-btn:hover .reaction-mini--amen{
+  animation:miniPulse .6s ease;
+}
+
+@keyframes miniPop{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.18); }
+  100%{ transform:scale(1.12); }
+}
+
+@keyframes miniDip{
+  0%{ transform:scale(1) translateY(0); }
+  50%{ transform:scale(1.1) translateY(2px); }
+  100%{ transform:scale(1.12) translateY(0); }
+}
+
+@keyframes miniPulse{
+  0%{ transform:scale(1); }
+  50%{ transform:scale(1.16); }
+  100%{ transform:scale(1.12); }
+}
+
 .photo-manager-card{
   border:1px solid var(--line);
   border-radius:22px;
   overflow:hidden;
   box-shadow:0 8px 20px rgba(32,24,18,.05);
   height:100%;
+}
+
+/* ===== GLOBAL REACTION UI ===== */
+.reaction-bar{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  align-items:center;
+  margin-top:10px;
+}
+
+.reaction-chip{
+  position:relative;
+  display:inline-flex;
+  align-items:center;
+  justify-content:center;
+  min-width:44px;
+  height:44px;
+  padding:0 12px;
+  border-radius:999px;
+  border:1px solid var(--line);
+  background:rgba(255,255,255,.05);
+  color:var(--text);
+  cursor:pointer;
+  transition:
+    transform .18s ease,
+    background .18s ease,
+    border-color .18s ease,
+    box-shadow .18s ease;
+  user-select:none;
+}
+
+.reaction-chip:hover{
+  transform:translateY(-4px) scale(1.08);
+  background:rgba(255,255,255,.09);
+  border-color:rgba(214,177,94,.35);
+  box-shadow:0 10px 22px rgba(0,0,0,.22);
+}
+
+.reaction-chip.active-reaction{
+  border-color:rgba(214,177,94,.55);
+  background:linear-gradient(135deg, rgba(214,177,94,.22), rgba(242,208,138,.14));
+  color:var(--gold2);
+  box-shadow:0 8px 18px rgba(0,0,0,.18);
+}
+
+.reaction-chip .reaction-emoji{
+  font-size:20px;
+  line-height:1;
+}
+
+.reaction-chip .reaction-label{
+  position:absolute;
+  bottom:calc(100% + 8px);
+  left:50%;
+  transform:translateX(-50%) translateY(6px);
+  opacity:0;
+  pointer-events:none;
+  white-space:nowrap;
+  font-size:12px;
+  color:#fff;
+  background:rgba(0,0,0,.82);
+  border:1px solid rgba(255,255,255,.1);
+  padding:5px 8px;
+  border-radius:10px;
+  transition:opacity .18s ease, transform .18s ease;
+  z-index:3;
+}
+
+.reaction-chip:hover .reaction-label{
+  opacity:1;
+  transform:translateX(-50%) translateY(0);
+}
+
+.reaction-summary-click{
+  cursor:pointer;
+}
+
+.reaction-summary-click:hover{
+  filter:brightness(1.08);
+}
+
+.reaction-user-group{
+  margin-top:14px;
+  padding:12px;
+  border:1px solid var(--line);
+  border-radius:14px;
+  background:rgba(255,255,255,.03);
+}
+
+.reaction-user-group h4{
+  margin:0 0 8px;
+  color:var(--gold2);
+  font-size:14px;
 }
 
 .photo-manager-card img{
@@ -3771,6 +3897,54 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
   }
 
 
+function getReactionMeta(type) {
+  return {
+    like: { emoji: "👍", label: "Like" },
+    love: { emoji: "❤️", label: "Love" },
+    care: { emoji: "🤗", label: "Care" },
+    wow: { emoji: "😮", label: "Wow" },
+    sad: { emoji: "😢", label: "Sad" },
+    amen: { emoji: "🙏", label: "Amen" },
+    going: { emoji: "✅", label: "Going" },
+    interested: { emoji: "⭐", label: "Interested" }
+  }[type] || { emoji: "🙂", label: type };
+}
+
+function buildReactionChip({ type, active, outreachId, targetId, targetType }) {
+  const meta = getReactionMeta(type);
+  const dataAttr = targetType === "photo"
+    ? `data-photo="${escapeHtml(targetId)}"`
+    : `data-schedule="${escapeHtml(targetId)}"`;
+
+  const className = targetType === "photo"
+    ? "photo-reaction-btn"
+    : "schedule-react-btn";
+
+  return `
+    <button
+      class="reaction-chip ${className} ${active ? "active-reaction" : ""}"
+      type="button"
+      data-outreach="${escapeHtml(outreachId)}"
+      ${dataAttr}
+      data-reaction="${escapeHtml(type)}">
+      <span class="reaction-emoji">${meta.emoji}</span>
+      <span class="reaction-label">${meta.label}</span>
+    </button>
+  `;
+}
+
+function buildReactionSummaryPills(counts, extraClass = "", dataAttrs = "") {
+  return `
+    <div class="photo-reaction-summary reaction-summary-click ${extraClass}" ${dataAttrs}>
+      ${counts.like ? `<span class="photo-reaction-pill">👍 ${counts.like}</span>` : ""}
+      ${counts.love ? `<span class="photo-reaction-pill">❤️ ${counts.love}</span>` : ""}
+      ${counts.care ? `<span class="photo-reaction-pill">🤗 ${counts.care}</span>` : ""}
+      ${counts.wow ? `<span class="photo-reaction-pill">😮 ${counts.wow}</span>` : ""}
+      ${counts.sad ? `<span class="photo-reaction-pill">😢 ${counts.sad}</span>` : ""}
+      ${counts.amen ? `<span class="photo-reaction-pill">🙏 ${counts.amen}</span>` : ""}
+    </div>
+  `;
+}
 
 
 function buildGalleryHtml(outreach) {
@@ -3814,67 +3988,58 @@ function buildGalleryHtml(outreach) {
                 ` : ""}
 
                 ${photo.caption ? `
-  <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"}; color:var(--text); line-height:1.5;">
-    ${escapeHtml(photo.caption)}
-  </div>
-` : ""}
+                  <div style="margin-top:${outreachAdminState[outreach.id] || isSuperAdmin ? "10px" : "0"}; color:var(--text); line-height:1.5;">
+                    ${escapeHtml(photo.caption)}
+                  </div>
+                ` : ""}
 
-                <div class="photo-reactions">
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "like" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="like">
-                    👍
-                  </button>
+                <div class="photo-reactions reaction-bar">
+                  ${buildReactionChip({
+                    type: "like",
+                    active: reactionSummary.myReaction === "like",
+                    outreachId: outreach.id,
+                    targetId: photo.id,
+                    targetType: "photo"
+                  })}
 
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "love" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="love">
-                    ❤️
-                  </button>
+                  ${buildReactionChip({
+                    type: "love",
+                    active: reactionSummary.myReaction === "love",
+                    outreachId: outreach.id,
+                    targetId: photo.id,
+                    targetType: "photo"
+                  })}
 
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "care" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="care">
-                    🤗
-                  </button>
+                  ${buildReactionChip({
+                    type: "care",
+                    active: reactionSummary.myReaction === "care",
+                    outreachId: outreach.id,
+                    targetId: photo.id,
+                    targetType: "photo"
+                  })}
 
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "wow" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="wow">
-                    😮
-                  </button>
+                  ${buildReactionChip({
+                    type: "wow",
+                    active: reactionSummary.myReaction === "wow",
+                    outreachId: outreach.id,
+                    targetId: photo.id,
+                    targetType: "photo"
+                  })}
 
-
-                  <button class="photo-reaction-btn ${reactionSummary.myReaction === "amen" ? "active-reaction" : ""}"
-                    type="button"
-                    data-outreach="${escapeHtml(outreach.id)}"
-                    data-photo="${escapeHtml(photo.id)}"
-                    data-reaction="amen">
-                    🙏
-                  </button>
+                  ${buildReactionChip({
+                    type: "amen",
+                    active: reactionSummary.myReaction === "amen",
+                    outreachId: outreach.id,
+                    targetId: photo.id,
+                    targetType: "photo"
+                  })}
                 </div>
 
-                <div
-  class="photo-reaction-summary open-photo-reaction-users-btn"
-  data-outreach="${escapeHtml(outreach.id)}"
-  data-photo="${escapeHtml(photo.id)}"
-  style="cursor:pointer;"
-  title="Click to see who reacted"
->
-                  ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
-                  ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
-                  ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
-                  ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
-                  ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
-                </div>
+                ${buildReactionSummaryPills(
+                  reactionSummary.counts,
+                  "open-photo-reaction-users-btn",
+                  `data-outreach="${escapeHtml(outreach.id)}" data-photo="${escapeHtml(photo.id)}" style="cursor:pointer;" title="Click to see who reacted"`
+                )}
               </div>
             </div>
           `;
@@ -3885,10 +4050,15 @@ function buildGalleryHtml(outreach) {
 }
 
 
+
+
 function getPhotoReactionSummary(reactions, photoId, outreachId = "") {
-  const items = (reactions || []).filter(r => String(r.photoId || "") === String(photoId));
+  const items = (reactions || []).filter(
+    r => String(r.photoId || "") === String(photoId)
+  );
 
   const uniqueMap = new Map();
+
   items.forEach(item => {
     const key = normalizeMemberName(item.fullName || "");
     if (key) uniqueMap.set(key, item);
@@ -3908,6 +4078,7 @@ function getPhotoReactionSummary(reactions, photoId, outreachId = "") {
   const savedMemberName = activeMember?.normalizedName || "";
 
   let myReaction = "";
+
   if (savedMemberName) {
     const mine = uniqueItems.find(
       item => normalizeMemberName(item.fullName || "") === savedMemberName
@@ -3933,6 +4104,7 @@ function getPhotoReactionUsers(reactions, photoId) {
   const items = (reactions || []).filter(r => r.photoId === photoId);
 
   const uniqueMap = new Map();
+
   items.forEach(item => {
     const key = normalizeMemberName(item.fullName || "");
     if (key) uniqueMap.set(key, item);
@@ -3941,66 +4113,19 @@ function getPhotoReactionUsers(reactions, photoId) {
   const uniqueItems = Array.from(uniqueMap.values());
 
   return {
-    like: uniqueItems.filter(i => i.reaction === "like").map(i => i.fullName),
-    love: uniqueItems.filter(i => i.reaction === "love").map(i => i.fullName),
-    care: uniqueItems.filter(i => i.reaction === "care").map(i => i.fullName),
-    wow: uniqueItems.filter(i => i.reaction === "wow").map(i => i.fullName),
-    sad: uniqueItems.filter(i => i.reaction === "sad").map(i => i.fullName),
-    amen: uniqueItems.filter(i => i.reaction === "amen").map(i => i.fullName)
+    like: uniqueItems.filter(i => i.reaction === "like").map(i => i.fullName || "Guest"),
+    love: uniqueItems.filter(i => i.reaction === "love").map(i => i.fullName || "Guest"),
+    care: uniqueItems.filter(i => i.reaction === "care").map(i => i.fullName || "Guest"),
+    wow: uniqueItems.filter(i => i.reaction === "wow").map(i => i.fullName || "Guest"),
+    sad: uniqueItems.filter(i => i.reaction === "sad").map(i => i.fullName || "Guest"),
+    amen: uniqueItems.filter(i => i.reaction === "amen").map(i => i.fullName || "Guest")
   };
 }
 
-window.showReactionUsers = function(photoId, reactions) {
-  const grouped = getPhotoReactionUsers(reactions, photoId);
-
-  let html = `<h3 style="margin-top:0;">Photo Reactions</h3>`;
-
-  const labels = {
-    like: "👍 Like",
-    love: "❤️ Love",
-    care: "🤗 Care",
-    wow: "😮 Wow",
-    amen: "🙏 Amen"
-  };
-
-  Object.keys(grouped).forEach(type => {
-    if (!grouped[type].length) return;
-
-    html += `<div style="margin-top:12px;">`;
-    html += `<strong style="color:var(--gold2);">${labels[type]}</strong>`;
-    html += `<ul class="list">`;
-    grouped[type].forEach(name => {
-      html += `<li>${escapeHtml(name || "Guest")}</li>`;
-    });
-    html += `</ul>`;
-    html += `</div>`;
-  });
-
-  if (
-    !grouped.like.length &&
-    !grouped.love.length &&
-    !grouped.care.length &&
-    !grouped.wow.length &&
-    !grouped.sad.length &&
-    !grouped.amen.length
-  ) {
-    html += `<p class="smallmuted">No reactions yet.</p>`;
-  }
-
-  const content = document.getElementById("reactionUsersContent");
-  const modal = document.getElementById("reactionUsersModal");
-
-  if (content) content.innerHTML = html;
-  if (modal) modal.classList.add("active");
-};
-
-window.closeReactionUsersModal = function() {
-  const modal = document.getElementById("reactionUsersModal");
-  if (modal) modal.classList.remove("active");
-};
-
  function getReactionSummary(reactions, scheduleId, outreachId = "") {
-  const items = (reactions || []).filter(r => r.scheduleId === scheduleId);
+  const items = (reactions || []).filter(
+    r => String(r.scheduleId || "") === String(scheduleId)
+  );
 
   const uniqueMap = new Map();
 
@@ -4011,12 +4136,14 @@ window.closeReactionUsersModal = function() {
 
   const uniqueItems = Array.from(uniqueMap.values());
 
-  const savedMemberName = outreachId ? getSavedMemberSession(outreachId) : "";
+  const activeMember = getActiveMemberSession();
+  const savedMemberName = activeMember?.normalizedName || "";
+
   let myReaction = "";
 
   if (savedMemberName) {
     const mine = uniqueItems.find(
-      item => normalizeMemberName(item.fullName || "") === normalizeMemberName(savedMemberName)
+      item => normalizeMemberName(item.fullName || "") === savedMemberName
     );
     myReaction = mine?.reaction || "";
   }
@@ -4909,7 +5036,7 @@ function activateScheduledLiveStreams() {
     if (!liveStart) {
   setLiveOff();
   return;
-   }
+}
 
     let startTime;
     if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
@@ -5790,6 +5917,12 @@ function renderPhotoManagerGrid(outreachId) {
     <div class="photo-modal-grid">
       ${photos.map(photo => {
         const reactionSummary = getPhotoReactionSummary(outreach.photoReactions, photo.id, outreachId);
+        const hasSummary =
+          reactionSummary.counts.like ||
+          reactionSummary.counts.love ||
+          reactionSummary.counts.care ||
+          reactionSummary.counts.wow ||
+          reactionSummary.counts.amen;
 
         return `
           <div class="photo-manager-card">
@@ -5826,51 +5959,53 @@ function renderPhotoManagerGrid(outreachId) {
                 </div>
               ` : ""}
 
-              <div class="photo-reactions">
-                <button class="photo-reaction-btn ${reactionSummary.myReaction === "like" ? "active-reaction" : ""}"
-                  type="button"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-photo="${escapeHtml(photo.id)}"
-                  data-reaction="like">👍</button>
+              <div class="photo-reactions reaction-bar">
+                ${buildReactionChip({
+                  type: "like",
+                  active: reactionSummary.myReaction === "like",
+                  outreachId,
+                  targetId: photo.id,
+                  targetType: "photo"
+                })}
 
-                <button class="photo-reaction-btn ${reactionSummary.myReaction === "love" ? "active-reaction" : ""}"
-                  type="button"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-photo="${escapeHtml(photo.id)}"
-                  data-reaction="love">❤️</button>
+                ${buildReactionChip({
+                  type: "love",
+                  active: reactionSummary.myReaction === "love",
+                  outreachId,
+                  targetId: photo.id,
+                  targetType: "photo"
+                })}
 
-                <button class="photo-reaction-btn ${reactionSummary.myReaction === "care" ? "active-reaction" : ""}"
-                  type="button"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-photo="${escapeHtml(photo.id)}"
-                  data-reaction="care">🤗</button>
+                ${buildReactionChip({
+                  type: "care",
+                  active: reactionSummary.myReaction === "care",
+                  outreachId,
+                  targetId: photo.id,
+                  targetType: "photo"
+                })}
 
-                <button class="photo-reaction-btn ${reactionSummary.myReaction === "wow" ? "active-reaction" : ""}"
-                  type="button"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-photo="${escapeHtml(photo.id)}"
-                  data-reaction="wow">😮</button>
+                ${buildReactionChip({
+                  type: "wow",
+                  active: reactionSummary.myReaction === "wow",
+                  outreachId,
+                  targetId: photo.id,
+                  targetType: "photo"
+                })}
 
-                <button class="photo-reaction-btn ${reactionSummary.myReaction === "amen" ? "active-reaction" : ""}"
-                  type="button"
-                  data-outreach="${escapeHtml(outreachId)}"
-                  data-photo="${escapeHtml(photo.id)}"
-                  data-reaction="amen">🙏</button>
+                ${buildReactionChip({
+                  type: "amen",
+                  active: reactionSummary.myReaction === "amen",
+                  outreachId,
+                  targetId: photo.id,
+                  targetType: "photo"
+                })}
               </div>
 
-              <div
-                class="photo-reaction-summary open-photo-reaction-users-btn"
-                data-outreach="${escapeHtml(outreachId)}"
-                data-photo="${escapeHtml(photo.id)}"
-                style="cursor:pointer;${reactionSummary.counts.like || reactionSummary.counts.love || reactionSummary.counts.care || reactionSummary.counts.wow || reactionSummary.counts.amen ? "" : "display:none;"}"
-                title="Click to see who reacted"
-              >
-                ${reactionSummary.counts.like ? `<span class="photo-reaction-pill">👍 ${reactionSummary.counts.like}</span>` : ""}
-                ${reactionSummary.counts.love ? `<span class="photo-reaction-pill">❤️ ${reactionSummary.counts.love}</span>` : ""}
-                ${reactionSummary.counts.care ? `<span class="photo-reaction-pill">🤗 ${reactionSummary.counts.care}</span>` : ""}
-                ${reactionSummary.counts.wow ? `<span class="photo-reaction-pill">😮 ${reactionSummary.counts.wow}</span>` : ""}
-                ${reactionSummary.counts.amen ? `<span class="photo-reaction-pill">🙏 ${reactionSummary.counts.amen}</span>` : ""}
-              </div>
+              ${hasSummary ? buildReactionSummaryPills(
+                reactionSummary.counts,
+                "open-photo-reaction-users-btn",
+                `data-outreach="${escapeHtml(outreachId)}" data-photo="${escapeHtml(photo.id)}" style="cursor:pointer;" title="Click to see who reacted"`
+              ) : ""}
 
               ${photo.caption ? `
                 <div class="photo-manager-caption">${escapeHtml(photo.caption)}</div>
