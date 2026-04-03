@@ -5013,52 +5013,42 @@ function activateScheduledLiveStreams() {
     }
 
     function setLiveOn(message = "The livestream is now active.") {
-      if (!cleanUrl) {
-        setLiveOff();
-        return;
-      }
+  if (!cleanUrl) {
+    setLiveOff();
+    return;
+  }
 
-      if (frame && frame.getAttribute("src") !== cleanUrl) {
-        frame.setAttribute("src", cleanUrl);
-      }
+  if (frame && frame.getAttribute("src") !== cleanUrl) {
+    frame.setAttribute("src", cleanUrl);
+  }
 
-      if (frame) {
-        frame.style.opacity = "1";
-        frame.style.visibility = "visible";
-      }
+  if (frame) {
+    frame.style.opacity = "1";
+    frame.style.visibility = "visible";
+    frame.style.zIndex = "3";
+  }
 
-      setBadgeOn();
-      showLiveMessage(message);
+  setBadgeOn();
+  showLiveMessage(message);
 
-      if (watermark) {
-        watermark.style.opacity = "0";
-        watermark.style.transform = "scale(.96)";
-        watermark.style.pointerEvents = "none";
-        watermark.style.visibility = "hidden";
-      }
+  if (watermark) {
+    watermark.style.opacity = "0";
+    watermark.style.transform = "scale(.96)";
+    watermark.style.pointerEvents = "none";
+    watermark.style.visibility = "hidden";
+    watermark.style.display = "none";
+  }
 
-      if (waitingOverlay) {
-  if (liveStart) {
-    // SHOW overlay only if scheduled
-    waitingOverlay.style.opacity = "1";
-    waitingOverlay.style.transform = "translateY(0)";
-    waitingOverlay.style.pointerEvents = "auto";
-    waitingOverlay.style.visibility = "visible";
-  } else {
-    // HIDE overlay if no announcement / schedule
+  if (waitingOverlay) {
     waitingOverlay.style.opacity = "0";
+    waitingOverlay.style.transform = "translateY(8px)";
     waitingOverlay.style.pointerEvents = "none";
     waitingOverlay.style.visibility = "hidden";
+    waitingOverlay.style.display = "none";
   }
+
+  container.dataset.liveActivated = "true";
 }
-
-      if (audio) {
-        audio.pause();
-        audio.currentTime = 0;
-      }
-
-      container.dataset.liveActivated = "true";
-    }
 
    function setLiveOff() {
   setBadgeOff();
