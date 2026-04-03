@@ -4605,7 +4605,7 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
         </div>
 
         <!-- LIVE STREAM -->
-<div class="panel">
+        <div class="panel public-live-panel">
   <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
     <h3 style="margin:0;">📺 Live Stream</h3>
 
@@ -4876,6 +4876,7 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
 }
 
 
+
   function scrollToAdminOutreach() {
   if (!currentUser || isSuperAdmin) return;
 
@@ -4979,7 +4980,6 @@ function activateScheduledLiveStreams() {
         badge.style.display = "none";
         badge.classList.remove("is-live");
       }
-
       if (badgeText) {
         badgeText.textContent = "WATCH LIVE";
       }
@@ -4990,17 +4990,8 @@ function activateScheduledLiveStreams() {
         badge.style.display = "inline-flex";
         badge.classList.add("is-live");
       }
-
       if (badgeText) {
         badgeText.textContent = "LIVE NOW";
-      }
-    }
-
-    function showWaitingMessage() {
-      if (status) {
-        status.textContent = "";
-        status.className = "smallmuted";
-        status.style.display = "block";
       }
     }
 
@@ -5012,130 +5003,148 @@ function activateScheduledLiveStreams() {
       }
     }
 
-   function setLiveOn(message = "The livestream is now active.") {
-  if (!cleanUrl) {
-    setLiveOff();
-    return;
-  }
-
-  if (frame && frame.getAttribute("src") !== cleanUrl) {
-    frame.setAttribute("src", cleanUrl);
-  }
-
-  if (frame) {
-    frame.style.opacity = "1";
-    frame.style.visibility = "visible";
-    frame.style.zIndex = "3";
-  }
-
-  setBadgeOn();
-  showLiveMessage(message);
-
-  if (watermark) {
-    watermark.style.opacity = "0";
-    watermark.style.transform = "scale(.96)";
-    watermark.style.pointerEvents = "none";
-    watermark.style.visibility = "hidden";
-    watermark.style.display = "none";
-  }
-
-  if (waitingOverlay) {
-    waitingOverlay.style.opacity = "0";
-    waitingOverlay.style.transform = "translateY(8px)";
-    waitingOverlay.style.pointerEvents = "none";
-    waitingOverlay.style.visibility = "hidden";
-    waitingOverlay.style.display = "none";
-  }
-
-  container.dataset.liveActivated = "true";
-}
-
-   function setLiveOff() {
-  setBadgeOff();
-
-  let showCountdown = false;
-
-  if (liveStart) {
-    let startTime;
-
-    if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
-      startTime = parseGermanyDateTime(liveStart);
-    } else {
-      startTime = new Date(liveStart).getTime();
+    function showNoScheduleMessage() {
+      if (status) {
+        status.textContent = "No Live Stream Scheduled.";
+        status.className = "smallmuted";
+        status.style.display = "block";
+      }
     }
 
-    const now = Date.now();
-    const diffMinutes = (startTime - now) / 60000;
-
-    // ✅ show only if within 60 minutes
-    if (diffMinutes <= 60 && diffMinutes > 0) {
-      showCountdown = true;
+    function showCountdownMessage() {
+      if (status) {
+        status.textContent = "The Live Stream will start when the countdown is finished.";
+        status.className = "smallmuted";
+        status.style.display = "block";
+      }
     }
-  }
 
-  if (watermark) {
-    watermark.style.opacity = "1";
-    watermark.style.transform = "scale(1)";
-    watermark.style.pointerEvents = "auto";
-    watermark.style.visibility = "visible";
-  }
+    function setLiveOn(message = "The livestream is now active.") {
+      if (!cleanUrl) {
+        setLiveOff();
+        return;
+      }
 
-  if (waitingOverlay) {
-    if (showCountdown) {
-      waitingOverlay.style.opacity = "1";
-      waitingOverlay.style.transform = "translateY(0)";
-      waitingOverlay.style.pointerEvents = "auto";
-      waitingOverlay.style.visibility = "visible";
-    } else {
-      waitingOverlay.style.opacity = "0";
-      waitingOverlay.style.transform = "translateY(8px)";
-      waitingOverlay.style.pointerEvents = "none";
-      waitingOverlay.style.visibility = "hidden";
+      if (frame && frame.getAttribute("src") !== cleanUrl) {
+        frame.setAttribute("src", cleanUrl);
+      }
+
+      if (frame) {
+        frame.style.opacity = "1";
+        frame.style.visibility = "visible";
+        frame.style.zIndex = "3";
+      }
+
+      setBadgeOn();
+      showLiveMessage(message);
+
+      if (watermark) {
+        watermark.style.opacity = "0";
+        watermark.style.transform = "scale(.96)";
+        watermark.style.pointerEvents = "none";
+        watermark.style.visibility = "hidden";
+        watermark.style.display = "none";
+      }
+
+      if (waitingOverlay) {
+        waitingOverlay.style.opacity = "0";
+        waitingOverlay.style.transform = "translateY(8px)";
+        waitingOverlay.style.pointerEvents = "none";
+        waitingOverlay.style.visibility = "hidden";
+        waitingOverlay.style.display = "none";
+      }
+
+      if (audio) {
+        audio.pause();
+        audio.currentTime = 0;
+      }
+
+      container.dataset.liveActivated = "true";
     }
-  }
 
-  if (status) {
-    if (showCountdown) {
-      status.textContent = "Live stream begins soon.";
-      status.className = "smallmuted";
-      status.style.display = "block";
-    } else {
-      status.textContent = "Live Stream appears here, when admin posts announcement ";
-      status.className = "smallmuted";
-      status.style.display = "block";
+    function setLiveOff() {
+      setBadgeOff();
+
+      let showCountdown = false;
+
+      if (liveStart) {
+        let startTime;
+
+        if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
+          startTime = parseGermanyDateTime(liveStart);
+        } else {
+          startTime = new Date(liveStart).getTime();
+        }
+
+        const diffMinutes = (startTime - Date.now()) / 60000;
+
+        if (diffMinutes <= 60 && diffMinutes > 0) {
+          showCountdown = true;
+        }
+      }
+
+      if (watermark) {
+        watermark.style.opacity = "1";
+        watermark.style.transform = "scale(1)";
+        watermark.style.pointerEvents = "auto";
+        watermark.style.visibility = "visible";
+        watermark.style.display = "flex";
+      }
+
+      if (waitingOverlay) {
+        if (showCountdown) {
+          waitingOverlay.style.opacity = "1";
+          waitingOverlay.style.transform = "translateY(0)";
+          waitingOverlay.style.pointerEvents = "auto";
+          waitingOverlay.style.visibility = "visible";
+          waitingOverlay.style.display = "flex";
+        } else {
+          waitingOverlay.style.opacity = "0";
+          waitingOverlay.style.transform = "translateY(8px)";
+          waitingOverlay.style.pointerEvents = "none";
+          waitingOverlay.style.visibility = "hidden";
+          waitingOverlay.style.display = "none";
+        }
+      }
+
+      if (status) {
+        if (showCountdown) {
+          showCountdownMessage();
+        } else {
+          showNoScheduleMessage();
+        }
+      }
+
+      if (frame) {
+        frame.setAttribute("src", "");
+        frame.style.opacity = "0";
+        frame.style.visibility = "hidden";
+      }
+
+      if (audio) {
+        if (showCountdown && audio.paused) {
+          audio.volume = 0.35;
+          audio.play().catch(() => {});
+        } else {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+      }
+
+      container.dataset.liveActivated = "false";
     }
-  }
-
-  if (frame) {
-    frame.setAttribute("src", "");
-    frame.style.opacity = "0";
-    frame.style.visibility = "hidden";
-  }
-
-  if (audio) {
-    if (showCountdown && audio.paused) {
-      audio.volume = 0.35;
-      audio.play().catch(() => {});
-    } else {
-      audio.pause();
-      audio.currentTime = 0;
-    }
-  }
-
-  container.dataset.liveActivated = "false";
-}
 
     if (!cleanUrl) {
       setLiveOff();
       return;
     }
 
-    // No schedule but a live URL exists:
-    // keep showing the stream after refresh.
+    // Public behavior:
+    // if a live URL exists and no schedule is set, show the livestream to everyone
     if (!liveStart) {
-  setLiveOff();
-  return;
-}
+      setLiveOn("The livestream is active.");
+      return;
+    }
 
     let startTime;
     if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
@@ -5207,60 +5216,80 @@ function buildAutoplayLiveUrl(url) {
   return finalUrl;
 }
 
-  function renderOutreaches() {
-    if (!currentOutreaches.length) {
-      els.dynamicOutreachSections.innerHTML = `
-        <div class="card">
-          <h3>No outreach found</h3>
-          <p class="smallmuted">No outreach data is available yet.</p>
-        </div>
-      `;
-      return;
-    }
+function renderOutreaches() {
+  if (!currentOutreaches.length) {
+    els.dynamicOutreachSections.innerHTML = `
+      <div class="card">
+        <h3>No outreach found</h3>
+        <p class="smallmuted">No outreach data is available yet.</p>
+      </div>
+    `;
+    return;
+  }
 
-    els.dynamicOutreachSections.innerHTML = currentOutreaches.map(buildOutreachCard).join("");
-    bindDynamicButtons();
+  els.dynamicOutreachSections.innerHTML = currentOutreaches.map(buildOutreachCard).join("");
+  bindDynamicButtons();
 
-    document.querySelectorAll(".show-join-fields-btn").forEach(btn => {
-      if (btn.dataset.bound === "true") return;
-      btn.dataset.bound = "true";
-      btn.addEventListener("click", () => {
-        const outreachId = btn.dataset.outreach;
-        const fields = document.getElementById(`${outreachId}-visitor-fields`);
-        const actions = document.getElementById(`${outreachId}-join-actions`);
-        if (fields) fields.classList.remove("hidden");
-        if (actions) actions.classList.remove("hidden");
-        btn.classList.add("hidden");
-      });
+  ensurePublicLivePanelsVisible();
+  activateScheduledLiveStreams();
+  updateLivePanelCountdowns();
+
+  document.querySelectorAll(".show-join-fields-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => {
+      const outreachId = btn.dataset.outreach;
+      const fields = document.getElementById(`${outreachId}-visitor-fields`);
+      const actions = document.getElementById(`${outreachId}-join-actions`);
+      if (fields) fields.classList.remove("hidden");
+      if (actions) actions.classList.remove("hidden");
+      btn.classList.add("hidden");
     });
-
-    document.querySelectorAll(".cancel-join-fields-btn").forEach(btn => {
-      if (btn.dataset.bound === "true") return;
-      btn.dataset.bound = "true";
-      btn.addEventListener("click", () => {
-        const outreachId = btn.dataset.outreach;
-        const fields = document.getElementById(`${outreachId}-visitor-fields`);
-        const actions = document.getElementById(`${outreachId}-join-actions`);
-        const showBtn = document.querySelector(`.show-join-fields-btn[data-outreach="${outreachId}"]`);
-
-        if (fields) fields.classList.add("hidden");
-        if (actions) actions.classList.add("hidden");
-        if (showBtn) showBtn.classList.remove("hidden");
-      });
-    });
-
-    setTimeout(() => {
-
-  currentOutreaches.forEach(o => {
-    loadWorkers(o.id);
   });
 
-}, 200);
+  document.querySelectorAll(".cancel-join-fields-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+    btn.addEventListener("click", () => {
+      const outreachId = btn.dataset.outreach;
+      const fields = document.getElementById(`${outreachId}-visitor-fields`);
+      const actions = document.getElementById(`${outreachId}-join-actions`);
+      const showBtn = document.querySelector(`.show-join-fields-btn[data-outreach="${outreachId}"]`);
 
-    attachGalleryDrag();
-    startCountdowns();
-    updateMemberAccessVisibility();
-  }
+      if (fields) fields.classList.add("hidden");
+      if (actions) actions.classList.add("hidden");
+      if (showBtn) showBtn.classList.remove("hidden");
+    });
+  });
+
+  setTimeout(() => {
+    currentOutreaches.forEach(o => {
+      loadWorkers(o.id);
+    });
+  }, 200);
+
+  attachGalleryDrag();
+  startCountdowns();
+  updateMemberAccessVisibility();
+
+  ensurePublicLivePanelsVisible();
+  activateScheduledLiveStreams();
+  updateLivePanelCountdowns();
+}
+
+function ensurePublicLivePanelsVisible() {
+  document.querySelectorAll(".public-live-panel").forEach(panel => {
+    panel.classList.remove("hidden");
+    panel.style.display = "";
+    panel.removeAttribute("hidden");
+  });
+
+  document.querySelectorAll("[id$='-live-stream-container']").forEach(container => {
+    container.classList.remove("hidden");
+    container.style.display = "";
+    container.removeAttribute("hidden");
+  });
+}
 
  async function createNewOutreach() {
   const feedback = document.getElementById("createOutreachFeedback");
