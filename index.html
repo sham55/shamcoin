@@ -4958,12 +4958,23 @@ function updateLivePanelCountdowns() {
 function activateScheduledLiveStreams() {
   const now = Date.now();
 
-  document.querySelectorAll("[data-live-start]").forEach(container => {
+  document.querySelectorAll("[data-outreach-id]").forEach(container => {
     const outreachId = container.getAttribute("data-outreach-id") || "";
     const liveUrlRaw = container.getAttribute("data-live-url") || "";
-    const liveStart = container.getAttribute("data-live-start") || "";
+    let liveStart = container.getAttribute("data-live-start") || "";
 
     if (!outreachId) return;
+
+    const outreach = typeof getOutreachById === "function"
+      ? getOutreachById(outreachId)
+      : null;
+
+    if (!liveStart && outreach) {
+      liveStart =
+        outreach.liveStreamStart ||
+        (typeof getNextScheduleStart === "function" ? getNextScheduleStart(outreach) : "") ||
+        "";
+    }
 
     const frame = document.getElementById(`${outreachId}-live-frame`);
     const status = document.getElementById(`${outreachId}-live-status`);
@@ -4974,6 +4985,16 @@ function activateScheduledLiveStreams() {
     const audio = document.getElementById(`${outreachId}-live-audio`);
 
     const cleanUrl = buildAutoplayLiveUrl(liveUrlRaw);
+
+    function getStartTime() {
+      if (!liveStart) return NaN;
+
+      if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
+        return parseGermanyDateTime(liveStart);
+      }
+
+      return new Date(liveStart).getTime();
+    }
 
     function setBadgeOff() {
       if (badge) {
@@ -4997,7 +5018,7 @@ function activateScheduledLiveStreams() {
 
     function showLiveMessage(message) {
       if (status) {
-        status.textContent = message;
+        status.innerHTML = `<span style="color:#ff4d4f;font-weight:700;">${message}</span>`;
         status.className = "smallmuted success-text";
         status.style.display = "block";
       }
@@ -5012,16 +5033,74 @@ function activateScheduledLiveStreams() {
     }
 
     function showCountdownMessage() {
-      if (status) {
-        status.textContent = "The Live Stream will start when the countdown is finished.";
+      if (!status) return;
+
+      const targetTime = getStartTime();
+
+      if (!Number.isFinite(targetTime)) {
+        showNoScheduleMessage();
+        return;
+      }
+
+      const diff = targetTime - Date.now();
+
+      if (diff <= 0) {
+        status.innerHTML = `<span style="color:#ff4d4f;font-weight:700;">🔴 LIVE NOW</span>`;
         status.className = "smallmuted";
         status.style.display = "block";
+        return;
       }
+
+      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+      const minutes = Math.floor((diff / (1000 * 60)) % 60);
+      const seconds = Math.floor((diff / 1000) % 60);
+
+      status.innerHTML = `
+        <span style="color:#f2d08a;">Live stream in:</span>
+        <span style="color:#38bdf8;font-weight:700;text-shadow:0 0 8px rgba(56,189,248,.45);">
+          ${days}d ${hours}h ${minutes}m ${seconds}s
+        </span>
+      `;
+      status.className = "smallmuted";
+      status.style.display = "block";
     }
 
-    function setLiveOn(message = "The livestream is now active.") {
+    function setLiveOn(message = "🔴 LIVE NOW") {
       if (!cleanUrl) {
-        setLiveOff();
+        setBadgeOff();
+
+        if (frame) {
+          frame.setAttribute("src", "");
+          frame.style.opacity = "0";
+          frame.style.visibility = "hidden";
+          frame.style.display = "none";
+        }
+
+        if (watermark) {
+          watermark.style.opacity = "1";
+          watermark.style.transform = "scale(1)";
+          watermark.style.pointerEvents = "auto";
+          watermark.style.visibility = "visible";
+          watermark.style.display = "flex";
+        }
+
+        if (waitingOverlay) {
+          waitingOverlay.style.opacity = "0";
+          waitingOverlay.style.transform = "translateY(8px)";
+          waitingOverlay.style.pointerEvents = "none";
+          waitingOverlay.style.visibility = "hidden";
+          waitingOverlay.style.display = "none";
+        }
+
+        showLiveMessage(message);
+
+        if (audio) {
+          audio.pause();
+          audio.currentTime = 0;
+        }
+
+        container.dataset.liveActivated = "false";
         return;
       }
 
@@ -5032,11 +5111,14 @@ function activateScheduledLiveStreams() {
       if (frame) {
         frame.style.opacity = "1";
         frame.style.visibility = "visible";
+        frame.style.display = "block";
         frame.style.zIndex = "3";
       }
 
       setBadgeOn();
-      showLiveMessage(message);
+      if (status) {
+  status.style.display = "none";
+}
 
       if (watermark) {
         watermark.style.opacity = "0";
@@ -5065,23 +5147,9 @@ function activateScheduledLiveStreams() {
     function setLiveOff() {
       setBadgeOff();
 
-      let showCountdown = false;
-
-      if (liveStart) {
-        let startTime;
-
-        if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
-          startTime = parseGermanyDateTime(liveStart);
-        } else {
-          startTime = new Date(liveStart).getTime();
-        }
-
-        const diffMinutes = (startTime - Date.now()) / 60000;
-
-        if (diffMinutes <= 60 && diffMinutes > 0) {
-          showCountdown = true;
-        }
-      }
+      const startTime = getStartTime();
+      const hasSchedule = Number.isFinite(startTime);
+      const showCountdown = hasSchedule && startTime > Date.now();
 
       if (watermark) {
         watermark.style.opacity = "1";
@@ -5119,6 +5187,7 @@ function activateScheduledLiveStreams() {
         frame.setAttribute("src", "");
         frame.style.opacity = "0";
         frame.style.visibility = "hidden";
+        frame.style.display = "none";
       }
 
       if (audio) {
@@ -5134,36 +5203,81 @@ function activateScheduledLiveStreams() {
       container.dataset.liveActivated = "false";
     }
 
-    if (!cleanUrl) {
+    if (!liveStart && !cleanUrl) {
       setLiveOff();
       return;
     }
 
-    // Public behavior:
-    // if a live URL exists and no schedule is set, show the livestream to everyone
-    if (!liveStart) {
-      setLiveOn("The livestream is active.");
+    if (!liveStart && cleanUrl) {
+      setLiveOn("🔴 LIVE NOW");
       return;
     }
 
-    let startTime;
-    if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
-      startTime = parseGermanyDateTime(liveStart);
-    } else {
-      startTime = new Date(liveStart).getTime();
-    }
+    const startTime = getStartTime();
 
-    if (isNaN(startTime)) {
+    if (!Number.isFinite(startTime)) {
       setLiveOff();
       return;
     }
 
     if (now >= startTime) {
-      setLiveOn("The livestream is now active.");
+      setLiveOn("🔴 LIVE NOW");
     } else {
       setLiveOff();
     }
   });
+}
+
+function updateLiveTextByCountdown(outreachId, liveStart, liveUrl) {
+  const statusEl = document.getElementById(`${outreachId}-live-status`);
+  const frame = document.getElementById(`${outreachId}-live-frame`);
+
+  if (!statusEl) return;
+
+  let target;
+
+  if (liveStart.includes("T") && !liveStart.endsWith("Z")) {
+    target = parseGermanyDateTime(liveStart);
+  } else {
+    target = new Date(liveStart).getTime();
+  }
+
+  const now = Date.now();
+
+  // ❌ NO SCHEDULE AT ALL
+  if (!liveStart) {
+    statusEl.textContent = "No Live Stream Scheduled.";
+    if (frame) frame.style.display = "none";
+    return;
+  }
+
+  const diff = target - now;
+
+  // ⏳ BEFORE START → SHOW COUNTDOWN
+  if (diff > 0) {
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+    const minutes = Math.floor((diff / (1000 * 60)) % 60);
+    const seconds = Math.floor((diff / 1000) % 60);
+
+    statusEl.innerHTML = `
+      <span style="color:#f2d08a;">Live stream in:</span>
+      <span style="color:#38bdf8;font-weight:700;text-shadow:0 0 8px rgba(56,189,248,.45);">
+        ${days}d ${hours}h ${minutes}m ${seconds}s
+      </span>
+    `;
+
+    if (frame) frame.style.display = "none";
+    return;
+  }
+
+  // 🔴 WHEN TIME REACHED
+  statusEl.innerHTML = `<span style="color:#ff4d4f;font-weight:700;">🔴 LIVE NOW</span>`;
+
+  if (liveUrl && frame) {
+    frame.src = liveUrl;
+    frame.style.display = "block";
+  }
 }
 
 function buildAutoplayLiveUrl(url) {
