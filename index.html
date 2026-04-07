@@ -4596,6 +4596,7 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
               </div>
             ` : ""}
           </div>
+            ${getSavedMemberSession(outreach.id) ? getMemberNewsPostPanelHtml(outreach.id) : ""}
         </div>
 
         <!-- ANNOUNCEMENTS -->
@@ -4640,26 +4641,7 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
       <div class="live-waiting-overlay" id="${escapeHtml(outreach.id)}-waiting-overlay">
         <div class="live-starting-text">Starting Soon</div>
 
-        <div
-          class="live-panel-countdown"
-          data-live-panel-countdown="${escapeHtml(liveStart)}">
-          <div class="lp-box">
-            <div class="lp-num">0</div>
-            <div class="lp-lab">Days</div>
-          </div>
-          <div class="lp-box">
-            <div class="lp-num">0</div>
-            <div class="lp-lab">Hours</div>
-          </div>
-          <div class="lp-box">
-            <div class="lp-num">0</div>
-            <div class="lp-lab">Minutes</div>
-          </div>
-          <div class="lp-box">
-            <div class="lp-num">0</div>
-            <div class="lp-lab">Seconds</div>
-          </div>
-        </div>
+       
 
         <div class="live-soon-message" id="${escapeHtml(outreach.id)}-live-soon-message">
           Live stream begins in 60 minutes.
@@ -5017,12 +4999,18 @@ function activateScheduledLiveStreams() {
     }
 
     function showLiveMessage(message) {
-      if (status) {
-        status.innerHTML = `<span style="color:#ff4d4f;font-weight:700;">${message}</span>`;
-        status.className = "smallmuted success-text";
-        status.style.display = "block";
-      }
-    }
+  if (status) {
+    status.textContent = "";
+    status.style.display = "none";
+  }
+}
+
+  function showOfflineAfterStartMessage() {
+  if (status) {
+    status.textContent = "";
+    status.style.display = "none";
+  }
+}
 
     function showNoScheduleMessage() {
       if (status) {
@@ -5033,38 +5021,37 @@ function activateScheduledLiveStreams() {
     }
 
     function showCountdownMessage() {
-      if (!status) return;
+  if (!status) return;
 
-      const targetTime = getStartTime();
+  const targetTime = getStartTime();
 
-      if (!Number.isFinite(targetTime)) {
-        showNoScheduleMessage();
-        return;
-      }
+  if (!Number.isFinite(targetTime)) {
+    showNoScheduleMessage();
+    return;
+  }
 
-      const diff = targetTime - Date.now();
+  const diff = targetTime - Date.now();
 
-      if (diff <= 0) {
-        status.innerHTML = `<span style="color:#ff4d4f;font-weight:700;">🔴 LIVE NOW</span>`;
-        status.className = "smallmuted";
-        status.style.display = "block";
-        return;
-      }
+  if (diff <= 0) {
+    status.textContent = "";
+    status.style.display = "none";
+    return;
+  }
 
-      const days = Math.floor(diff / (1000 * 60 * 60 * 24));
-      const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
-      const minutes = Math.floor((diff / (1000 * 60)) % 60);
-      const seconds = Math.floor((diff / 1000) % 60);
+  const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+  const hours = Math.floor((diff / (1000 * 60 * 60)) % 24);
+  const minutes = Math.floor((diff / (1000 * 60)) % 60);
+  const seconds = Math.floor((diff / 1000) % 60);
 
-      status.innerHTML = `
-        <span style="color:#f2d08a;">Live stream in:</span>
-        <span style="color:#38bdf8;font-weight:700;text-shadow:0 0 8px rgba(56,189,248,.45);">
-          ${days}d ${hours}h ${minutes}m ${seconds}s
-        </span>
-      `;
-      status.className = "smallmuted";
-      status.style.display = "block";
-    }
+  status.innerHTML = `
+    <span style="color:#f2d08a;">Live stream in:</span>
+    <span style="color:#38bdf8;font-weight:700;text-shadow:0 0 8px rgba(56,189,248,.45);">
+      ${days}d ${hours}h ${minutes}m ${seconds}s
+    </span>
+  `;
+  status.className = "smallmuted";
+  status.style.display = "block";
+}
 
     function setLiveOn(message = "🔴 LIVE NOW") {
       if (!cleanUrl) {
@@ -5176,12 +5163,13 @@ function activateScheduledLiveStreams() {
       }
 
       if (status) {
-        if (showCountdown) {
-          showCountdownMessage();
-        } else {
-          showNoScheduleMessage();
-        }
-      }
+  if (showCountdown) {
+    showCountdownMessage();
+  } else {
+    status.textContent = "";
+    status.style.display = "none";
+  }
+}
 
       if (frame) {
         frame.setAttribute("src", "");
@@ -5343,6 +5331,7 @@ function renderOutreaches() {
 
   els.dynamicOutreachSections.innerHTML = currentOutreaches.map(buildOutreachCard).join("");
   bindDynamicButtons();
+  bindMemberNewsButtons();
 
   ensurePublicLivePanelsVisible();
   activateScheduledLiveStreams();
@@ -7274,11 +7263,8 @@ function renderNewsUpdates() {
 
   stopHeroSliderAuto();
 
-  const memberPanelHtml = getMemberNewsPostPanelHtml();
-
   if (!NEWS_UPDATES.length) {
     grid.innerHTML = `
-      ${memberPanelHtml}
       <div class="news-hero-slider" id="newsHeroSlider">
         <div class="news-hero-track" id="newsHeroTrack">
           <article
@@ -7307,12 +7293,13 @@ function renderNewsUpdates() {
       </div>
     `;
 
-    bindMemberNewsButtons();
+    bindNewsCards();
+    bindNewsAdminButtons();
+    setupInfiniteHeroSlider();
     return;
   }
 
   grid.innerHTML = `
-    ${memberPanelHtml}
     <div class="news-hero-slider" id="newsHeroSlider">
       <div class="news-hero-track" id="newsHeroTrack">
         ${NEWS_UPDATES.map(item => {
@@ -7340,17 +7327,16 @@ function renderNewsUpdates() {
 
           return `
             <article
-  class="news-hero-card"
-  data-news-id="${escapeHtml(item.id)}"
-  data-media-type="${escapeHtml(item.mediaType || "image")}"
-  tabindex="0"
-  role="button"
-  aria-label="Read ${escapeHtml(item.title || "News update")}"
-  title="${escapeHtml(item.title || "News update")}"
->
+              class="news-hero-card"
+              data-news-id="${escapeHtml(item.id)}"
+              data-media-type="${escapeHtml(item.mediaType || "image")}"
+              tabindex="0"
+              role="button"
+              aria-label="Read ${escapeHtml(item.title || "News update")}"
+              title="${escapeHtml(item.title || "News update")}"
+            >
               <div class="news-hero-card-image-wrap">
                 ${item.mediaType === "video" ? `
-
                   <video
                     class="news-thumb"
                     src="${escapeHtml(item.imageUrl || "")}"
@@ -7358,8 +7344,8 @@ function renderNewsUpdates() {
                     playsinline
                     preload="metadata"
                     onloadeddata="this.currentTime=0.1"
-                    onerror="this.outerHTML='<img class=&quot;news-thumb&quot; src=&quot;srm.png&quot; alt=&quot;Default news&quot;>';">
-                  </video>
+                    onerror="this.outerHTML='<img class=&quot;news-thumb&quot; src=&quot;srm.png&quot; alt=&quot;Default news&quot;>';"
+                  ></video>
                 ` : `
                   <img
                     class="news-thumb"
@@ -7385,6 +7371,7 @@ function renderNewsUpdates() {
                   </div>
                 ` : ""}
               </div>
+
               <div class="news-image-overlay"></div>
               <div class="news-watermark"></div>
             </article>
@@ -7396,26 +7383,23 @@ function renderNewsUpdates() {
 
   bindNewsCards();
   bindNewsAdminButtons();
-  bindMemberNewsButtons();
   setupInfiniteHeroSlider();
 }
 
 
 
-function getActiveMemberNewsInfo() {
-  for (const outreach of currentOutreaches) {
-    const savedName = getSavedMemberSession(outreach.id);
+function getActiveMemberNewsInfo(outreachId = "") {
+  if (!outreachId) return null;
 
-    if (savedName && String(savedName).trim()) {
-      return {
-        outreachId: outreach.id,
-        fullName: toDisplayName(savedName),
-        normalizedName: normalizeMemberName(savedName)
-      };
-    }
-  }
+  const savedName = localStorage.getItem(`memberName-${outreachId}`);
 
-  return null;
+  if (!savedName || !savedName.trim()) return null;
+
+  return {
+    outreachId,
+    fullName: toDisplayName(savedName),
+    normalizedName: normalizeMemberName(savedName)
+  };
 }
 
 function getActiveMemberSession() {
@@ -7433,41 +7417,74 @@ function getActiveMemberSession() {
 }
 
 
-function getMemberNewsPostPanelHtml() {
-  const memberInfo = getActiveMemberNewsInfo();
-
-  if (!memberInfo || !memberInfo.fullName || !memberInfo.outreachId) {
-    return "";
-  }
+function getMemberNewsPostPanelHtml(outreachId = "") {
+  const memberInfo = getActiveMemberNewsInfo(outreachId);
 
   return `
-    <div class="card" style="margin-bottom:18px;">
+    <div class="card" style="margin-top:18px;">
+      <input type="hidden" id="${escapeHtml(outreachId)}-member-editing-news-id" value="">
+
       <h3 style="margin-top:0;">Post to SRM News Letter</h3>
       <p class="smallmuted">
         Logged-in members can submit testimonies, reflections, and encouragement.
       </p>
 
-      <label for="member-news-title">Title</label>
-      <input id="member-news-title" type="text" placeholder="Enter title">
+      <label for="${escapeHtml(outreachId)}-member-news-title">Title</label>
+      <input
+        id="${escapeHtml(outreachId)}-member-news-title"
+        type="text"
+        placeholder="Enter title"
+      >
 
-      <label for="member-news-author">Author</label>
-      <input id="member-news-author" type="text" value="${escapeHtml(memberInfo.fullName)}" placeholder="Your name">
+      <label for="${escapeHtml(outreachId)}-member-news-author">Author</label>
+      <input
+        id="${escapeHtml(outreachId)}-member-news-author"
+        type="text"
+        value="${escapeHtml(memberInfo?.fullName || "")}"
+        placeholder="Your name"
+      >
 
-      <label for="member-news-excerpt">Short Excerpt</label>
-      <textarea id="member-news-excerpt" placeholder="Short preview text"></textarea>
+      <label for="${escapeHtml(outreachId)}-member-news-excerpt">Short Excerpt</label>
+      <textarea
+        id="${escapeHtml(outreachId)}-member-news-excerpt"
+        placeholder="Short preview text"
+      ></textarea>
 
-      <label for="member-news-body">Full Article</label>
-      <textarea id="member-news-body" placeholder="Write your full post here..." style="min-height:180px;"></textarea>
+      <label for="${escapeHtml(outreachId)}-member-news-body">Full Article</label>
+      <textarea
+        id="${escapeHtml(outreachId)}-member-news-body"
+        placeholder="Write your full post here..."
+        style="min-height:180px;"
+      ></textarea>
 
-      <label for="member-news-image">Image</label>
-      <input id="member-news-image" type="file" accept="image/*,video/mp4,video/webm,video/ogg,.heic,.heif">
+      <label for="${escapeHtml(outreachId)}-member-news-image">Image</label>
+      <input
+        id="${escapeHtml(outreachId)}-member-news-image"
+        type="file"
+        accept="image/*,video/mp4,video/webm,video/ogg,.heic,.heif"
+      >
 
       <div class="toolbar-row" style="margin-top:12px;">
-        <button class="btn" id="submitMemberNewsBtn" type="button">Submit News</button>
-        <button class="ghost-btn" id="clearMemberNewsBtn" type="button">Clear</button>
+        <button
+          class="btn submit-member-news-btn"
+          id="${escapeHtml(outreachId)}-submit-member-news-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreachId)}"
+        >
+          Submit News
+        </button>
+
+        <button
+          class="ghost-btn clear-member-news-btn"
+          id="${escapeHtml(outreachId)}-clear-member-news-btn"
+          type="button"
+          data-outreach="${escapeHtml(outreachId)}"
+        >
+          Clear
+        </button>
       </div>
 
-      <p id="member-news-feedback" class="smallmuted"></p>
+      <p id="${escapeHtml(outreachId)}-member-news-feedback" class="smallmuted"></p>
     </div>
   `;
 }
@@ -7497,46 +7514,55 @@ async function normalizeMediaFile(file) {
   return await normalizeImageFile(file);
 }
 
-async function submitMemberNewsUpdate() {
-  const feedback = document.getElementById("member-news-feedback");
-  const title = document.getElementById("member-news-title")?.value.trim() || "";
-  const author = document.getElementById("member-news-author")?.value.trim() || "";
-  const excerpt = document.getElementById("member-news-excerpt")?.value.trim() || "";
-  const bodyRaw = document.getElementById("member-news-body")?.value.trim() || "";
-  const imageInput = document.getElementById("member-news-image");
-  const originalFile = imageInput?.files?.[0] || null;
-
-  const memberInfo = getActiveMemberNewsInfo();
+async function submitMemberNewsUpdate(outreachId) {
+  const memberInfo = getActiveMemberNewsInfo(outreachId);
+  const feedback = document.getElementById(`${outreachId}-member-news-feedback`);
 
   if (!memberInfo) {
     if (feedback) {
-      feedback.textContent = "You must be logged in as a member to submit news.";
-      feedback.className = "smallmuted error-text";
-    }
-    return;
-  }
-
-  if (!title || !author || !excerpt || !bodyRaw) {
-    if (feedback) {
-      feedback.textContent = "Please complete title, author, excerpt, and full article.";
+      feedback.textContent = "You must join this outreach first before posting.";
       feedback.className = "smallmuted error-text";
     }
     return;
   }
 
   try {
-    if (feedback) {
-      feedback.textContent = "Submitting your news...";
-      feedback.className = "smallmuted";
+    const editingId = document.getElementById(`${outreachId}-member-editing-news-id`)?.value.trim() || "";
+    const title = document.getElementById(`${outreachId}-member-news-title`)?.value.trim() || "";
+    const author = document.getElementById(`${outreachId}-member-news-author`)?.value.trim() || memberInfo.fullName;
+    const excerpt = document.getElementById(`${outreachId}-member-news-excerpt`)?.value.trim() || "";
+    const bodyRaw = document.getElementById(`${outreachId}-member-news-body`)?.value.trim() || "";
+    const file = document.getElementById(`${outreachId}-member-news-image`)?.files?.[0] || null;
+
+    if (!title || !author || !excerpt || !bodyRaw) {
+      if (feedback) {
+        feedback.textContent = "Please complete title, author, short excerpt, and full article.";
+        feedback.className = "smallmuted error-text";
+      }
+      return;
     }
 
-        let imageUrl = "";
+    let imageUrl = "";
     let imageStoragePath = "";
     let mediaType = "image";
 
-    if (originalFile) {
-      const file = await normalizeMediaFile(originalFile);
-      mediaType = isVideoFile(originalFile) ? "video" : "image";
+    if (editingId) {
+      const existingItem = NEWS_UPDATES.find(n => String(n.id) === String(editingId));
+      if (!existingItem || !canManageNewsItem(existingItem)) {
+        if (feedback) {
+          feedback.textContent = "You are not allowed to edit this post.";
+          feedback.className = "smallmuted error-text";
+        }
+        return;
+      }
+
+      imageUrl = existingItem.imageUrl || "";
+      imageStoragePath = existingItem.imageStoragePath || "";
+      mediaType = existingItem.mediaType || "image";
+    }
+
+    if (file) {
+      mediaType = isVideoFile(file) ? "video" : "image";
 
       const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
       const storagePath = `memberNewsSubmissions/${memberInfo.outreachId}/${safeName}`;
@@ -7546,7 +7572,17 @@ async function submitMemberNewsUpdate() {
         contentType: file.type || (mediaType === "video" ? "video/mp4" : "image/jpeg")
       });
 
-      imageUrl = await getDownloadURL(storageRef);
+      const uploadedUrl = await getDownloadURL(storageRef);
+
+      if (imageStoragePath) {
+        try {
+          await deleteObject(ref(storage, imageStoragePath));
+        } catch (storageError) {
+          console.warn("Old member news media delete warning:", storageError);
+        }
+      }
+
+      imageUrl = uploadedUrl;
       imageStoragePath = storagePath;
     }
 
@@ -7557,29 +7593,49 @@ async function submitMemberNewsUpdate() {
       .map(line => `<p>${escapeHtml(line)}</p>`)
       .join("");
 
-    await addDoc(collection(db, "newsUpdates"), {
-      outreachId: memberInfo.outreachId,
-      title,
-      author,
-      excerpt,
-      body,
-      imageUrl,
-      imageStoragePath,
-      mediaType,
-      createdAt: serverTimestamp(),
-      createdBy: memberInfo.fullName,
-      createdByType: "member",
-      memberName: memberInfo.fullName,
-      memberNormalizedName: memberInfo.normalizedName,
-      status: "approved"
-    });
+    if (editingId) {
+      await updateDoc(doc(db, "newsUpdates", editingId), {
+        title,
+        author,
+        excerpt,
+        body,
+        imageUrl,
+        imageStoragePath,
+        mediaType,
+        updatedAt: serverTimestamp(),
+        updatedBy: memberInfo.fullName,
+        memberName: memberInfo.fullName,
+        memberNormalizedName: memberInfo.normalizedName
+      });
+    } else {
+      await addDoc(collection(db, "newsUpdates"), {
+        outreachId: memberInfo.outreachId,
+        title,
+        author,
+        excerpt,
+        body,
+        imageUrl,
+        imageStoragePath,
+        mediaType,
+        createdAt: serverTimestamp(),
+        createdBy: memberInfo.fullName,
+        createdByType: "member",
+        memberName: memberInfo.fullName,
+        memberNormalizedName: memberInfo.normalizedName,
+        status: "approved"
+      });
+    }
 
-    clearMemberNewsForm();
+    clearMemberNewsForm(outreachId);
 
     if (feedback) {
-      feedback.textContent = "Your SRM News Letter post was published successfully";
+      feedback.textContent = editingId
+        ? "Your SRM News Letter post was updated successfully."
+        : "Your SRM News Letter post was published successfully";
       feedback.className = "smallmuted success-text";
     }
+
+    await initPage();
   } catch (error) {
     console.error("submitMemberNewsUpdate failed:", error);
     if (feedback) {
@@ -7589,11 +7645,12 @@ async function submitMemberNewsUpdate() {
   }
 }
 
-function clearMemberNewsForm() {
+function clearMemberNewsForm(outreachId) {
   const ids = [
-    "member-news-title",
-    "member-news-excerpt",
-    "member-news-body"
+    `${outreachId}-member-editing-news-id`,
+    `${outreachId}-member-news-title`,
+    `${outreachId}-member-news-excerpt`,
+    `${outreachId}-member-news-body`
   ];
 
   ids.forEach(id => {
@@ -7601,29 +7658,42 @@ function clearMemberNewsForm() {
     if (el) el.value = "";
   });
 
-  const authorField = document.getElementById("member-news-author");
-  const memberInfo = getActiveMemberNewsInfo();
+  const authorField = document.getElementById(`${outreachId}-member-news-author`);
+  const memberInfo = getActiveMemberNewsInfo(outreachId);
   if (authorField) {
     authorField.value = memberInfo?.fullName || "";
   }
 
-  const imageField = document.getElementById("member-news-image");
+  const imageField = document.getElementById(`${outreachId}-member-news-image`);
   if (imageField) imageField.value = "";
+
+  const feedback = document.getElementById(`${outreachId}-member-news-feedback`);
+  if (feedback) {
+    feedback.textContent = "";
+    feedback.className = "smallmuted";
+  }
 }
 
 function bindMemberNewsButtons() {
-  const submitBtn = document.getElementById("submitMemberNewsBtn");
-  const clearBtn = document.getElementById("clearMemberNewsBtn");
+  document.querySelectorAll(".submit-member-news-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
 
-  if (submitBtn && submitBtn.dataset.bound !== "true") {
-    submitBtn.dataset.bound = "true";
-    submitBtn.addEventListener("click", submitMemberNewsUpdate);
-  }
+    btn.addEventListener("click", () => {
+      console.log("Submit clicked for outreach:", btn.dataset.outreach);
+      submitMemberNewsUpdate(btn.dataset.outreach || "");
+    });
+  });
 
-  if (clearBtn && clearBtn.dataset.bound !== "true") {
-    clearBtn.dataset.bound = "true";
-    clearBtn.addEventListener("click", clearMemberNewsForm);
-  }
+  document.querySelectorAll(".clear-member-news-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+
+    btn.addEventListener("click", () => {
+      console.log("Clear clicked for outreach:", btn.dataset.outreach);
+      clearMemberNewsForm(btn.dataset.outreach || "");
+    });
+  });
 }
 
 
@@ -7815,13 +7885,16 @@ function bindHeroSliderSwipe() {
   });
 }
 
-function getCurrentMemberIdentity() {
-  const memberInfo = getActiveMemberNewsInfo();
+function getCurrentMemberIdentity(outreachId = "") {
+  if (!outreachId) return null;
+
+  const memberInfo = getActiveMemberNewsInfo(outreachId);
   if (!memberInfo) return null;
 
   return {
     fullName: memberInfo.fullName || "",
-    normalizedName: memberInfo.normalizedName || normalizeMemberName(memberInfo.fullName || "")
+    normalizedName:
+      memberInfo.normalizedName || normalizeMemberName(memberInfo.fullName || "")
   };
 }
 
@@ -7832,13 +7905,16 @@ function canManageNewsItem(item) {
   const isOutreachAdminForItem = !!outreachAdminState[outreachId];
   if (isOutreachAdminForItem) return true;
 
-  const memberIdentity = getCurrentMemberIdentity();
+  const memberIdentity = getCurrentMemberIdentity(outreachId);
   if (!memberIdentity) return false;
 
   const itemCreatedByType = String(item.createdByType || "").toLowerCase();
-  const itemMemberName = normalizeMemberName(item.memberNormalizedName || item.memberName || item.createdBy || "");
+  const itemMemberName = normalizeMemberName(
+    item.memberNormalizedName || item.memberName || item.createdBy || ""
+  );
 
-  return itemCreatedByType === "member" && itemMemberName === memberIdentity.normalizedName;
+  return itemCreatedByType === "member" &&
+         itemMemberName === memberIdentity.normalizedName;
 }
 
 async function saveNewsUpdate(outreachId) {
@@ -7986,29 +8062,70 @@ async function editNewsUpdate(newsId) {
   const item = NEWS_UPDATES.find(n => n.id === newsId);
   if (!item) return;
 
-  const outreachId = item.outreachId;
-  if (!outreachAdminState[outreachId]) {
-    alert("Only the assigned outreach admin can edit this news item.");
+  const outreachId = item.outreachId || "";
+  const canManage = canManageNewsItem(item);
+
+  if (!canManage) {
+    alert("You are not allowed to edit this news item.");
     return;
   }
-
-  document.getElementById(`${outreachId}-editing-news-id`).value = item.id || "";
-  document.getElementById(`${outreachId}-news-title`).value = item.title || "";
-  document.getElementById(`${outreachId}-news-author`).value = item.author || "Solid Rock Ministries";
-  document.getElementById(`${outreachId}-news-excerpt`).value = item.excerpt || "";
 
   const plainBody = String(item.body || "")
     .replace(/<\/p>\s*<p>/g, "\n\n")
     .replace(/<[^>]+>/g, "");
-  document.getElementById(`${outreachId}-news-body`).value = plainBody;
 
-  const feedback = document.getElementById(`${outreachId}-news-feedback`);
-  if (feedback) {
-    feedback.textContent = "Editing existing news. Update the fields and click Post News.";
-    feedback.className = "smallmuted success-text";
+  if (outreachAdminState[outreachId]) {
+    const idField = document.getElementById(`${outreachId}-editing-news-id`);
+    const titleField = document.getElementById(`${outreachId}-news-title`);
+    const authorField = document.getElementById(`${outreachId}-news-author`);
+    const excerptField = document.getElementById(`${outreachId}-news-excerpt`);
+    const bodyField = document.getElementById(`${outreachId}-news-body`);
+    const feedback = document.getElementById(`${outreachId}-news-feedback`);
+
+    if (!idField || !titleField || !authorField || !excerptField || !bodyField) {
+      alert("Admin news form not found for this outreach.");
+      return;
+    }
+
+    idField.value = item.id || "";
+    titleField.value = item.title || "";
+    authorField.value = item.author || "Solid Rock Ministries";
+    excerptField.value = item.excerpt || "";
+    bodyField.value = plainBody;
+
+    if (feedback) {
+      feedback.textContent = "Editing existing news. Update the fields and click Post News.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    titleField.scrollIntoView({ behavior: "smooth", block: "center" });
+    return;
   }
 
-  document.getElementById(`${outreachId}-news-title`)?.scrollIntoView({ behavior: "smooth", block: "center" });
+  const memberIdField = document.getElementById(`${outreachId}-member-editing-news-id`);
+  const memberTitleField = document.getElementById(`${outreachId}-member-news-title`);
+  const memberAuthorField = document.getElementById(`${outreachId}-member-news-author`);
+  const memberExcerptField = document.getElementById(`${outreachId}-member-news-excerpt`);
+  const memberBodyField = document.getElementById(`${outreachId}-member-news-body`);
+  const memberFeedback = document.getElementById(`${outreachId}-member-news-feedback`);
+
+  if (!memberIdField || !memberTitleField || !memberAuthorField || !memberExcerptField || !memberBodyField) {
+    alert("Member news form not found for this outreach.");
+    return;
+  }
+
+  memberIdField.value = item.id || "";
+  memberTitleField.value = item.title || "";
+  memberAuthorField.value = item.author || "";
+  memberExcerptField.value = item.excerpt || "";
+  memberBodyField.value = plainBody;
+
+  if (memberFeedback) {
+    memberFeedback.textContent = "Editing your post. Update the fields and click Submit News.";
+    memberFeedback.className = "smallmuted success-text";
+  }
+
+  memberTitleField.scrollIntoView({ behavior: "smooth", block: "center" });
 }
 
 async function deleteNewsUpdate(newsId, imageStoragePath = "") {
