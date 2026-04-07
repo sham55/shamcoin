@@ -4857,6 +4857,147 @@ const livePanelLogo = "srm.png"; // same default live panel image for all outrea
   `;
 }
 
+ async function uploadOutreachLogo(outreachId) {
+  const feedback = document.getElementById(`${outreachId}-logo-feedback`);
+  const input = document.getElementById(`${outreachId}-logo-file`);
+  const outreach = getOutreachById(outreachId);
+
+  if (!outreach) {
+    if (feedback) {
+      feedback.textContent = "Outreach not found.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  const originalFile = input?.files?.[0];
+  if (!originalFile) {
+    if (feedback) {
+      feedback.textContent = "Please choose a logo image first.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Uploading logo...";
+      feedback.className = "smallmuted";
+    }
+
+    const normalizedFile = await normalizeImageFile(originalFile);
+    const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${normalizedFile.name.replace(/\s+/g, "-")}`;
+    const storagePath = `outreachLogos/${outreachId}/${safeName}`;
+    const storageRef = ref(storage, storagePath);
+
+    await uploadBytes(storageRef, normalizedFile, {
+      contentType: normalizedFile.type || "image/jpeg"
+    });
+
+    const logoUrl = await getDownloadURL(storageRef);
+    const oldLogoPath = outreach.logoStoragePath || "";
+
+    await updateDoc(doc(db, "outreaches", outreachId), {
+      logoUrl,
+      logoStoragePath: storagePath,
+      updatedAt: serverTimestamp()
+    });
+
+    if (oldLogoPath) {
+      try {
+        await deleteObject(ref(storage, oldLogoPath));
+      } catch (storageError) {
+        console.warn("Old outreach logo delete warning:", storageError);
+      }
+    }
+
+    if (input) input.value = "";
+
+    if (feedback) {
+      feedback.textContent = "Logo uploaded successfully.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("uploadOutreachLogo failed:", error);
+    if (feedback) {
+      feedback.textContent = "Upload failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+async function removeOutreachLogo(outreachId) {
+  const feedback = document.getElementById(`${outreachId}-logo-feedback`);
+  const outreach = getOutreachById(outreachId);
+
+  if (!outreach) {
+    if (feedback) {
+      feedback.textContent = "Outreach not found.";
+      feedback.className = "smallmuted error-text";
+    }
+    return;
+  }
+
+  try {
+    if (feedback) {
+      feedback.textContent = "Removing custom logo...";
+      feedback.className = "smallmuted";
+    }
+
+    const oldLogoPath = outreach.logoStoragePath || "";
+
+    await updateDoc(doc(db, "outreaches", outreachId), {
+      logoUrl: "",
+      logoStoragePath: "",
+      updatedAt: serverTimestamp()
+    });
+
+    if (oldLogoPath) {
+      try {
+        await deleteObject(ref(storage, oldLogoPath));
+      } catch (storageError) {
+        console.warn("Outreach logo delete warning:", storageError);
+      }
+    }
+
+    if (feedback) {
+      feedback.textContent = "Custom logo removed.";
+      feedback.className = "smallmuted success-text";
+    }
+
+    await initPage();
+  } catch (error) {
+    console.error("removeOutreachLogo failed:", error);
+    if (feedback) {
+      feedback.textContent = "Remove failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+function bindOutreachLogoButtons() {
+  document.querySelectorAll(".upload-outreach-logo-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+
+    btn.addEventListener("click", () => {
+      const outreachId = btn.dataset.outreach || "";
+      uploadOutreachLogo(outreachId);
+    });
+  });
+
+  document.querySelectorAll(".remove-outreach-logo-btn").forEach(btn => {
+    if (btn.dataset.bound === "true") return;
+    btn.dataset.bound = "true";
+
+    btn.addEventListener("click", () => {
+      const outreachId = btn.dataset.outreach || "";
+      removeOutreachLogo(outreachId);
+    });
+  });
+}
 
 
   function scrollToAdminOutreach() {
@@ -5332,6 +5473,7 @@ function renderOutreaches() {
   els.dynamicOutreachSections.innerHTML = currentOutreaches.map(buildOutreachCard).join("");
   bindDynamicButtons();
   bindMemberNewsButtons();
+  bindOutreachLogoButtons();
 
   ensurePublicLivePanelsVisible();
   activateScheduledLiveStreams();
