@@ -4406,6 +4406,51 @@ function getPhotoReactionUsers(reactions, photoId) {
           <p id="${escapeHtml(outreach.id)}-history-feedback" class="smallmuted"></p>
 
           <div class="divider"></div>
+
+          <h3 style="margin:0 0 10px;">🖼️ Outreach Logo</h3>
+<p class="smallmuted" style="margin-top:0;">
+  Upload a custom logo for this outreach only.
+</p>
+
+${outreach.logoUrl ? `
+  <div style="margin:10px 0 14px;">
+    <img
+      src="${escapeHtml(outreach.logoUrl)}"
+      alt="Current outreach logo"
+      style="width:96px;height:96px;object-fit:contain;border-radius:14px;border:1px solid var(--line);padding:8px;background:rgba(255,255,255,.03);"
+      onerror="this.onerror=null; this.src='srm.png';"
+    >
+  </div>
+` : ""}
+
+<label for="${escapeHtml(outreach.id)}-logo-file">Outreach Logo</label>
+<input
+  id="${escapeHtml(outreach.id)}-logo-file"
+  type="file"
+  accept="image/*,.heic,.heif"
+>
+
+<div class="toolbar-row" style="margin-top:12px;">
+  <button
+    class="btn upload-outreach-logo-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Upload Logo
+  </button>
+
+  <button
+    class="ghost-btn remove-outreach-logo-btn"
+    type="button"
+    data-outreach="${escapeHtml(outreach.id)}">
+    Remove Custom Logo
+  </button>
+</div>
+
+<p id="${escapeHtml(outreach.id)}-logo-feedback" class="smallmuted"></p>
+
+<div class="divider"></div>
+
+          
         ` : ""}
 
         ${!isSuperAdmin ? `
