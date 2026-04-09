@@ -7646,6 +7646,88 @@ document.querySelectorAll(".clear-live-stream-btn").forEach(btn => {
     }
   });
 
+
+  async function migrateNewsItemToCloudinary(newsId) {
+  try {
+    const newsRef = doc(db, "newsUpdates", newsId);
+    const snap = await getDoc(newsRef);
+
+    if (!snap.exists()) {
+      throw new Error("News item not found.");
+    }
+
+    const item = snap.data() || {};
+    const oldUrl = item.imageUrl || "";
+    const outreachId = item.outreachId || "general";
+    const mediaType = item.mediaType || "image";
+
+    if (!oldUrl) {
+      throw new Error("No news media URL found.");
+    }
+
+    if (oldUrl.includes("res.cloudinary.com")) {
+      alert("This news item is already using Cloudinary.");
+      return;
+    }
+
+    const oldResponse = await fetch(oldUrl, { mode: "cors" });
+    if (!oldResponse.ok) {
+      throw new Error(`Failed to fetch old Firebase media: ${oldResponse.status}`);
+    }
+
+    const blob = await oldResponse.blob();
+    const endpoint = mediaType === "video" ? "video" : "image";
+
+    const safeTitle = (item.title || newsId)
+      .replace(/[^\w\-]+/g, "_")
+      .replace(/^_+|_+$/g, "");
+
+    const extension =
+      mediaType === "video"
+        ? (blob.type.includes("mp4") ? "mp4" : "mov")
+        : (blob.type.includes("png") ? "png" : "jpg");
+
+    const fileName = `${safeTitle || "news"}_${Date.now()}.${extension}`;
+
+    const formData = new FormData();
+    formData.append("file", blob, fileName);
+    formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+    formData.append("folder", `newsUpdates/${outreachId}`);
+
+    const uploadResponse = await fetch(
+      `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${endpoint}/upload`,
+      {
+        method: "POST",
+        body: formData
+      }
+    );
+
+    const data = await uploadResponse.json();
+
+    if (!uploadResponse.ok || !data.secure_url) {
+      throw new Error(data?.error?.message || "Cloudinary upload failed.");
+    }
+
+    await updateDoc(newsRef, {
+      imageUrl: data.secure_url || "",
+      imagePublicId: data.public_id || "",
+      imageStoragePath: "",
+      mediaType,
+      migratedFromFirebase: true,
+      migratedAt: serverTimestamp(),
+      updatedAt: serverTimestamp()
+    });
+
+    alert("News media moved to Cloudinary successfully.");
+    await initPage();
+  } catch (error) {
+    console.error("migrateNewsItemToCloudinary failed:", error);
+    alert("News migration failed: " + error.message);
+  }
+}
+
+window.migrateNewsItemToCloudinary = migrateNewsItemToCloudinary;
+
   async function handleLogout() {
   try {
     closeAdminAccessModal();
@@ -7804,11 +7886,27 @@ function renderNewsUpdates() {
                 <div class="news-hero-card-readmore">Read more →</div>
 
                 ${canManage ? `
-                  <div class="toolbar-row news-card-toolbar" style="margin-top:12px;">
-                    <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
-                    <button class="danger-btn delete-news-btn" type="button" data-id="${escapeHtml(item.id)}" data-path="${escapeHtml(item.imageStoragePath || "")}">Delete</button>
-                  </div>
-                ` : ""}
+  <div class="toolbar-row news-card-toolbar" style="margin-top:12px;">
+  <button class="ghost-btn edit-news-btn" type="button" data-id="${escapeHtml(item.id)}">Edit</button>
+
+  ${item.imageUrl && !String(item.imageUrl).includes("res.cloudinary.com") ? `
+    <button
+      class="btn migrate-news-btn"
+      type="button"
+      data-id="${escapeHtml(item.id)}">
+      Move to Cloudinary
+    </button>
+  ` : ""}
+
+  <button
+    class="danger-btn delete-news-btn"
+    type="button"
+    data-id="${escapeHtml(item.id)}"
+    data-path="${escapeHtml(item.imageStoragePath || "")}">
+    Delete
+  </button>
+</div>
+` : ""}
               </div>
 
               <div class="news-image-overlay"></div>
@@ -8531,8 +8629,9 @@ async function saveNewsUpdate(outreachId) {
       feedback.className = "smallmuted";
     }
 
-        let imageUrl = "";
+    let imageUrl = "";
     let imageStoragePath = "";
+    let imagePublicId = "";
     let mediaType = "image";
 
     if (editingId) {
@@ -8541,34 +8640,39 @@ async function saveNewsUpdate(outreachId) {
         const existing = existingSnap.data();
         imageUrl = existing.imageUrl || "";
         imageStoragePath = existing.imageStoragePath || "";
+        imagePublicId = existing.imagePublicId || "";
         mediaType = existing.mediaType || "image";
       }
     }
 
     if (originalFile) {
-      const file = await normalizeMediaFile(originalFile);
+      const normalizedFile = await normalizeMediaFile(originalFile);
       mediaType = isVideoFile(originalFile) ? "video" : "image";
+      const endpoint = mediaType === "video" ? "video" : "image";
 
-      const safeName = `${Date.now()}-${Math.random().toString(36).slice(2,8)}-${file.name.replace(/\s+/g, "-")}`;
-      const storagePath = `newsUpdates/${outreachId}/${safeName}`;
-      const storageRef = ref(storage, storagePath);
+      const formData = new FormData();
+      formData.append("file", normalizedFile);
+      formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+      formData.append("folder", `newsUpdates/${outreachId}`);
 
-      await uploadBytes(storageRef, file, {
-        contentType: file.type || (mediaType === "video" ? "video/mp4" : "image/jpeg")
-      });
-
-      const uploadedUrl = await getDownloadURL(storageRef);
-
-      if (imageStoragePath) {
-        try {
-          await deleteObject(ref(storage, imageStoragePath));
-        } catch (storageError) {
-          console.warn("Old news media delete warning:", storageError);
+      const response = await fetch(
+        `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/${endpoint}/upload`,
+        {
+          method: "POST",
+          body: formData
         }
+      );
+
+      const data = await response.json();
+
+      if (!response.ok || !data.secure_url) {
+        throw new Error(data?.error?.message || "Cloudinary news upload failed.");
       }
 
-      imageUrl = uploadedUrl;
-      imageStoragePath = storagePath;
+      imageUrl = data.secure_url || "";
+      imagePublicId = data.public_id || "";
+      imageStoragePath = "";
+      mediaType = mediaType;
     }
 
     const body = bodyRaw
@@ -8586,25 +8690,27 @@ async function saveNewsUpdate(outreachId) {
         body,
         imageUrl,
         imageStoragePath,
+        imagePublicId,
         mediaType,
         updatedAt: serverTimestamp(),
         updatedBy: currentUser?.email || ""
       });
     } else {
       await addDoc(collection(db, "newsUpdates"), {
-  outreachId: outreachId,
-  title,
-  author,
-  excerpt,
-  body,
-  imageUrl,
-  imageStoragePath,
-  mediaType,
-  createdAt: serverTimestamp(),
-  createdBy: currentUser?.email || "",
-  createdByType: "admin",
-  status: "approved"
-});
+        outreachId: outreachId,
+        title,
+        author,
+        excerpt,
+        body,
+        imageUrl,
+        imageStoragePath,
+        imagePublicId,
+        mediaType,
+        createdAt: serverTimestamp(),
+        createdBy: currentUser?.email || "",
+        createdByType: "admin",
+        status: "approved"
+      });
     }
 
     clearNewsForm(outreachId);
@@ -8623,6 +8729,7 @@ async function saveNewsUpdate(outreachId) {
     }
   }
 }
+
 
 function clearNewsForm(outreachId) {
   const idField = document.getElementById(`${outreachId}-editing-news-id`);
@@ -8752,7 +8859,6 @@ async function deleteNewsUpdate(newsId, imageStoragePath = "") {
   }
 }
 
-
 function bindNewsAdminButtons() {
   document.querySelectorAll(".save-news-btn").forEach(btn => {
     if (btn.dataset.bound === "true") return;
@@ -8770,6 +8876,7 @@ function bindNewsAdminButtons() {
     if (btn.dataset.bound === "true") return;
     btn.dataset.bound = "true";
     btn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       editNewsUpdate(btn.dataset.id);
     });
@@ -8779,8 +8886,19 @@ function bindNewsAdminButtons() {
     if (btn.dataset.bound === "true") return;
     btn.dataset.bound = "true";
     btn.addEventListener("click", (e) => {
+      e.preventDefault();
       e.stopPropagation();
       deleteNewsUpdate(btn.dataset.id, btn.dataset.path || "");
+    });
+  });
+
+  document.querySelectorAll(".migrate-news-btn").forEach(btn => {
+    if (btn.dataset.boundMigrate === "true") return;
+    btn.dataset.boundMigrate = "true";
+    btn.addEventListener("click", async (e) => {
+      e.preventDefault();
+      e.stopPropagation();
+      await migrateNewsItemToCloudinary(btn.dataset.id);
     });
   });
 }
@@ -8799,7 +8917,7 @@ function bindNewsCards() {
     let moved = false;
 
     card.addEventListener("pointerdown", (e) => {
-      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      if (e.target.closest(".edit-news-btn, .delete-news-btn, .migrate-news-btn, .news-card-toolbar")) return;
       startX = e.clientX;
       startY = e.clientY;
       moved = false;
@@ -8812,7 +8930,7 @@ function bindNewsCards() {
     });
 
     card.addEventListener("click", (e) => {
-      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      if (e.target.closest(".edit-news-btn, .delete-news-btn, .migrate-news-btn, .news-card-toolbar")) return;
       if (moved || heroSliderState.movedByDrag) return;
 
       const id = card.dataset.newsId;
@@ -8821,7 +8939,7 @@ function bindNewsCards() {
     });
 
     card.addEventListener("keydown", (e) => {
-      if (e.target.closest(".edit-news-btn, .delete-news-btn")) return;
+      if (e.target.closest(".edit-news-btn, .delete-news-btn, .migrate-news-btn, .news-card-toolbar")) return;
 
       if (e.key === "Enter" || e.key === " ") {
         e.preventDefault();
@@ -9465,6 +9583,17 @@ window.deleteWorker = async function(workerId, photoStoragePath, outreachId) {
     alert("Failed to delete worker: " + error.message);
   }
 };
+
+function openNewsImageLightbox(src) {
+  if (typeof openLightbox === "function") {
+    openLightbox(src);
+  } else {
+    console.warn("openLightbox not found, fallback opening image");
+    window.open(src, "_blank");
+  }
+}
+
+window.openNewsImageLightbox = openNewsImageLightbox;
 
 
 async function normalizeImageFile(file, maxSize = 1600, quality = 0.88) {
