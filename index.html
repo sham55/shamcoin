@@ -858,6 +858,10 @@ input, textarea, select, button{
   cursor:pointer;
 }
 
+.gallery-source-badge {
+  display: none !important;
+}
+
 .photo-manager-body{
   padding:10px 12px;
 }
@@ -3139,6 +3143,7 @@ section{
     </div>
   </div>
   <script src="https://cdn.jsdelivr.net/npm/qrcode/build/qrcode.min.js"></script>
+  <script src="https://upload-widget.cloudinary.com/latest/global/all.js"></script>
  <script type="module">
   import { initializeApp } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-app.js";
   import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-auth.js";
@@ -3167,6 +3172,9 @@ section{
   const auth = getAuth(app);
   const db = getFirestore(app);
   const storage = getStorage(app);
+  const CLOUDINARY_CLOUD_NAME = "ddk39ylhl";
+  const CLOUDINARY_UPLOAD_PRESET = "church_unsigned_upload";
+  const CLOUDINARY_FOLDER = "outreach_gallery";
 
   function bindLightboxSwipe() {
   const lightbox = document.getElementById("lightbox");
@@ -3836,6 +3844,65 @@ async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
     }
   }
 
+  function reuploadFirebasePhotoToCloudinary(outreachId, photoId) {
+  if (!window.cloudinary) {
+    alert("Cloudinary uploader is not loaded.");
+    return;
+  }
+
+  const widget = window.cloudinary.createUploadWidget(
+    {
+      cloudName: CLOUDINARY_CLOUD_NAME,
+      uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+      folder: `${CLOUDINARY_FOLDER}/${outreachId}`,
+      sources: ["local", "camera"],
+      multiple: false,
+      resourceType: "image",
+      clientAllowedFormats: ["jpg", "jpeg", "png", "webp", "heic", "heif"],
+      maxImageFileSize: 10000000,
+      singleUploadAutoClose: true,
+      showAdvancedOptions: false,
+      showPoweredBy: false,
+      cropping: false
+    },
+    async (error, result) => {
+      if (error) {
+        console.error("Cloudinary upload error:", error);
+        alert("Upload failed.");
+        return;
+      }
+
+      if (!result || result.event !== "success") return;
+
+      try {
+        const info = result.info || {};
+        const secureUrl = info.secure_url || "";
+        if (!secureUrl) return;
+
+        await replacePhotoWithCloudinary(outreachId, photoId, {
+          url: secureUrl,
+          thumbUrl: makeCloudinaryCardThumb(secureUrl),
+          publicId: info.public_id || "",
+          format: info.format || "",
+          width: info.width || 0,
+          height: info.height || 0,
+          bytes: info.bytes || 0
+        });
+
+        alert("Photo moved to Cloudinary successfully.");
+      } catch (err) {
+        console.error(err);
+        alert("Upload succeeded, but updating the photo record failed.");
+      }
+    }
+  );
+
+  widget.open();
+}
+
+
+window.reuploadFirebasePhotoToCloudinary = reuploadFirebasePhotoToCloudinary;
+
 
   async function loadPhotoReactionsForOutreach(outreachId) {
   try {
@@ -3965,29 +4032,82 @@ function buildReactionSummaryPills(counts, extraClass = "", dataAttrs = "") {
 }
 
 
+function getPhotoSourceBadge(photo) {
+  return "";
+}
+
+function handleHybridImageError(img, fallback = "srm.png") {
+  if (!img) return;
+
+  const original = img.getAttribute("data-original-src") || "";
+  const backup = img.getAttribute("data-fallback-src") || fallback;
+
+  if (!img.dataset.errorStage) {
+    img.dataset.errorStage = "1";
+
+    if (original && original !== img.src && original !== backup) {
+      img.src = original;
+      img.style.objectFit = "contain";
+      img.style.background = "rgba(255,255,255,.03)";
+      return;
+    }
+  }
+
+  img.dataset.errorStage = "2";
+  img.onerror = null;
+  img.src = backup;
+  img.style.objectFit = "contain";
+  img.style.background = "rgba(255,255,255,.03)";
+}
+
+
 function buildGalleryHtml(outreach) {
-  const photos = outreach.photos || [];
+  const photos = Array.isArray(outreach.photos) ? outreach.photos : [];
   if (!photos.length) {
     return `<p class="smallmuted" style="margin:0;">No photos uploaded yet. Photos will appear here once posted by the outreach admin.</p>`;
   }
 
-  const galleryUrls = photos.map(photo => photo.url).filter(Boolean);
+  const galleryUrls = photos.map(photo => getBestFullPhotoUrl(photo)).filter(Boolean);
 
   return `
     <div class="gallery">
       <div class="gallery-track">
         ${photos.map(photo => {
           const reactionSummary = getPhotoReactionSummary(outreach.photoReactions, photo.id, outreach.id);
+          const bestThumb = getBestPhotoUrl(photo);
+          const bestFull = getBestFullPhotoUrl(photo);
+          const sourceBadge = getPhotoSourceBadge(photo);
 
           return `
             <div class="gitem">
-              <img
-                src="${escapeHtml(photo.url || "srm.png")}"
-                alt="${escapeHtml(photo.caption || "")}"
-                data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
-                loading="lazy"
-                onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-                onclick="openGalleryImage(this)">
+              <div class="gallery-image-wrap" style="position:relative;">
+                <img
+                  src="${escapeHtml(bestThumb)}"
+                  alt="${escapeHtml(photo.caption || "")}"
+                  data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+                  data-original-src="${escapeHtml(bestFull)}"
+                  data-fallback-src="srm.png"
+                  loading="lazy"
+                  onerror="handleHybridImageError(this, 'srm.png')"
+                  onclick="openGalleryImage(this)">
+
+                <span class="gallery-source-badge" style="
+                  position:absolute;
+                  top:10px;
+                  right:10px;
+                  padding:5px 10px;
+                  border-radius:999px;
+                  font-size:.72rem;
+                  font-weight:700;
+                  color:#fff;
+                  background:rgba(11,18,32,.78);
+                  border:1px solid rgba(255,255,255,.14);
+                  backdrop-filter:blur(8px);
+                  z-index:2;
+                ">
+                  ${escapeHtml(sourceBadge)}
+                </span>
+              </div>
 
               <div class="gcap">
                 ${outreachAdminState[outreach.id] ? `
@@ -5978,34 +6098,59 @@ async function uploadPhotos(outreachId) {
     return;
   }
 
+  if (!window.cloudinary) {
+    feedback.textContent = "Cloudinary uploader is not loaded.";
+    feedback.className = "smallmuted error-text";
+    return;
+  }
+
   try {
     feedback.textContent = "Preparing photo(s)...";
     feedback.className = "smallmuted";
 
     let uploadedCount = 0;
-    let failedNames = [];
+    const failedNames = [];
 
     for (const originalFile of files) {
       try {
         const file = await normalizeImageFile(originalFile);
 
-        const safeName = `${Date.now()}-${Math.random().toString(36).slice(2, 8)}-${file.name.replace(/\s+/g, "-")}`;
-        const storagePath = `outreach/${outreachId}/${safeName}`;
-        const storageRef = ref(storage, storagePath);
+        const formData = new FormData();
+        formData.append("file", file);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", `${CLOUDINARY_FOLDER}/${outreachId}`);
 
-        await uploadBytes(storageRef, file, {
-          contentType: file.type || "image/jpeg"
-        });
+        const response = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
 
-        const url = await getDownloadURL(storageRef);
+        const data = await response.json();
+
+        if (!response.ok || !data.secure_url) {
+          throw new Error(data?.error?.message || "Cloudinary upload failed.");
+        }
+
+        const secureUrl = data.secure_url || "";
+        const publicId = data.public_id || "";
 
         await addDoc(collection(db, "outreachPhotos"), {
           outreach: outreachId,
           caption,
-          url,
-          storagePath,
-          mimeType: file.type || "image/jpeg",
+          url: secureUrl,
+          thumbUrl: makeCloudinaryCardThumb(secureUrl),
+          publicId,
+          source: "cloudinary",
+          mimeType: file.type || data.format || "image/jpeg",
           fileName: file.name,
+          format: data.format || "",
+          width: Number(data.width || 0),
+          height: Number(data.height || 0),
+          bytes: Number(data.bytes || 0),
+          storagePath: "",
           createdAt: serverTimestamp(),
           uploadedBy: currentUser?.email || ""
         });
@@ -6021,7 +6166,7 @@ async function uploadPhotos(outreachId) {
     captionInput.value = "";
 
     if (uploadedCount && !failedNames.length) {
-      feedback.textContent = "Photo(s) uploaded successfully.";
+      feedback.textContent = "Photo(s) uploaded successfully to Cloudinary.";
       feedback.className = "smallmuted success-text";
     } else if (uploadedCount && failedNames.length) {
       feedback.textContent = `Uploaded ${uploadedCount} photo(s), but these failed: ${failedNames.join(", ")}`;
@@ -6209,6 +6354,8 @@ function updatePhotoManagerSelectAllState(outreachId) {
   }
 }
 
+
+
 function bindPhotoManagerSelectAll(outreachId) {
   const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
   const outreach = getOutreachById(outreachId);
@@ -6246,6 +6393,7 @@ window.openPhotoManagerModal = async function(outreachId) {
   const subtext = document.getElementById("photoManagerSubtext");
   const grid = document.getElementById("photoManagerGrid");
   const feedback = document.getElementById("photoManagerFeedback");
+  const moveBtn = document.getElementById("photoManagerMoveSelectedBtn");
   const deleteBtn = document.getElementById("photoManagerDeleteSelectedBtn");
 const selectAllWrap = document.getElementById("photoManagerSelectAllWrap");
 const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
@@ -6271,6 +6419,11 @@ const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
  if (deleteBtn) {
   if (allowDelete) deleteBtn.classList.remove("hidden");
   else deleteBtn.classList.add("hidden");
+}
+
+if (moveBtn) {
+  if (allowDelete) moveBtn.classList.remove("hidden");
+  else moveBtn.classList.add("hidden");
 }
 
 if (selectAllWrap) {
@@ -6305,6 +6458,11 @@ updatePhotoManagerSelectAllState(outreachId);
     if (deleteBtn) {
       deleteBtn.onclick = () => deleteSelectedPhotos(outreachId, true);
     }
+
+    if (moveBtn) {
+  moveBtn.onclick = () => moveSelectedPhotosToCloudinary(outreachId);
+    }
+
   } catch (error) {
     console.error("openPhotoManagerModal failed:", error);
     grid.innerHTML = `<p class="smallmuted error-text" style="margin:0;">Failed to load photos.</p>`;
@@ -6312,6 +6470,7 @@ updatePhotoManagerSelectAllState(outreachId);
     feedback.className = "smallmuted error-text";
   }
 };
+
 
 
 function renderPhotoManagerGrid(outreachId) {
@@ -6322,8 +6481,8 @@ function renderPhotoManagerGrid(outreachId) {
 
   if (!outreach || !grid) return;
 
-  const photos = outreach.photos || [];
-  const galleryUrls = photos.map(photo => photo.url).filter(Boolean);
+  const photos = Array.isArray(outreach.photos) ? outreach.photos : [];
+  const galleryUrls = photos.map(photo => getBestFullPhotoUrl(photo)).filter(Boolean);
 
   if (!photos.length) {
     grid.innerHTML = `<p class="smallmuted" style="margin:0;">No uploaded photos yet.</p>`;
@@ -6342,16 +6501,44 @@ function renderPhotoManagerGrid(outreachId) {
           reactionSummary.counts.wow ||
           reactionSummary.counts.amen;
 
+        const bestThumb = getBestPhotoUrl(photo);
+        const bestFull = getBestFullPhotoUrl(photo);
+        const sourceBadge = getPhotoSourceBadge(photo);
+        const isFirebasePhoto = detectPhotoSource(photo) === "firebase";
+
         return `
           <div class="photo-manager-card">
-            <img
-              src="${escapeHtml(photo.url || "srm.png")}"
-              alt="${escapeHtml(photo.caption || "")}"
-              data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
-              loading="lazy"
-              onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain';"
-              onclick="openGalleryImage(this)"
-            >
+            <div class="photo-card-image-wrap" style="position:relative;">
+              <img
+                src="${escapeHtml(bestThumb)}"
+                alt="${escapeHtml(photo.caption || "")}"
+                data-gallery='${escapeHtml(JSON.stringify(galleryUrls))}'
+                data-original-src="${escapeHtml(bestFull)}"
+                data-fallback-src="srm.png"
+                loading="lazy"
+                onerror="handleHybridImageError(this, 'srm.png')"
+                onclick="openGalleryImage(this)"
+              >
+
+              ${sourceBadge ? `
+                <span class="gallery-source-badge" style="
+                  position:absolute;
+                  top:10px;
+                  right:10px;
+                  padding:5px 10px;
+                  border-radius:999px;
+                  font-size:.72rem;
+                  font-weight:700;
+                  color:#fff;
+                  background:rgba(11,18,32,.78);
+                  border:1px solid rgba(255,255,255,.14);
+                  backdrop-filter:blur(8px);
+                  z-index:2;
+                ">
+                  ${escapeHtml(sourceBadge)}
+                </span>
+              ` : ""}
+            </div>
 
             <div class="photo-manager-body">
               ${allowDelete ? `
@@ -6367,13 +6554,25 @@ function renderPhotoManagerGrid(outreachId) {
                     Select
                   </label>
 
-                  <button
-                    class="danger-btn"
-                    type="button"
-                    style="padding:8px 10px;font-size:12px;"
-                    onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
-                    Delete
-                  </button>
+                  <div style="display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;">
+                    ${isFirebasePhoto ? `
+                      <button
+                        class="btn"
+                        type="button"
+                        style="padding:8px 10px;font-size:12px;"
+                        onclick="reuploadFirebasePhotoToCloudinary('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}')">
+                        Move to Cloudinary
+                      </button>
+                    ` : ""}
+
+                    <button
+                      class="danger-btn"
+                      type="button"
+                      style="padding:8px 10px;font-size:12px;"
+                      onclick="deleteSinglePhoto('${escapeHtml(outreachId)}','${escapeHtml(photo.id)}','${escapeHtml(photo.storagePath || "")}')">
+                      Delete
+                    </button>
+                  </div>
                 </div>
               ` : ""}
 
@@ -6479,32 +6678,85 @@ function renderPhotoManagerGrid(outreachId) {
   });
 }
 
+async function replacePhotoWithCloudinary(outreachId, photoId, cloudinaryData) {
+  const photoRef = doc(db, "outreachPhotos", photoId);
+  const snap = await getDoc(photoRef);
 
-function bindPhotoManagerCheckboxes() {
-  document.querySelectorAll(".photo-manager-check").forEach(box => {
-    if (box.dataset.bound === "true") return;
-    box.dataset.bound = "true";
+  if (!snap.exists()) {
+    throw new Error("Photo not found.");
+  }
 
-    box.addEventListener("change", () => {
-      const outreachId = box.dataset.outreach;
-      const photoId = box.dataset.id;
-      if (!outreachId || !photoId) return;
+  const photo = snap.data() || {};
 
-      if (!selectedPhotoIds[outreachId]) {
-        selectedPhotoIds[outreachId] = new Set();
-      }
-
-      if (box.checked) {
-        selectedPhotoIds[outreachId].add(photoId);
-      } else {
-        selectedPhotoIds[outreachId].delete(photoId);
-      }
-
-      updatePhotoManagerSelectAllState(outreachId);
-    });
+  await updateDoc(photoRef, {
+    url: cloudinaryData.url || photo.url || "",
+    thumbUrl: cloudinaryData.thumbUrl || makeCloudinaryCardThumb(cloudinaryData.url || ""),
+    publicId: cloudinaryData.publicId || "",
+    format: cloudinaryData.format || photo.format || "",
+    width: Number(cloudinaryData.width || photo.width || 0),
+    height: Number(cloudinaryData.height || photo.height || 0),
+    bytes: Number(cloudinaryData.bytes || photo.bytes || 0),
+    source: "cloudinary",
+    storagePath: "",
+    migratedFromFirebase: true,
+    migratedAt: Date.now(),
+    updatedAt: serverTimestamp()
   });
+
+  await loadOutreaches();
+  renderOutreaches();
+
+  if (typeof openPhotoManagerModal === "function") {
+    openPhotoManagerModal(outreachId);
+  }
 }
 
+window.replacePhotoWithCloudinary = replacePhotoWithCloudinary;
+
+function makeCloudinaryCardThumb(url) {
+  if (!url || typeof url !== "string") return "srm.png";
+  return url.replace("/upload/", "/upload/f_auto,q_auto,w_700,h_700,c_fit/");
+}
+
+
+function isFirebaseStorageUrl(url) {
+  return typeof url === "string" && (
+    url.includes("firebasestorage.googleapis.com") ||
+    url.includes("storage.googleapis.com")
+  );
+}
+
+function isCloudinaryUrl(url) {
+  return typeof url === "string" && url.includes("res.cloudinary.com");
+}
+
+function detectPhotoSource(photo) {
+  if (photo?.source) return String(photo.source).toLowerCase();
+
+  const url = photo?.url || "";
+  if (isCloudinaryUrl(url)) return "cloudinary";
+  if (isFirebaseStorageUrl(url)) return "firebase";
+  return "other";
+}
+
+function getBestPhotoUrl(photo) {
+  if (!photo) return "srm.png";
+
+  const source = detectPhotoSource(photo);
+  const rawUrl = photo.url || "";
+  const rawThumb = photo.thumbUrl || "";
+
+  if (source === "cloudinary") {
+    return rawThumb || makeCloudinaryCardThumb(rawUrl || "srm.png");
+  }
+
+  return rawThumb || rawUrl || "srm.png";
+}
+
+function getBestFullPhotoUrl(photo) {
+  if (!photo) return "srm.png";
+  return photo.url || photo.thumbUrl || "srm.png";
+}
 
   async function saveOutreachHistory(outreachId) {
     const feedback = document.getElementById(`${outreachId}-history-feedback`);
@@ -7603,6 +7855,149 @@ function getActiveMemberSession() {
   return null;
 }
 
+async function moveSelectedPhotosToCloudinary(outreachId) {
+  const selectedIds = Array.from(selectedPhotoIds[outreachId] || []);
+  if (!selectedIds.length) {
+    alert("Please select one or more photos first.");
+    return;
+  }
+
+  const outreach = getOutreachById(outreachId);
+  const photos = Array.isArray(outreach?.photos) ? outreach.photos : [];
+  const selectedPhotos = photos.filter(photo => selectedIds.includes(photo.id));
+  const firebasePhotos = selectedPhotos.filter(photo => detectPhotoSource(photo) === "firebase");
+
+  if (!firebasePhotos.length) {
+    alert("No selected Firebase photos to move.");
+    return;
+  }
+
+  if (!window.cloudinary) {
+    alert("Cloudinary uploader is not loaded.");
+    return;
+  }
+
+  const queue = firebasePhotos.map(photo => ({
+    id: photo.id,
+    caption: photo.caption || "",
+    sourceUrl: photo.url || ""
+  }));
+
+  let currentIndex = 0;
+  let successCount = 0;
+  let skippedCount = 0;
+
+  async function openNextWidget() {
+    if (currentIndex >= queue.length) {
+      await loadOutreaches();
+      renderOutreaches();
+
+      if (typeof openPhotoManagerModal === "function") {
+        await openPhotoManagerModal(outreachId);
+      }
+
+      alert(`Done. Moved ${successCount} photo(s). Skipped ${skippedCount}.`);
+      return;
+    }
+
+    const item = queue[currentIndex];
+    currentIndex++;
+
+    const widget = window.cloudinary.createUploadWidget(
+      {
+        cloudName: CLOUDINARY_CLOUD_NAME,
+        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
+        folder: `${CLOUDINARY_FOLDER}/${outreachId}`,
+        sources: ["local", "camera"],
+        multiple: false,
+        resourceType: "image",
+        clientAllowedFormats: ["jpg", "jpeg", "png", "webp", "heic", "heif"],
+        maxImageFileSize: 10000000,
+        singleUploadAutoClose: true,
+        showAdvancedOptions: false,
+        showPoweredBy: false,
+        cropping: false
+      },
+      async (error, result) => {
+        if (error) {
+          console.error("Cloudinary upload error:", error);
+          skippedCount++;
+          await openNextWidget();
+          return;
+        }
+
+        if (!result) return;
+
+        if (result.event === "close") {
+          skippedCount++;
+          await openNextWidget();
+          return;
+        }
+
+        if (result.event !== "success") return;
+
+        try {
+          const info = result.info || {};
+          const secureUrl = info.secure_url || "";
+
+          if (!secureUrl) {
+            skippedCount++;
+            await openNextWidget();
+            return;
+          }
+
+          await replacePhotoWithCloudinary(outreachId, item.id, {
+            url: secureUrl,
+            thumbUrl: makeCloudinaryCardThumb(secureUrl),
+            publicId: info.public_id || "",
+            format: info.format || "",
+            width: info.width || 0,
+            height: info.height || 0,
+            bytes: info.bytes || 0
+          });
+
+          successCount++;
+        } catch (err) {
+          console.error("Bulk move failed for photo:", item.id, err);
+          skippedCount++;
+        }
+
+        await openNextWidget();
+      }
+    );
+
+    widget.open();
+  }
+
+  await openNextWidget();
+}
+
+window.moveSelectedPhotosToCloudinary = moveSelectedPhotosToCloudinary;
+
+
+function bindPhotoManagerCheckboxes() {
+  document.querySelectorAll(".photo-manager-check").forEach(cb => {
+    if (cb.dataset.bound === "true") return;
+    cb.dataset.bound = "true";
+
+    cb.addEventListener("change", () => {
+      const outreachId = cb.dataset.outreach;
+      const photoId = cb.dataset.id;
+
+      if (!selectedPhotoIds[outreachId]) {
+        selectedPhotoIds[outreachId] = new Set();
+      }
+
+      if (cb.checked) {
+        selectedPhotoIds[outreachId].add(photoId);
+      } else {
+        selectedPhotoIds[outreachId].delete(photoId);
+      }
+
+      updatePhotoManagerSelectAllState(outreachId);
+    });
+  });
+}
 
 function getMemberNewsPostPanelHtml(outreachId = "") {
   const memberInfo = getActiveMemberNewsInfo(outreachId);
@@ -9701,6 +10096,10 @@ async function clearLiveStream(outreachId) {
         <p id="photoManagerSubtext" class="smallmuted" style="margin:6px 0 0;">All uploaded photos</p>
       </div>
 
+      <button id="photoManagerMoveSelectedBtn" class="btn hidden" type="button">
+  Move Selected to Cloudinary
+</button>
+
       <div class="toolbar-row">
         <label id="photoManagerSelectAllWrap" class="select-chip hidden" style="cursor:pointer;">
           <input id="photoManagerSelectAllCheckbox" type="checkbox">
@@ -9710,6 +10109,7 @@ async function clearLiveStream(outreachId) {
         <button id="photoManagerDeleteSelectedBtn" class="danger-btn hidden" type="button">
           Delete Selected
         </button>
+        
 
         <button class="ghost-btn" type="button" onclick="closePhotoManagerModal()">
           Close
