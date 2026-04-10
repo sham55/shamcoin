@@ -3757,6 +3757,68 @@ function getOutreachDisplayName(outreachId) {
   }
 }
 
+async function loadMorePhotoManagerPhotos(outreachId) {
+  try {
+    const outreach = getOutreachById(outreachId);
+    if (!outreach) return;
+
+    const feedback = document.getElementById("photoManagerFeedback");
+    const subtext = document.getElementById("photoManagerSubtext");
+
+    if (feedback) {
+      feedback.textContent = "Loading more photos...";
+      feedback.className = "smallmuted";
+    }
+
+    const morePhotos = await loadMorePhotosForOutreach(outreachId, 12);
+
+    if (!Array.isArray(morePhotos) || !morePhotos.length) {
+      if (feedback) {
+        feedback.textContent = "No more photos available.";
+        feedback.className = "smallmuted";
+      }
+      renderPhotoManagerGrid(outreachId);
+      return;
+    }
+
+    const currentPhotos = Array.isArray(outreach.photos) ? outreach.photos : [];
+    const merged = [...currentPhotos];
+
+    morePhotos.forEach(photo => {
+      if (!merged.some(item => String(item.id) === String(photo.id))) {
+        merged.push(photo);
+      }
+    });
+
+    outreach.photos = merged;
+
+    renderPhotoManagerGrid(outreachId);
+
+    if (subtext) {
+      subtext.textContent = `${merged.length} loaded photo(s)`;
+      if (!photoPagingState[outreachId]?.done) {
+        subtext.textContent += ` • More available`;
+      }
+    }
+
+    if (feedback) {
+      feedback.textContent = photoPagingState[outreachId]?.done
+        ? "All photos loaded."
+        : "More photos loaded.";
+      feedback.className = "smallmuted success-text";
+    }
+  } catch (error) {
+    console.error("loadMorePhotoManagerPhotos failed:", error);
+
+    const feedback = document.getElementById("photoManagerFeedback");
+    if (feedback) {
+      feedback.textContent = "Load more failed: " + error.message;
+      feedback.className = "smallmuted error-text";
+    }
+  }
+}
+
+window.loadMorePhotoManagerPhotos = loadMorePhotoManagerPhotos;
 
 async function loadMorePhotosForOutreach(outreachId, pageSize = 12) {
   try {
@@ -6357,23 +6419,26 @@ function updatePhotoManagerSelectAllState(outreachId) {
 
 
 function bindPhotoManagerSelectAll(outreachId) {
-  const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
+  const oldBox = document.getElementById("photoManagerSelectAllCheckbox");
   const outreach = getOutreachById(outreachId);
 
-  if (!outreachAdminState[outreachId]) return;
-  if (!selectAllBox || !outreach) return;
-  if (selectAllBox.dataset.bound === "true") return;
+  if (!oldBox || !outreach) return;
+  if (!outreachAdminState[outreachId] && !isSuperAdmin) return;
 
-  selectAllBox.dataset.bound = "true";
+  const newBox = oldBox.cloneNode(true);
+  oldBox.parentNode.replaceChild(newBox, oldBox);
 
-  selectAllBox.addEventListener("change", () => {
-    const photos = outreach.photos || [];
+  newBox.checked = false;
+  newBox.indeterminate = false;
+
+  newBox.addEventListener("change", () => {
+    const photos = Array.isArray(outreach.photos) ? outreach.photos : [];
 
     if (!selectedPhotoIds[outreachId]) {
       selectedPhotoIds[outreachId] = new Set();
     }
 
-    if (selectAllBox.checked) {
+    if (newBox.checked) {
       photos.forEach(photo => {
         if (photo.id) selectedPhotoIds[outreachId].add(photo.id);
       });
@@ -6384,6 +6449,7 @@ function bindPhotoManagerSelectAll(outreachId) {
     }
 
     renderPhotoManagerGrid(outreachId);
+    updatePhotoManagerSelectAllState(outreachId);
   });
 }
 
@@ -6393,10 +6459,10 @@ window.openPhotoManagerModal = async function(outreachId) {
   const subtext = document.getElementById("photoManagerSubtext");
   const grid = document.getElementById("photoManagerGrid");
   const feedback = document.getElementById("photoManagerFeedback");
-  const moveBtn = document.getElementById("photoManagerMoveSelectedBtn");
   const deleteBtn = document.getElementById("photoManagerDeleteSelectedBtn");
-const selectAllWrap = document.getElementById("photoManagerSelectAllWrap");
-const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
+  const moveBtn = document.getElementById("photoManagerMoveSelectedBtn");
+  const selectAllWrap = document.getElementById("photoManagerSelectAllWrap");
+  const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
 
   if (!modal || !grid) return;
 
@@ -6411,48 +6477,58 @@ const selectAllBox = document.getElementById("photoManagerSelectAllCheckbox");
 
   const allowDelete = !!outreachAdminState[outreachId];
 
-  title.textContent = `${outreach.name} Photo Gallery`;
-  subtext.textContent = `Loading photos...`;
-  feedback.textContent = "";
-  feedback.className = "smallmuted";
+  if (title) {
+    title.textContent = `${outreach.name} Photo Gallery`;
+  }
 
- if (deleteBtn) {
-  if (allowDelete) deleteBtn.classList.remove("hidden");
-  else deleteBtn.classList.add("hidden");
-}
+  if (subtext) {
+    subtext.textContent = `Loading photos...`;
+  }
 
-if (moveBtn) {
-  if (allowDelete) moveBtn.classList.remove("hidden");
-  else moveBtn.classList.add("hidden");
-}
+  if (feedback) {
+    feedback.textContent = "";
+    feedback.className = "smallmuted";
+  }
 
-if (selectAllWrap) {
-  if (allowDelete) selectAllWrap.classList.remove("hidden");
-  else selectAllWrap.classList.add("hidden");
-}
+  if (deleteBtn) {
+    if (allowDelete) deleteBtn.classList.remove("hidden");
+    else deleteBtn.classList.add("hidden");
+  }
 
-if (selectAllBox) {
-  selectAllBox.checked = false;
-  selectAllBox.indeterminate = false;
-  selectAllBox.dataset.bound = "false";
-}
+  if (moveBtn) {
+    if (allowDelete) moveBtn.classList.remove("hidden");
+    else moveBtn.classList.add("hidden");
+  }
+
+  if (selectAllWrap) {
+    if (allowDelete) selectAllWrap.classList.remove("hidden");
+    else selectAllWrap.classList.add("hidden");
+  }
+
+  if (selectAllBox) {
+    selectAllBox.checked = false;
+    selectAllBox.indeterminate = false;
+    selectAllBox.dataset.bound = "false";
+  }
 
   grid.innerHTML = `<p class="smallmuted" style="margin:0;">Loading photos...</p>`;
   modal.classList.add("active");
 
   try {
     const firstPage = await loadPhotosForOutreach(outreachId, outreach.fallbackPhotos || [], 12);
-
     const mergedPhotos = firstPage.length ? firstPage : (outreach.fallbackPhotos || []);
+
     outreach.photos = mergedPhotos;
 
     renderPhotoManagerGrid(outreachId);
     bindPhotoManagerSelectAll(outreachId);
-updatePhotoManagerSelectAllState(outreachId);
+    updatePhotoManagerSelectAllState(outreachId);
 
-    subtext.textContent = `${mergedPhotos.length} loaded photo(s)`;
-    if (!photoPagingState[outreachId]?.done) {
-      subtext.textContent += ` • More available`;
+    if (subtext) {
+      subtext.textContent = `${mergedPhotos.length} loaded photo(s)`;
+      if (!photoPagingState[outreachId]?.done) {
+        subtext.textContent += ` • More available`;
+      }
     }
 
     if (deleteBtn) {
@@ -6460,14 +6536,16 @@ updatePhotoManagerSelectAllState(outreachId);
     }
 
     if (moveBtn) {
-  moveBtn.onclick = () => moveSelectedPhotosToCloudinary(outreachId);
+      moveBtn.onclick = () => moveSelectedPhotosToCloudinary(outreachId);
     }
-
   } catch (error) {
     console.error("openPhotoManagerModal failed:", error);
     grid.innerHTML = `<p class="smallmuted error-text" style="margin:0;">Failed to load photos.</p>`;
-    feedback.textContent = error.message || "Failed to load photos.";
-    feedback.className = "smallmuted error-text";
+
+    if (feedback) {
+      feedback.textContent = error.message || "Failed to load photos.";
+      feedback.className = "smallmuted error-text";
+    }
   }
 };
 
@@ -7962,116 +8040,113 @@ async function moveSelectedPhotosToCloudinary(outreachId) {
 
   const outreach = getOutreachById(outreachId);
   const photos = Array.isArray(outreach?.photos) ? outreach.photos : [];
-  const selectedPhotos = photos.filter(photo => selectedIds.includes(photo.id));
-  const firebasePhotos = selectedPhotos.filter(photo => detectPhotoSource(photo) === "firebase");
+  const firebasePhotos = photos.filter(photo =>
+    selectedIds.includes(photo.id) && detectPhotoSource(photo) === "firebase"
+  );
 
   if (!firebasePhotos.length) {
     alert("No selected Firebase photos to move.");
     return;
   }
 
-  if (!window.cloudinary) {
-    alert("Cloudinary uploader is not loaded.");
-    return;
-  }
-
-  const queue = firebasePhotos.map(photo => ({
-    id: photo.id,
-    caption: photo.caption || "",
-    sourceUrl: photo.url || ""
-  }));
-
-  let currentIndex = 0;
+  const feedback = document.getElementById("photoManagerFeedback");
   let successCount = 0;
-  let skippedCount = 0;
+  const failed = [];
 
-  async function openNextWidget() {
-    if (currentIndex >= queue.length) {
-      await loadOutreaches();
-      renderOutreaches();
+  try {
+    for (let i = 0; i < firebasePhotos.length; i++) {
+      const photo = firebasePhotos[i];
 
-      if (typeof openPhotoManagerModal === "function") {
-        await openPhotoManagerModal(outreachId);
+      if (feedback) {
+        feedback.textContent = `Migrating ${i + 1} of ${firebasePhotos.length} photo(s) to Cloudinary...`;
+        feedback.className = "smallmuted";
       }
 
-      alert(`Done. Moved ${successCount} photo(s). Skipped ${skippedCount}.`);
-      return;
+      try {
+        const response = await fetch(photo.url, { mode: "cors" });
+        if (!response.ok) {
+          throw new Error(`Failed to fetch old Firebase photo: ${response.status}`);
+        }
+
+        const blob = await response.blob();
+
+        const guessedName =
+          photo.fileName ||
+          `${(photo.caption || photo.id || "photo").replace(/[^\w\-]+/g, "_")}.jpg`;
+
+        const formData = new FormData();
+        formData.append("file", blob, guessedName);
+        formData.append("upload_preset", CLOUDINARY_UPLOAD_PRESET);
+        formData.append("folder", `${CLOUDINARY_FOLDER}/${outreachId}`);
+
+        const uploadResponse = await fetch(
+          `https://api.cloudinary.com/v1_1/${CLOUDINARY_CLOUD_NAME}/image/upload`,
+          {
+            method: "POST",
+            body: formData
+          }
+        );
+
+        const uploaded = await uploadResponse.json();
+
+        if (!uploadResponse.ok || !uploaded.secure_url) {
+          throw new Error(uploaded?.error?.message || "Cloudinary upload failed.");
+        }
+
+        await replacePhotoWithCloudinary(outreachId, photo.id, {
+          url: uploaded.secure_url,
+          thumbUrl: makeCloudinaryCardThumb(uploaded.secure_url),
+          publicId: uploaded.public_id || "",
+          format: uploaded.format || "",
+          width: uploaded.width || 0,
+          height: uploaded.height || 0,
+          bytes: uploaded.bytes || 0
+        });
+
+        successCount++;
+      } catch (err) {
+        console.error("Outreach photo migration failed:", photo.id, err);
+        failed.push({
+          id: photo.id,
+          caption: photo.caption || "",
+          error: err.message || "Unknown error"
+        });
+      }
     }
 
-    const item = queue[currentIndex];
-    currentIndex++;
+    await loadOutreaches();
+    renderOutreaches();
 
-    const widget = window.cloudinary.createUploadWidget(
-      {
-        cloudName: CLOUDINARY_CLOUD_NAME,
-        uploadPreset: CLOUDINARY_UPLOAD_PRESET,
-        folder: `${CLOUDINARY_FOLDER}/${outreachId}`,
-        sources: ["local", "camera"],
-        multiple: false,
-        resourceType: "image",
-        clientAllowedFormats: ["jpg", "jpeg", "png", "webp", "heic", "heif"],
-        maxImageFileSize: 10000000,
-        singleUploadAutoClose: true,
-        showAdvancedOptions: false,
-        showPoweredBy: false,
-        cropping: false
-      },
-      async (error, result) => {
-        if (error) {
-          console.error("Cloudinary upload error:", error);
-          skippedCount++;
-          await openNextWidget();
-          return;
-        }
+    if (typeof openPhotoManagerModal === "function") {
+      await openPhotoManagerModal(outreachId);
+    }
 
-        if (!result) return;
-
-        if (result.event === "close") {
-          skippedCount++;
-          await openNextWidget();
-          return;
-        }
-
-        if (result.event !== "success") return;
-
-        try {
-          const info = result.info || {};
-          const secureUrl = info.secure_url || "";
-
-          if (!secureUrl) {
-            skippedCount++;
-            await openNextWidget();
-            return;
-          }
-
-          await replacePhotoWithCloudinary(outreachId, item.id, {
-            url: secureUrl,
-            thumbUrl: makeCloudinaryCardThumb(secureUrl),
-            publicId: info.public_id || "",
-            format: info.format || "",
-            width: info.width || 0,
-            height: info.height || 0,
-            bytes: info.bytes || 0
-          });
-
-          successCount++;
-        } catch (err) {
-          console.error("Bulk move failed for photo:", item.id, err);
-          skippedCount++;
-        }
-
-        await openNextWidget();
+    if (feedback) {
+      if (!failed.length) {
+        feedback.textContent = `Successfully moved ${successCount} photo(s) to Cloudinary.`;
+        feedback.className = "smallmuted success-text";
+      } else {
+        feedback.textContent = `Moved ${successCount} photo(s). Failed: ${failed.length}. Check console for details.`;
+        feedback.className = "smallmuted error-text";
       }
-    );
+    }
 
-    widget.open();
+    if (failed.length) {
+      alert(`Moved ${successCount} photo(s) to Cloudinary. Failed: ${failed.length}.`);
+    } else {
+      alert(`Moved ${successCount} photo(s) to Cloudinary successfully.`);
+    }
+  } catch (error) {
+    console.error("Bulk outreach photo migration failed:", error);
+    if (feedback) {
+      feedback.textContent = `Bulk migration failed: ${error.message}`;
+      feedback.className = "smallmuted error-text";
+    }
+    alert("Bulk migration failed: " + error.message);
   }
-
-  await openNextWidget();
 }
 
 window.moveSelectedPhotosToCloudinary = moveSelectedPhotosToCloudinary;
-
 
 function bindPhotoManagerCheckboxes() {
   document.querySelectorAll(".photo-manager-check").forEach(cb => {
