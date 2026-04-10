@@ -3302,15 +3302,32 @@ generalAnnouncementsList: document.getElementById("generalAnnouncementsList"),
   await handleLogout();
 };
 
-  window.openLightbox = function(src, gallery = []) {
+window.openLightbox = function(src, gallery = [], startIndex = -1) {
   const imgEl = document.getElementById("lightbox-img");
   const lightbox = document.getElementById("lightbox");
 
-  lightboxImages = Array.isArray(gallery) && gallery.length ? gallery : [src];
-  lightboxIndex = Math.max(0, lightboxImages.indexOf(src));
-  if (lightboxIndex < 0) lightboxIndex = 0;
+  if (!imgEl || !lightbox) return;
 
-  imgEl.src = lightboxImages[lightboxIndex];
+  lightboxImages = Array.isArray(gallery) && gallery.length ? gallery.map(url => String(url || "").trim()) : [String(src || "srm.png").trim()];
+
+  const normalizedSrc = String(src || "").trim();
+
+  if (typeof startIndex === "number" && startIndex >= 0 && startIndex < lightboxImages.length) {
+    lightboxIndex = startIndex;
+  } else {
+    lightboxIndex = lightboxImages.findIndex(url => url === normalizedSrc);
+
+    if (lightboxIndex < 0) {
+      const baseSrc = normalizedSrc.split("?")[0];
+      lightboxIndex = lightboxImages.findIndex(url => String(url || "").split("?")[0] === baseSrc);
+    }
+
+    if (lightboxIndex < 0) {
+      lightboxIndex = 0;
+    }
+  }
+
+  imgEl.src = lightboxImages[lightboxIndex] || normalizedSrc || "srm.png";
   lightbox.classList.add("active");
 };
 
@@ -3334,6 +3351,7 @@ window.nextLightboxImage = function() {
   lightboxIndex = (lightboxIndex + 1) % lightboxImages.length;
   document.getElementById("lightbox-img").src = lightboxImages[lightboxIndex];
 };
+
 
   function escapeHtml(str) {
     return String(str || "").replace(/[&<>"']/g, m => ({
@@ -9258,7 +9276,9 @@ window.memberNameLogin = async function () {
 };
 
 window.openGalleryImage = function(imgEl) {
-  const src = imgEl.getAttribute("src");
+  const src =
+    imgEl.getAttribute("data-original-src") || imgEl.src || "srm.png";
+
   let gallery = [];
 
   try {
@@ -9267,30 +9287,23 @@ window.openGalleryImage = function(imgEl) {
     gallery = [src];
   }
 
-  window.openLightbox(src, gallery);
-};
+  // normalize gallery
+  gallery = gallery.map(url => String(url || "").trim());
 
-let lastScroll = 0;
+  // find correct index
+  let index = gallery.findIndex(url => url === src);
 
-window.addEventListener("scroll", () => {
-
-  const nav = document.querySelector(".nav");
-  const currentScroll = window.pageYOffset;
-
-  if (!nav) return;
-
-  // scrolling down
-  if (currentScroll > lastScroll && currentScroll > 80) {
-    nav.classList.add("nav-hidden");
-  } 
-  // scrolling up
-  else {
-    nav.classList.remove("nav-hidden");
+  // fallback (ignore query params)
+  if (index < 0) {
+    const baseSrc = src.split("?")[0];
+    index = gallery.findIndex(url => url.split("?")[0] === baseSrc);
   }
 
-  lastScroll = currentScroll;
+  // fallback again
+  if (index < 0) index = 0;
 
-});
+  window.openLightbox(gallery[index], gallery, index);
+};
 
 
 async function saveGeneralAnnouncement() {
