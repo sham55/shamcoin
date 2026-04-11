@@ -3163,6 +3163,7 @@ section{
   where,
   limit,
   startAfter,
+   writeBatch,
 } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-firestore.js";
   import { getStorage, ref, uploadBytes, getDownloadURL, deleteObject, getBlob } from "https://www.gstatic.com/firebasejs/10.12.5/firebase-storage.js";
   import { firebaseConfig } from "./firebase-config.js";
@@ -3790,25 +3791,28 @@ async function loadMorePhotoManagerPhotos(outreachId) {
 
     const morePhotos = await loadMorePhotosForOutreach(outreachId, 12);
 
-    if (!Array.isArray(morePhotos) || !morePhotos.length) {
-      if (feedback) {
-        feedback.textContent = "No more photos available.";
-        feedback.className = "smallmuted";
-      }
-      renderPhotoManagerGrid(outreachId);
-      return;
-    }
-
     const currentPhotos = Array.isArray(outreach.photos) ? outreach.photos : [];
-    const merged = [...currentPhotos];
+const merged = [...currentPhotos];
 
-    morePhotos.forEach(photo => {
-      if (!merged.some(item => String(item.id) === String(photo.id))) {
-        merged.push(photo);
-      }
-    });
+morePhotos.forEach(photo => {
+  const cleanUrl = String(photo?.url || "").split("?")[0];
 
-    outreach.photos = merged;
+  const exists = merged.some(existing => {
+    const existingUrl = String(existing?.url || "").split("?")[0];
+
+    return (
+      String(existing?.id || "") === String(photo?.id || "") || // same Firestore doc
+      existingUrl === cleanUrl || // same image file (IMPORTANT)
+      String(existing?.publicId || "") === String(photo?.publicId || "") // Cloudinary
+    );
+  });
+
+  if (!exists) {
+    merged.push(photo);
+  }
+});
+
+outreach.photos = merged;
 
     renderPhotoManagerGrid(outreachId);
 
@@ -3820,10 +3824,12 @@ async function loadMorePhotoManagerPhotos(outreachId) {
     }
 
     if (feedback) {
-      feedback.textContent = photoPagingState[outreachId]?.done
-        ? "All photos loaded."
-        : "More photos loaded.";
-      feedback.className = "smallmuted success-text";
+      feedback.textContent = morePhotos.length
+        ? "More photos loaded."
+        : "No more photos available.";
+      feedback.className = morePhotos.length
+        ? "smallmuted success-text"
+        : "smallmuted";
     }
   } catch (error) {
     console.error("loadMorePhotoManagerPhotos failed:", error);
@@ -6406,7 +6412,7 @@ function updatePhotoManagerSelectAllState(outreachId) {
 
   if (!selectAllWrap || !selectAllBox || !outreach) return;
 
-  const photos = outreach.photos || [];
+  const photos = dedupePhotos(outreach.photos || []);
   const selectablePhotos = photos.filter(photo => photo.id);
 
   if (!outreachAdminState[outreachId] || !selectablePhotos.length) {
@@ -6535,8 +6541,7 @@ window.openPhotoManagerModal = async function(outreachId) {
   try {
     const firstPage = await loadPhotosForOutreach(outreachId, outreach.fallbackPhotos || [], 12);
     const mergedPhotos = firstPage.length ? firstPage : (outreach.fallbackPhotos || []);
-
-    outreach.photos = mergedPhotos;
+outreach.photos = dedupePhotos(mergedPhotos);
 
     renderPhotoManagerGrid(outreachId);
     bindPhotoManagerSelectAll(outreachId);
@@ -6566,6 +6571,24 @@ window.openPhotoManagerModal = async function(outreachId) {
     }
   }
 };
+
+
+function dedupePhotos(photos = []) {
+  const map = new Map();
+
+  photos.forEach(photo => {
+    const key =
+      (photo.publicId && `pid-${photo.publicId}`) ||
+      (photo.url && `url-${photo.url.split("?")[0]}`) ||
+      `id-${photo.id}`;
+
+    if (!map.has(key)) {
+      map.set(key, photo);
+    }
+  });
+
+  return Array.from(map.values());
+}
 
 
 
@@ -7872,7 +7895,100 @@ async function loadNewsUpdates() {
   }
 }
 
+async function cleanDuplicateOutreachPhotos() {
+  if (!currentUser || !isSuperAdmin) {
+    alert("Only super admin can run duplicate cleanup.");
+    return;
+  }
 
+  if (!confirm("Clean duplicate outreach photos? This will delete older duplicate photo documents.")) {
+    return;
+  }
+
+  try {
+    const snap = await getDocs(query(collection(db, "outreachPhotos"), orderBy("createdAt", "desc")));
+    const allPhotos = snap.docs.map(docSnap => ({
+      id: docSnap.id,
+      ...docSnap.data()
+    }));
+
+    const groups = new Map();
+
+    for (const photo of allPhotos) {
+      const outreach = String(photo.outreach || "").trim().toLowerCase();
+      const publicId = String(photo.publicId || "").trim();
+      const baseUrl = String(photo.url || "").split("?")[0].trim().toLowerCase();
+      const caption = String(photo.caption || "").trim().toLowerCase();
+
+      const key =
+        publicId
+          ? `${outreach}__publicid__${publicId}`
+          : `${outreach}__url__${baseUrl}__caption__${caption}`;
+
+      if (!groups.has(key)) {
+        groups.set(key, []);
+      }
+
+      groups.get(key).push(photo);
+    }
+
+    const toDelete = [];
+
+    for (const [, items] of groups.entries()) {
+      if (items.length <= 1) continue;
+
+      const sorted = [...items].sort((a, b) => {
+        const aTime =
+          a.updatedAt?.toMillis?.() ||
+          a.createdAt?.toMillis?.() ||
+          a.migratedAt?.toMillis?.() ||
+          0;
+
+        const bTime =
+          b.updatedAt?.toMillis?.() ||
+          b.createdAt?.toMillis?.() ||
+          b.migratedAt?.toMillis?.() ||
+          0;
+
+        return bTime - aTime;
+      });
+
+      const keep = sorted[0];
+      const duplicates = sorted.slice(1);
+
+      console.log("Keeping photo:", keep.id, keep.url);
+      duplicates.forEach(item => {
+        console.log("Deleting duplicate:", item.id, item.url);
+        toDelete.push(item);
+      });
+    }
+
+    if (!toDelete.length) {
+      alert("No duplicate outreach photos found.");
+      return;
+    }
+
+    const batchSize = 200;
+    for (let i = 0; i < toDelete.length; i += batchSize) {
+      const chunk = toDelete.slice(i, i + batchSize);
+      const batch = writeBatch(db);
+
+      chunk.forEach(photo => {
+        batch.delete(doc(db, "outreachPhotos", photo.id));
+      });
+
+      await batch.commit();
+    }
+
+    alert(`Deleted ${toDelete.length} duplicate outreach photo document(s).`);
+    await initPage();
+  } catch (error) {
+    console.error("cleanDuplicateOutreachPhotos failed:", error);
+    alert("Duplicate cleanup failed: " + error.message);
+  }
+}
+
+window.cleanDuplicateOutreachPhotos = cleanDuplicateOutreachPhotos;
 
 function renderNewsUpdates() {
   const grid = document.getElementById("newsUpdatesGrid");
