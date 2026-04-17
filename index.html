@@ -4516,57 +4516,90 @@ function getPhotoReactionUsers(reactions, photoId) {
 
 
   function buildMemberList(outreach) {
-    if (!outreach.members?.length) {
-      return `<p class="smallmuted" style="margin-top:10px;">No members yet in this outreach.</p>`;
-    }
-
-    return `
-      <div class="member-list">
-        ${outreach.members.map(m => `
-          <div class="member-tag">
-            <img class="member-avatar" src="${escapeHtml(m.photoUrl || "srm.png")}" alt="${escapeHtml(m.fullName || "Member")}" onclick="openLightbox(this.src)">
-            <span>${escapeHtml(m.fullName || "Member")}</span>
-          </div>
-        `).join("")}
-      </div>
-    `;
+  if (!outreach.members?.length) {
+    return `<p class="smallmuted" style="margin-top:10px;">No members yet in this outreach.</p>`;
   }
 
-  function buildMemberAdminList(outreach) {
-    if (!outreach.members?.length) {
-      return `<p class="smallmuted" style="margin:0;">No member signups yet.</p>`;
-    }
-
-    return `
-      ${outreach.members.map(member => {
-        const savedName = getSavedMemberSession(outreach.id);
-        const memberName = normalizeMemberName(member.normalizedName || member.fullName || "");
-        const isMe = savedName && savedName === memberName;
+  return `
+    <div class="member-list">
+      ${outreach.members.map(m => {
+        const photoUrl = (m.photoUrl || "").trim();
 
         return `
-          <div class="member-card">
-            <div style="display:flex;align-items:center;gap:12px;">
-              <img class="member-avatar big" src="${escapeHtml(member.photoUrl || "srm.png")}" alt="${escapeHtml(member.fullName || "Member")}" onclick="openLightbox(this.src)">
-              <div>
-                <strong style="color:var(--gold2)">${escapeHtml(member.fullName || "Unnamed member")}</strong><br>
-                <span class="smallmuted">${isMe ? "You" : ""}</span>
-              </div>
-            </div>
-            <div class="member-actions">
-              ${isMe ? `
-                <button
-                  class="danger-btn remove-my-member-btn"
-                  type="button"
-                  onclick="removeMyMembership('${escapeHtml(outreach.id)}','${escapeHtml(member.id)}','${escapeHtml(member.photoStoragePath || "")}')">
-                  Remove My Name
-                </button>
-              ` : ""}
-            </div>
+          <div class="member-tag">
+            ${
+              photoUrl
+                ? `
+                  <img
+                    class="member-avatar"
+                    src="${escapeHtml(photoUrl)}"
+                    alt="${escapeHtml(m.fullName || "Member")}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    onclick="openLightbox(this.src)"
+                    onerror="this.onerror=null;this.style.display='none';"
+                  >
+                `
+                : ``
+            }
+            <span>${escapeHtml(m.fullName || "Member")}</span>
           </div>
         `;
       }).join("")}
-    `;
+    </div>
+  `;
+}
+
+function buildMemberAdminList(outreach) {
+  if (!outreach.members?.length) {
+    return `<p class="smallmuted" style="margin:0;">No member signups yet.</p>`;
   }
+
+  return `
+    ${outreach.members.map(member => {
+      const savedName = getSavedMemberSession(outreach.id);
+      const memberName = normalizeMemberName(member.normalizedName || member.fullName || "");
+      const isMe = savedName && savedName === memberName;
+      const photoUrl = (member.photoUrl || "").trim();
+
+      return `
+        <div class="member-card">
+          <div style="display:flex;align-items:center;gap:12px;">
+            ${
+              photoUrl
+                ? `
+                  <img
+                    class="member-avatar big"
+                    src="${escapeHtml(photoUrl)}"
+                    alt="${escapeHtml(member.fullName || "Member")}"
+                    loading="lazy"
+                    referrerpolicy="no-referrer"
+                    onclick="openLightbox(this.src)"
+                    onerror="this.onerror=null;this.style.display='none';"
+                  >
+                `
+                : ``
+            }
+            <div>
+              <strong style="color:var(--gold2)">${escapeHtml(member.fullName || "Unnamed member")}</strong><br>
+              <span class="smallmuted">${isMe ? "You" : ""}</span>
+            </div>
+          </div>
+          <div class="member-actions">
+            ${isMe ? `
+              <button
+                class="danger-btn remove-my-member-btn"
+                type="button"
+                onclick="removeMyMembership('${escapeHtml(outreach.id)}','${escapeHtml(member.id)}','${escapeHtml(member.photoStoragePath || "")}')">
+                Remove My Name
+              </button>
+            ` : ""}
+          </div>
+        </div>
+      `;
+    }).join("")}
+  `;
+}
 
  function buildAdminSection(outreach) {
   if (!outreachAdminState[outreach.id] && !isSuperAdmin) return "";
@@ -8082,7 +8115,16 @@ function renderNewsUpdates() {
                 ` : `
                   <img
                     class="news-thumb"
-                    src="${escapeHtml(item.imageUrl || "srm.png")}"
+                    ${item.imageUrl ? `
+  <img
+    class="news-thumb"
+    src="${escapeHtml(item.imageUrl)}"
+    alt="${escapeHtml(item.title || "News image")}"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+    onerror="this.onerror=null;this.style.display='none';"
+  >
+` : ``}
                     alt="${escapeHtml(item.title || "News update")}"
                     onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
                   >
@@ -9643,7 +9685,6 @@ async function saveInlineMinistryScope(outreachId) {
 }
 
 
-
 async function loadWorkers(outreachId) {
   const list = document.getElementById(`workers-${outreachId}`);
   if (!list) return;
@@ -9666,26 +9707,40 @@ async function loadWorkers(outreachId) {
     const items = [];
     snap.forEach(docSnap => items.push({ id: docSnap.id, ...docSnap.data() }));
 
-    list.innerHTML = items.map(worker => `
-      <div class="worker-card">
-        <img
-          class="worker-photo"
-          src="${escapeHtml(worker.photoUrl || "srm.png")}"
-          alt="${escapeHtml(worker.name || "Worker")}"
-          onclick="openLightbox(this.src)"
-        >
-        <div class="worker-name">${escapeHtml(worker.name || "Unnamed Worker")}</div>
+    list.innerHTML = items.map(worker => {
+      const photoUrl = (worker.photoUrl || "").trim();
 
-        ${(outreachAdminState[outreachId] || isSuperAdmin) ? `
-          <button
-            class="danger-btn worker-delete-btn"
-            type="button"
-            onclick="deleteWorker('${escapeHtml(worker.id)}','${escapeHtml(worker.photoStoragePath || "")}','${escapeHtml(outreachId)}')">
-            Delete
-          </button>
-        ` : ""}
-      </div>
-    `).join("");
+      return `
+        <div class="worker-card">
+          ${
+            photoUrl
+              ? `
+                <img
+                  class="worker-photo"
+                  src="${escapeHtml(photoUrl)}"
+                  alt="${escapeHtml(worker.name || "Worker")}"
+                  loading="lazy"
+                  referrerpolicy="no-referrer"
+                  onclick="openLightbox(this.src)"
+                  onerror="this.onerror=null;this.style.display='none';"
+                >
+              `
+              : ``
+          }
+
+          <div class="worker-name">${escapeHtml(worker.name || "Unnamed Worker")}</div>
+
+          ${(outreachAdminState[outreachId] || isSuperAdmin) ? `
+            <button
+              class="danger-btn worker-delete-btn"
+              type="button"
+              onclick="deleteWorker('${escapeHtml(worker.id)}','${escapeHtml(worker.photoStoragePath || "")}','${escapeHtml(outreachId)}')">
+              Delete
+            </button>
+          ` : ""}
+        </div>
+      `;
+    }).join("");
   } catch (error) {
     list.innerHTML = `<p class="smallmuted error-text" style="margin:0;">Failed to load workers: ${escapeHtml(error.message)}</p>`;
   }
@@ -10287,13 +10342,17 @@ window.openNewsArticle = function(article) {
             style="width:100%;max-width:100%;max-height:60vh;border-radius:22px;background:rgba(255,255,255,.03);border:1px solid var(--line);box-shadow:var(--shadow);">
           </video>
         ` : `
-          <img
-            class="news-modal-image clickable-news-image"
-            src="${escapeHtml(article.imageUrl || "srm.png")}"
-            alt="${escapeHtml(article.title || "News image")}"
-            onclick="event.stopPropagation(); openNewsImageLightbox('${escapeHtml(article.imageUrl || "srm.png")}')"
-            onerror="this.onerror=null; this.src='srm.png'; this.style.objectFit='contain'; this.style.background='rgba(255,255,255,.03)';"
-          >
+          ${article.imageUrl ? `
+  <img
+    class="news-modal-image clickable-news-image"
+    src="${escapeHtml(article.imageUrl)}"
+    alt="${escapeHtml(article.title || "News image")}"
+    loading="lazy"
+    referrerpolicy="no-referrer"
+    onclick="event.stopPropagation(); openNewsImageLightbox('${escapeHtml(article.imageUrl)}')"
+    onerror="this.onerror=null;this.style.display='none';"
+  >
+` : ``}
         `}
       </div>
 
